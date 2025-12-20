@@ -35,6 +35,9 @@ export default function PassionCoachingForm({ clientId }: PassionCoachingFormPro
   const [showForm, setShowForm] = useState(true);
   const [progressMessageIndex, setProgressMessageIndex] = useState(0);
   const [cancelRequested, setCancelRequested] = useState(false);
+  const [exportingPDF, setExportingPDF] = useState(false);
+  const [exportingGoogleDocs, setExportingGoogleDocs] = useState(false);
+  const [exportMessage, setExportMessage] = useState('');
   const resultRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -218,21 +221,156 @@ export default function PassionCoachingForm({ clientId }: PassionCoachingFormPro
     }
   };
 
-  const handleDownloadPDF = () => {
-    const element = document.createElement('a');
-    const content = `Personalized Content Plan\n\n${aiContent}`;
-    const file = new Blob([content], { type: 'text/plain' });
-    element.href = URL.createObjectURL(file);
-    element.download = 'content-plan.txt';
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+  const handleDownloadPDF = async () => {
+    setExportingPDF(true);
+    setExportMessage('');
+
+    try {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+      const response = await fetch(
+        `${supabaseUrl}/functions/v1/generate-pdf`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${supabaseAnonKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            content: aiContent,
+            title: 'Passion Coaching Instagram Content',
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to generate PDF');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'passion-coaching-content.pdf';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      setExportMessage('PDF downloaded successfully!');
+      setTimeout(() => setExportMessage(''), 3000);
+    } catch (error) {
+      console.error('PDF export error:', error);
+      setExportMessage('Failed to generate PDF. Please try again.');
+      setTimeout(() => setExportMessage(''), 5000);
+    } finally {
+      setExportingPDF(false);
+    }
   };
 
-  const handleExportToGoogleDocs = () => {
-    const encodedContent = encodeURIComponent(aiContent);
-    const googleDocsUrl = `https://docs.google.com/document/create?title=Content Plan&body=${encodedContent}`;
-    window.open(googleDocsUrl, '_blank');
+  const handleExportToGoogleDocs = async () => {
+    setExportingGoogleDocs(true);
+    setExportMessage('');
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        throw new Error('Please sign in to export to Google Docs');
+      }
+
+      const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+      if (!CLIENT_ID) {
+        setExportMessage('Google Docs export requires configuration. Downloading as text file instead...');
+        const element = document.createElement('a');
+        const file = new Blob([aiContent], { type: 'text/plain' });
+        element.href = URL.createObjectURL(file);
+        element.download = 'passion-coaching-content.txt';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+        setTimeout(() => setExportMessage(''), 5000);
+        setExportingGoogleDocs(false);
+        return;
+      }
+
+      const SCOPES = 'https://www.googleapis.com/auth/documents';
+      const REDIRECT_URI = window.location.origin;
+
+      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+        `client_id=${CLIENT_ID}&` +
+        `redirect_uri=${REDIRECT_URI}&` +
+        `response_type=token&` +
+        `scope=${SCOPES}&` +
+        `state=${encodeURIComponent(JSON.stringify({ action: 'export_google_docs', content: aiContent }))}`;
+
+      const authWindow = window.open(authUrl, 'Google Auth', 'width=500,height=600');
+
+      const handleMessage = async (event: MessageEvent) => {
+        if (event.data.type === 'google_auth_success') {
+          const accessToken = event.data.accessToken;
+
+          try {
+            const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+            const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+            const response = await fetch(
+              `${supabaseUrl}/functions/v1/export-to-google-docs`,
+              {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${supabaseAnonKey}`,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  content: aiContent,
+                  title: 'Passion Coaching Instagram Content – Generated',
+                  googleAccessToken: accessToken,
+                }),
+              }
+            );
+
+            if (!response.ok) {
+              throw new Error('Failed to export to Google Docs');
+            }
+
+            const data = await response.json();
+            window.open(data.documentUrl, '_blank');
+            setExportMessage('Your content has been exported to Google Docs.');
+            setTimeout(() => setExportMessage(''), 5000);
+          } catch (error) {
+            console.error('Google Docs export error:', error);
+            setExportMessage('Failed to export to Google Docs. Please try again.');
+            setTimeout(() => setExportMessage(''), 5000);
+          } finally {
+            setExportingGoogleDocs(false);
+          }
+
+          window.removeEventListener('message', handleMessage);
+        }
+      };
+
+      window.addEventListener('message', handleMessage);
+
+      const checkWindowClosed = setInterval(() => {
+        if (authWindow?.closed) {
+          clearInterval(checkWindowClosed);
+          window.removeEventListener('message', handleMessage);
+          if (exportingGoogleDocs) {
+            setExportingGoogleDocs(false);
+            setExportMessage('Authentication cancelled.');
+            setTimeout(() => setExportMessage(''), 3000);
+          }
+        }
+      }, 500);
+    } catch (error) {
+      console.error('Google Docs export error:', error);
+      setExportMessage(error instanceof Error ? error.message : 'Failed to export to Google Docs');
+      setTimeout(() => setExportMessage(''), 5000);
+      setExportingGoogleDocs(false);
+    }
   };
 
   const handleChange = (field: string, value: string) => {
@@ -424,20 +562,53 @@ export default function PassionCoachingForm({ clientId }: PassionCoachingFormPro
 
             <div className="pt-2 border-t border-emerald-200">
               <p className="text-sm text-slate-600 mb-3">Export your content plan:</p>
+
+              {exportMessage && (
+                <div className={`mb-3 p-3 rounded-lg text-sm ${
+                  exportMessage.includes('success') || exportMessage.includes('exported')
+                    ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                    : exportMessage.includes('Failed') || exportMessage.includes('error')
+                    ? 'bg-red-50 text-red-800 border border-red-200'
+                    : 'bg-blue-50 text-blue-800 border border-blue-200'
+                }`}>
+                  {exportMessage}
+                </div>
+              )}
+
               <div className="flex flex-wrap gap-3">
                 <button
                   onClick={handleDownloadPDF}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-all shadow-sm font-medium text-sm"
+                  disabled={exportingPDF}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-all shadow-sm font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Download className="w-4 h-4" />
-                  <span>Download as Text File</span>
+                  {exportingPDF ? (
+                    <>
+                      <Loader className="w-4 h-4 animate-spin" />
+                      <span>Preparing PDF…</span>
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-4 h-4" />
+                      <span>Download as PDF</span>
+                    </>
+                  )}
                 </button>
                 <button
                   onClick={handleExportToGoogleDocs}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-all shadow-sm font-medium text-sm"
+                  disabled={exportingGoogleDocs}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-all shadow-sm font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <FileText className="w-4 h-4" />
-                  <span>Open in Google Docs</span>
+                  {exportingGoogleDocs ? (
+                    <>
+                      <Loader className="w-4 h-4 animate-spin" />
+                      <span>Preparing…</span>
+                    </>
+                  ) : (
+                    <>
+                      <FileText className="w-4 h-4" />
+                      <span>Export to Google Docs</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
