@@ -59,13 +59,41 @@ The following security and performance issues have been automatically fixed via 
 3. **Optimized Auth Function Calls**: Updated all RLS policies to use `(select auth.uid())` instead of `auth.uid()`
    - Changed from O(n) to O(1) evaluation
    - Significantly improves query performance at scale
-   - Affects 6 policies across `profiles` and `clients` tables
+   - Affects all policies across `profiles` and `clients` tables
 
-### ✅ Policy Consolidation
+4. **Eliminated current_setting() Per-Row Evaluation**: Split consolidated SELECT policy into role-specific policies
+   - Removed `current_setting('role')` check that evaluated per-row
+   - Created separate policies for `anon` and `authenticated` roles
+   - PostgreSQL can now optimize policy evaluation at query planning time
 
-4. **Merged Duplicate SELECT Policies**: Combined two SELECT policies on `clients` table into one efficient policy
-   - Reduces policy evaluation overhead
-   - Maintains both login verification and admin access functionality
+---
+
+## Informational Notices
+
+### "Unused Index" Warning
+
+**Notice**: Supabase may report that `idx_passion_coaching_responses_client_id` is unused.
+
+**Why This Is Safe to Ignore**:
+1. **Foreign Key Best Practice**: Indexing foreign key columns is a database best practice, even if usage statistics haven't accumulated yet
+2. **Future Performance**: The index will be used whenever:
+   - Queries JOIN between `passion_coaching_responses` and `clients` tables
+   - Queries filter responses by `client_id`
+   - The database enforces foreign key constraints during deletes
+3. **Low Overhead**: The index has minimal storage overhead and improves write consistency
+4. **Early Stage**: The warning may appear simply because there haven't been enough queries yet to register in PostgreSQL statistics
+
+**Recommendation**: Keep this index. It will provide performance benefits as the application scales and query patterns develop.
+
+### "Multiple Permissive Policies" Notice
+
+**Notice**: Supabase may flag the `clients` table as having multiple permissive SELECT policies.
+
+**Why This Is Correct**:
+- Having separate policies for different roles (`anon` vs `authenticated`) is the performant approach
+- The alternative (single consolidated policy) would require runtime role checking per-row
+- This architecture allows PostgreSQL to optimize policy evaluation at query planning time
+- This is the recommended pattern for handling different access patterns by role
 
 ---
 
@@ -120,4 +148,6 @@ After applying the manual configurations:
 ---
 
 **Last Updated**: 2025-12-20
-**Migration File**: `fix_security_and_performance_issues.sql`
+**Migration Files**:
+- `20251220191052_fix_security_and_performance_issues.sql`
+- `fix_remaining_rls_performance_issue.sql`
