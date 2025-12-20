@@ -1,10 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
-import { CheckCircle, Loader, Copy, Check, RotateCcw, Sparkles } from 'lucide-react';
+import { CheckCircle, Loader, Copy, Check, RotateCcw, Sparkles, Download, FileText, X } from 'lucide-react';
 
 interface PassionCoachingFormProps {
   clientId: string;
 }
+
+const PROGRESS_MESSAGES = [
+  "Understanding your answers…",
+  "Thinking through content ideas…",
+  "Crafting engaging captions…",
+  "Writing hooks and opening lines…",
+  "Polishing your content for Instagram…",
+  "Almost done…"
+];
 
 export default function PassionCoachingForm({ clientId }: PassionCoachingFormProps) {
   const [formData, setFormData] = useState({
@@ -24,11 +33,32 @@ export default function PassionCoachingForm({ clientId }: PassionCoachingFormPro
   const [aiContent, setAiContent] = useState('');
   const [copied, setCopied] = useState(false);
   const [showForm, setShowForm] = useState(true);
+  const [progressMessageIndex, setProgressMessageIndex] = useState(0);
+  const [cancelRequested, setCancelRequested] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     loadExistingResponse();
   }, [clientId]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (generating) {
+      setProgressMessageIndex(0);
+      interval = setInterval(() => {
+        setProgressMessageIndex((prev) => {
+          if (prev < PROGRESS_MESSAGES.length - 1) {
+            return prev + 1;
+          }
+          return prev;
+        });
+      }, 4000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [generating]);
 
   const loadExistingResponse = async () => {
     try {
@@ -107,6 +137,9 @@ export default function PassionCoachingForm({ clientId }: PassionCoachingFormPro
 
   const generateContent = async () => {
     try {
+      abortControllerRef.current = new AbortController();
+      setCancelRequested(false);
+
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
@@ -127,6 +160,7 @@ export default function PassionCoachingForm({ clientId }: PassionCoachingFormPro
             postsPerWeek: formData.postsPerWeek,
             preferredContentType: formData.contentPreference,
           }),
+          signal: abortControllerRef.current.signal,
         }
       );
 
@@ -143,10 +177,15 @@ export default function PassionCoachingForm({ clientId }: PassionCoachingFormPro
         resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 100);
     } catch (err: any) {
-      setError(err.message || 'Failed to generate content. Please try again.');
+      if (err.name === 'AbortError') {
+        setError('Generation cancelled. You can edit your answers or try again.');
+      } else {
+        setError(err.message || 'Failed to generate content. Please try again.');
+      }
       setShowForm(true);
     } finally {
       setGenerating(false);
+      abortControllerRef.current = null;
     }
   };
 
@@ -170,6 +209,30 @@ export default function PassionCoachingForm({ clientId }: PassionCoachingFormPro
     setShowForm(true);
     setError('');
     setSuccess(false);
+  };
+
+  const handleCancelGeneration = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      setCancelRequested(true);
+    }
+  };
+
+  const handleDownloadPDF = () => {
+    const element = document.createElement('a');
+    const content = `Personalized Content Plan\n\n${aiContent}`;
+    const file = new Blob([content], { type: 'text/plain' });
+    element.href = URL.createObjectURL(file);
+    element.download = 'content-plan.txt';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  };
+
+  const handleExportToGoogleDocs = () => {
+    const encodedContent = encodeURIComponent(aiContent);
+    const googleDocsUrl = `https://docs.google.com/document/create?title=Content Plan&body=${encodedContent}`;
+    window.open(googleDocsUrl, '_blank');
   };
 
   const handleChange = (field: string, value: string) => {
@@ -263,27 +326,36 @@ export default function PassionCoachingForm({ clientId }: PassionCoachingFormPro
 
       {generating && (
         <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl shadow-sm border border-emerald-200 p-12 sm:p-16">
-          <div className="max-w-lg mx-auto text-center space-y-6">
+          <div className="max-w-lg mx-auto text-center space-y-8">
             <div className="flex justify-center">
               <div className="relative">
                 <Sparkles className="w-16 h-16 text-emerald-600 animate-pulse" />
                 <Loader className="w-16 h-16 text-emerald-500 animate-spin absolute inset-0" />
               </div>
             </div>
-            <div className="space-y-3">
-              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
-                We are creating your personalized content
+            <div className="space-y-4">
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 min-h-[2.5rem] transition-all duration-500">
+                {PROGRESS_MESSAGES[progressMessageIndex]}
               </h2>
               <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
-                This may take 20–40 seconds. Please don't refresh the page.
+                {progressMessageIndex < PROGRESS_MESSAGES.length - 1
+                  ? "This usually takes about 20–40 seconds."
+                  : "Almost there — thank you for waiting."}
               </p>
             </div>
-            <div className="pt-4">
-              <div className="flex items-center justify-center gap-2">
+            <div className="pt-2">
+              <div className="flex items-center justify-center gap-2 mb-6">
                 <div className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
                 <div className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
                 <div className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
               </div>
+              <button
+                onClick={handleCancelGeneration}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 rounded-lg transition-all shadow-sm hover:shadow-md border border-slate-200 font-medium"
+              >
+                <X className="w-4 h-4" />
+                <span>Cancel Generation</span>
+              </button>
             </div>
           </div>
         </div>
@@ -315,38 +387,60 @@ export default function PassionCoachingForm({ clientId }: PassionCoachingFormPro
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-3">
-            <button
-              onClick={handleCopy}
-              className="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-all shadow-sm hover:shadow-md font-medium"
-            >
-              {copied ? (
-                <>
-                  <Check className="w-5 h-5" />
-                  <span>Copied!</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="w-5 h-5" />
-                  <span>Copy Content</span>
-                </>
-              )}
-            </button>
-            <button
-              onClick={handleRegenerate}
-              disabled={generating}
-              className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 rounded-lg transition-all shadow-sm hover:shadow-md border border-slate-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <RotateCcw className="w-5 h-5" />
-              <span>Regenerate</span>
-            </button>
-            <button
-              onClick={handleGenerateAgain}
-              className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 rounded-lg transition-all shadow-sm hover:shadow-md border border-slate-200 font-medium"
-            >
-              <Sparkles className="w-5 h-5" />
-              <span>Generate Again</span>
-            </button>
+          <div className="space-y-4">
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={handleCopy}
+                className="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-all shadow-sm hover:shadow-md font-medium"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-5 h-5" />
+                    <span>Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-5 h-5" />
+                    <span>Copy Content</span>
+                  </>
+                )}
+              </button>
+              <button
+                onClick={handleRegenerate}
+                disabled={generating}
+                className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 rounded-lg transition-all shadow-sm hover:shadow-md border border-slate-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <RotateCcw className="w-5 h-5" />
+                <span>Regenerate</span>
+              </button>
+              <button
+                onClick={handleGenerateAgain}
+                className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 rounded-lg transition-all shadow-sm hover:shadow-md border border-slate-200 font-medium"
+              >
+                <Sparkles className="w-5 h-5" />
+                <span>Generate Again</span>
+              </button>
+            </div>
+
+            <div className="pt-2 border-t border-emerald-200">
+              <p className="text-sm text-slate-600 mb-3">Export your content plan:</p>
+              <div className="flex flex-wrap gap-3">
+                <button
+                  onClick={handleDownloadPDF}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-all shadow-sm font-medium text-sm"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Download as Text File</span>
+                </button>
+                <button
+                  onClick={handleExportToGoogleDocs}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-all shadow-sm font-medium text-sm"
+                >
+                  <FileText className="w-4 h-4" />
+                  <span>Open in Google Docs</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
