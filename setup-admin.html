@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Setup Admin User</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f8fafc;
+    }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    button {
+      background: linear-gradient(to right, #059669, #0d9488);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      width: 100%;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    .status {
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #f1f5f9;
+    }
+    .success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Setup Admin User</h1>
+    <p>Click the button below to create the admin user for your application.</p>
+
+    <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; margin: 20px 0;">
+      <p style="margin: 0; font-weight: 600;">Email: sunilsu0@gmail.com</p>
+      <p style="margin: 5px 0 0 0; font-weight: 600;">Password: Astroid@12</p>
+    </div>
+
+    <button onclick="createAdmin()">Create Admin User</button>
+    <div id="status"></div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://stvzpemfziwjbwkezdrv.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0dnpwZW1meml3amJ3a2V6ZHJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ5NTExNDksImV4cCI6MjA4MDUyNzE0OX0.yA3SWcobCEyQgcOrO2sZndJMwpBAwGWURuT6we0ahpI';
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function createAdmin() {
+      const statusDiv = document.getElementById('status');
+      statusDiv.className = 'status';
+      statusDiv.textContent = 'Creating admin user...';
+
+      try {
+        const { data, error } = await supabase.auth.signUp({
+          email: 'sunilsu0@gmail.com',
+          password: 'Astroid@12',
+          options: {
+            data: {
+              role: 'admin'
+            }
+          }
+        });
+
+        if (error) {
+          statusDiv.className = 'status error';
+          statusDiv.textContent = 'Error: ' + error.message;
+        } else {
+          statusDiv.className = 'status success';
+          statusDiv.textContent = 'Admin user created successfully! You can now login at the main page.';
+        }
+      } catch (err) {
+        statusDiv.className = 'status error';
+        statusDiv.textContent = 'Error: ' + err.message;
+      }
+    }
+  </script>
+</body>
+</html>
