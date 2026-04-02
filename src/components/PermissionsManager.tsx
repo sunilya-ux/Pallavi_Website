@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Shield, Lock, Unlock, Save, AlertCircle } from 'lucide-react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { Shield, Lock, Unlock, Save, AlertCircle, Search, ChevronLeft, ChevronRight, ArrowUpDown } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { Module, Tool } from '../types/permissions';
 
@@ -7,6 +7,7 @@ interface Client {
   id: string;
   email: string;
   status: string;
+  created_at: string;
 }
 
 interface PermissionsManagerProps {
@@ -18,8 +19,10 @@ interface ClientPermissions {
   tools: Set<string>;
 }
 
+type SortOption = 'newest' | 'oldest' | 'az' | 'za';
+
 export default function PermissionsManager({ onClose }: PermissionsManagerProps) {
-  const [clients, setClients] = useState<Client[]>([]);
+  const [allClients, setAllClients] = useState<Client[]>([]);
   const [modules, setModules] = useState<Module[]>([]);
   const [tools, setTools] = useState<Tool[]>([]);
   const [selectedClient, setSelectedClient] = useState<string | null>(null);
@@ -31,6 +34,16 @@ export default function PermissionsManager({ onClose }: PermissionsManagerProps)
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
+  // Search & pagination state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<Client[]>([]);
+  const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState<SortOption>('newest');
+  const itemsPerPage = 10;
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     loadData();
   }, []);
@@ -41,12 +54,24 @@ export default function PermissionsManager({ onClose }: PermissionsManagerProps)
     }
   }, [selectedClient]);
 
+  // Close search dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+        setShowSearchDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const loadData = async () => {
     try {
       setLoading(true);
 
       const [clientsRes, modulesRes, toolsRes] = await Promise.all([
-        supabase.from('clients').select('id, email, status').order('email'),
+        supabase.from('clients').select('id, email, status, created_at').order('created_at', { ascending: false }),
         supabase.from('modules').select('*').order('sort_order'),
         supabase.from('tools').select('*').order('sort_order'),
       ]);
@@ -55,7 +80,7 @@ export default function PermissionsManager({ onClose }: PermissionsManagerProps)
       if (modulesRes.error) throw modulesRes.error;
       if (toolsRes.error) throw toolsRes.error;
 
-      setClients(clientsRes.data || []);
+      setAllClients(clientsRes.data || []);
       setModules(modulesRes.data || []);
       setTools(toolsRes.data || []);
     } catch (error) {
@@ -180,6 +205,69 @@ export default function PermissionsManager({ onClose }: PermissionsManagerProps)
     return tools.filter((tool) => tool.module_id === moduleId);
   };
 
+  // Debounced search function
+  const handleSearchInput = useCallback((query: string) => {
+    setSearchQuery(query);
+
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    if (query.trim() === '') {
+      setShowSearchDropdown(false);
+      setSearchResults([]);
+      return;
+    }
+
+    searchTimeoutRef.current = setTimeout(() => {
+      const filtered = allClients
+        .filter((client) => client.email.toLowerCase().includes(query.toLowerCase()))
+        .slice(0, 10); // Limit to 10 search results
+
+      setSearchResults(filtered);
+      setShowSearchDropdown(true);
+    }, 300);
+  }, [allClients]);
+
+  // Sort clients based on selected option
+  const getSortedClients = useCallback((clients: Client[]) => {
+    const sorted = [...clients];
+
+    switch (sortBy) {
+      case 'newest':
+        return sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      case 'oldest':
+        return sorted.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+      case 'az':
+        return sorted.sort((a, b) => a.email.localeCompare(b.email));
+      case 'za':
+        return sorted.sort((a, b) => b.email.localeCompare(a.email));
+      default:
+        return sorted;
+    }
+  }, [sortBy]);
+
+  // Get paginated clients for display
+  const getPaginatedClients = useCallback(() => {
+    const sorted = getSortedClients(allClients);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return sorted.slice(startIndex, endIndex);
+  }, [allClients, currentPage, getSortedClients]);
+
+  const totalPages = Math.ceil(allClients.length / itemsPerPage);
+
+  const handleClientSelect = (clientId: string) => {
+    setSelectedClient(clientId);
+    setShowSearchDropdown(false);
+    setSearchQuery('');
+  };
+
+  const handleSortChange = (newSort: SortOption) => {
+    setSortBy(newSort);
+    setCurrentPage(1); // Reset to first page when sorting changes
+  };
+
   if (loading) {
     return (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
@@ -219,18 +307,80 @@ export default function PermissionsManager({ onClose }: PermissionsManagerProps)
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-1">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Select User</h3>
-              <div className="space-y-2 max-h-[500px] overflow-y-auto">
-                {clients.length === 0 ? (
+
+              {/* Search Bar */}
+              <div ref={searchContainerRef} className="relative mb-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search users by email…"
+                    value={searchQuery}
+                    onChange={(e) => handleSearchInput(e.target.value)}
+                    onFocus={() => searchQuery && setShowSearchDropdown(true)}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                {/* Search Dropdown */}
+                {showSearchDropdown && searchResults.length > 0 && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-80 overflow-y-auto">
+                    {searchResults.map((client) => (
+                      <button
+                        key={client.id}
+                        onClick={() => handleClientSelect(client.id)}
+                        className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
+                      >
+                        <div className="font-medium text-gray-900">{client.email}</div>
+                        <div className="text-sm text-gray-600 mt-1">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                            client.status === 'Active'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            {client.status}
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {showSearchDropdown && searchQuery && searchResults.length === 0 && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-4 text-center text-gray-500">
+                    No users found matching "{searchQuery}"
+                  </div>
+                )}
+              </div>
+
+              {/* Sort Options */}
+              <div className="mb-4 flex items-center gap-2">
+                <ArrowUpDown className="w-4 h-4 text-gray-500" />
+                <select
+                  value={sortBy}
+                  onChange={(e) => handleSortChange(e.target.value as SortOption)}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="newest">Newest First</option>
+                  <option value="oldest">Oldest First</option>
+                  <option value="az">A → Z</option>
+                  <option value="za">Z → A</option>
+                </select>
+              </div>
+
+              {/* User List */}
+              <div className="space-y-2 max-h-[400px] overflow-y-auto mb-4">
+                {allClients.length === 0 ? (
                   <div className="text-center py-8">
                     <Shield className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                     <p className="text-gray-600 font-medium mb-1">No users found</p>
                     <p className="text-sm text-gray-500">Please add users first</p>
                   </div>
                 ) : (
-                  clients.map((client) => (
+                  getPaginatedClients().map((client) => (
                     <button
                       key={client.id}
-                      onClick={() => setSelectedClient(client.id)}
+                      onClick={() => handleClientSelect(client.id)}
                       className={`w-full text-left p-3 rounded-lg transition-all ${
                         selectedClient === client.id
                           ? 'bg-blue-50 border-2 border-blue-500 shadow-sm'
@@ -238,7 +388,7 @@ export default function PermissionsManager({ onClose }: PermissionsManagerProps)
                       }`}
                     >
                       <div className="font-medium text-gray-900">{client.email}</div>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-gray-600 mt-1">
                         <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
                           client.status === 'Active'
                             ? 'bg-green-100 text-green-800'
@@ -251,6 +401,33 @@ export default function PermissionsManager({ onClose }: PermissionsManagerProps)
                   ))
                 )}
               </div>
+
+              {/* Pagination */}
+              {allClients.length > 0 && totalPages > 1 && (
+                <div className="flex items-center justify-between border-t border-gray-200 pt-4">
+                  <button
+                    onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                    className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    Previous
+                  </button>
+
+                  <span className="text-sm text-gray-600">
+                    Page {currentPage} of {totalPages}
+                  </span>
+
+                  <button
+                    onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage === totalPages}
+                    className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Next
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="lg:col-span-2">
