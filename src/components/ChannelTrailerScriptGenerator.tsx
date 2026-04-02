@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Video, Loader, Copy, Download, CheckCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -18,6 +18,45 @@ export default function ChannelTrailerScriptGenerator() {
   const [generatedScript, setGeneratedScript] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [copied, setCopied] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authToken, setAuthToken] = useState<string>('');
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    try {
+      setAuthLoading(true);
+
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (session) {
+        setIsAuthenticated(true);
+        setAuthToken(session.access_token);
+        console.log('Auth: Supabase session found', { user: session.user.email });
+      } else {
+        const clientId = localStorage.getItem('clientId');
+        const clientEmail = localStorage.getItem('clientEmail');
+        const userType = localStorage.getItem('userType');
+
+        if (clientId && clientEmail && userType === 'client') {
+          setIsAuthenticated(true);
+          setAuthToken(import.meta.env.VITE_SUPABASE_ANON_KEY);
+          console.log('Auth: Client session found', { clientEmail });
+        } else {
+          setIsAuthenticated(false);
+          console.log('Auth: No valid session found');
+        }
+      }
+    } catch (err) {
+      console.error('Auth check error:', err);
+      setIsAuthenticated(false);
+    } finally {
+      setAuthLoading(false);
+    }
+  };
 
   const handleInputChange = (field: keyof FormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -36,8 +75,7 @@ export default function ChannelTrailerScriptGenerator() {
     setGeneratedScript('');
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      if (!isAuthenticated) {
         throw new Error('You must be logged in to use this tool');
       }
 
@@ -46,7 +84,7 @@ export default function ChannelTrailerScriptGenerator() {
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${session.access_token}`,
+          'Authorization': `Bearer ${authToken}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData)
@@ -76,8 +114,7 @@ export default function ChannelTrailerScriptGenerator() {
 
   const handleDownloadPDF = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      if (!isAuthenticated) {
         throw new Error('You must be logged in');
       }
 
@@ -86,7 +123,7 @@ export default function ChannelTrailerScriptGenerator() {
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${session.access_token}`,
+          'Authorization': `Bearer ${authToken}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -112,6 +149,31 @@ export default function ChannelTrailerScriptGenerator() {
       setError(err.message || 'Failed to download PDF');
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-8 flex items-center justify-center">
+        <div className="text-center">
+          <Loader className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
+          <p className="text-lg text-gray-700">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-8 flex items-center justify-center">
+        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Video className="w-8 h-8 text-red-600" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Authentication Required</h2>
+          <p className="text-gray-600">You must be logged in to use this tool. Please log in and try again.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-8">
