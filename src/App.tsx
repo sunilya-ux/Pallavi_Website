@@ -12,11 +12,12 @@ import FAQ from './components/FAQ';
 import FinalCTA from './components/FinalCTA';
 import Footer from './components/Footer';
 import Dashboard from './components/Dashboard';
-import ClientDashboard from './components/ClientDashboard';
+import ModularClientDashboard from './components/ModularClientDashboard';
 
 function App() {
   const [user, setUser] = useState<any>(null);
   const [clientUser, setClientUser] = useState<string | null>(null);
+  const [clientId, setClientId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,9 +27,11 @@ function App() {
       if (!session?.user) {
         const userType = localStorage.getItem('userType');
         const clientEmail = localStorage.getItem('clientEmail');
+        const storedClientId = localStorage.getItem('clientId');
 
-        if (userType === 'client' && clientEmail) {
+        if (userType === 'client' && clientEmail && storedClientId) {
           setClientUser(clientEmail);
+          setClientId(storedClientId);
         }
       }
 
@@ -43,9 +46,11 @@ function App() {
       if (!session?.user) {
         const userType = localStorage.getItem('userType');
         const clientEmail = localStorage.getItem('clientEmail');
+        const storedClientId = localStorage.getItem('clientId');
 
-        if (userType === 'client' && clientEmail) {
+        if (userType === 'client' && clientEmail && storedClientId) {
           setClientUser(clientEmail);
+          setClientId(storedClientId);
         }
       } else {
         setClientUser(null);
@@ -70,8 +75,8 @@ function App() {
     return <Dashboard userEmail={user.email || ''} />;
   }
 
-  if (clientUser) {
-    return <ClientDashboard email={clientUser} />;
+  if (clientUser && clientId) {
+    return <ModularClientDashboard email={clientUser} clientId={clientId} />;
   }
 
   return (

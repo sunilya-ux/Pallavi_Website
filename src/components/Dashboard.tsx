@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { LogOut, Menu, X, ExternalLink, Users } from 'lucide-react';
+import { LogOut, Menu, X, ExternalLink, Users, Shield } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import ClientsManager from './ClientsManager';
+import PermissionsManager from './PermissionsManager';
 
 interface DashboardProps {
   userEmail: string;
@@ -9,7 +10,8 @@ interface DashboardProps {
 
 export default function Dashboard({ userEmail }: DashboardProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [activeSection, setActiveSection] = useState<'overview' | 'clients'>('overview');
+  const [activeSection, setActiveSection] = useState<'overview' | 'clients' | 'permissions'>('overview');
+  const [showPermissionsModal, setShowPermissionsModal] = useState(false);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -52,6 +54,14 @@ export default function Dashboard({ userEmail }: DashboardProps) {
           >
             <Users className="w-5 h-5" />
             <span className="font-medium">Clients</span>
+          </button>
+
+          <button
+            onClick={() => setShowPermissionsModal(true)}
+            className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors w-full text-left text-slate-300 hover:bg-slate-700"
+          >
+            <Shield className="w-5 h-5" />
+            <span className="font-medium">Access Control</span>
           </button>
         </nav>
 
@@ -155,6 +165,10 @@ export default function Dashboard({ userEmail }: DashboardProps) {
           </div>
         </main>
       </div>
+
+      {showPermissionsModal && (
+        <PermissionsManager onClose={() => setShowPermissionsModal(false)} />
+      )}
     </div>
   );
 }

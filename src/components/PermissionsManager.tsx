@@ -1,0 +1,362 @@
+import React, { useEffect, useState } from 'react';
+import { Shield, Lock, Unlock, Save, AlertCircle } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import type { Module, Tool } from '../types/permissions';
+
+interface Client {
+  id: string;
+  name: string;
+  email: string;
+}
+
+interface PermissionsManagerProps {
+  onClose: () => void;
+}
+
+interface ClientPermissions {
+  modules: Set<string>;
+  tools: Set<string>;
+}
+
+export default function PermissionsManager({ onClose }: PermissionsManagerProps) {
+  const [clients, setClients] = useState<Client[]>([]);
+  const [modules, setModules] = useState<Module[]>([]);
+  const [tools, setTools] = useState<Tool[]>([]);
+  const [selectedClient, setSelectedClient] = useState<string | null>(null);
+  const [permissions, setPermissions] = useState<ClientPermissions>({
+    modules: new Set(),
+    tools: new Set(),
+  });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    if (selectedClient) {
+      loadClientPermissions(selectedClient);
+    }
+  }, [selectedClient]);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+
+      const [clientsRes, modulesRes, toolsRes] = await Promise.all([
+        supabase.from('clients').select('id, name, email').order('name'),
+        supabase.from('modules').select('*').order('sort_order'),
+        supabase.from('tools').select('*').order('sort_order'),
+      ]);
+
+      if (clientsRes.error) throw clientsRes.error;
+      if (modulesRes.error) throw modulesRes.error;
+      if (toolsRes.error) throw toolsRes.error;
+
+      setClients(clientsRes.data || []);
+      setModules(modulesRes.data || []);
+      setTools(toolsRes.data || []);
+    } catch (error) {
+      console.error('Error loading data:', error);
+      setMessage({ type: 'error', text: 'Failed to load data' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadClientPermissions = async (clientId: string) => {
+    try {
+      const [moduleAccessRes, toolAccessRes] = await Promise.all([
+        supabase
+          .from('user_module_access')
+          .select('module_id, is_enabled')
+          .eq('client_id', clientId),
+        supabase
+          .from('user_tool_access')
+          .select('tool_id, is_enabled')
+          .eq('client_id', clientId),
+      ]);
+
+      if (moduleAccessRes.error) throw moduleAccessRes.error;
+      if (toolAccessRes.error) throw toolAccessRes.error;
+
+      const moduleSet = new Set<string>();
+      const toolSet = new Set<string>();
+
+      moduleAccessRes.data?.forEach((access) => {
+        if (access.is_enabled) {
+          moduleSet.add(access.module_id);
+        }
+      });
+
+      toolAccessRes.data?.forEach((access) => {
+        if (access.is_enabled) {
+          toolSet.add(access.tool_id);
+        }
+      });
+
+      setPermissions({ modules: moduleSet, tools: toolSet });
+    } catch (error) {
+      console.error('Error loading permissions:', error);
+      setMessage({ type: 'error', text: 'Failed to load permissions' });
+    }
+  };
+
+  const toggleModuleAccess = (moduleId: string) => {
+    setPermissions((prev) => {
+      const newModules = new Set(prev.modules);
+      if (newModules.has(moduleId)) {
+        newModules.delete(moduleId);
+      } else {
+        newModules.add(moduleId);
+      }
+      return { ...prev, modules: newModules };
+    });
+  };
+
+  const toggleToolAccess = (toolId: string) => {
+    setPermissions((prev) => {
+      const newTools = new Set(prev.tools);
+      if (newTools.has(toolId)) {
+        newTools.delete(toolId);
+      } else {
+        newTools.add(toolId);
+      }
+      return { ...prev, tools: newTools };
+    });
+  };
+
+  const savePermissions = async () => {
+    if (!selectedClient) return;
+
+    try {
+      setSaving(true);
+      setMessage(null);
+
+      const { data: { user } } = await supabase.auth.getUser();
+      const adminId = user?.id;
+
+      await Promise.all([
+        supabase.from('user_module_access').delete().eq('client_id', selectedClient),
+        supabase.from('user_tool_access').delete().eq('client_id', selectedClient),
+      ]);
+
+      const moduleInserts = Array.from(permissions.modules).map((moduleId) => ({
+        client_id: selectedClient,
+        module_id: moduleId,
+        is_enabled: true,
+        granted_by: adminId,
+      }));
+
+      const toolInserts = Array.from(permissions.tools).map((toolId) => ({
+        client_id: selectedClient,
+        tool_id: toolId,
+        is_enabled: true,
+        granted_by: adminId,
+      }));
+
+      if (moduleInserts.length > 0) {
+        const { error } = await supabase.from('user_module_access').insert(moduleInserts);
+        if (error) throw error;
+      }
+
+      if (toolInserts.length > 0) {
+        const { error } = await supabase.from('user_tool_access').insert(toolInserts);
+        if (error) throw error;
+      }
+
+      setMessage({ type: 'success', text: 'Permissions saved successfully' });
+    } catch (error) {
+      console.error('Error saving permissions:', error);
+      setMessage({ type: 'error', text: 'Failed to save permissions' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const getToolsForModule = (moduleId: string) => {
+    return tools.filter((tool) => tool.module_id === moduleId);
+  };
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="bg-white rounded-xl p-8 max-w-4xl w-full mx-4">
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <div className="bg-white rounded-xl shadow-2xl max-w-6xl w-full my-8">
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                <Shield className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">Access Control</h2>
+                <p className="text-sm text-gray-600">Manage user permissions for modules and tools</p>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <span className="text-2xl">&times;</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="p-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-1">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Select User</h3>
+              <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                {clients.map((client) => (
+                  <button
+                    key={client.id}
+                    onClick={() => setSelectedClient(client.id)}
+                    className={`w-full text-left p-3 rounded-lg transition-all ${
+                      selectedClient === client.id
+                        ? 'bg-blue-50 border-2 border-blue-500 shadow-sm'
+                        : 'bg-gray-50 border-2 border-transparent hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="font-medium text-gray-900">{client.name}</div>
+                    <div className="text-sm text-gray-600">{client.email}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="lg:col-span-2">
+              {selectedClient ? (
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Permissions</h3>
+                    <button
+                      onClick={savePermissions}
+                      disabled={saving}
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <Save className="w-4 h-4" />
+                      {saving ? 'Saving...' : 'Save Changes'}
+                    </button>
+                  </div>
+
+                  {message && (
+                    <div
+                      className={`mb-4 p-3 rounded-lg flex items-center gap-2 ${
+                        message.type === 'success'
+                          ? 'bg-green-50 text-green-800'
+                          : 'bg-red-50 text-red-800'
+                      }`}
+                    >
+                      <AlertCircle className="w-4 h-4" />
+                      {message.text}
+                    </div>
+                  )}
+
+                  <div className="space-y-6 max-h-[500px] overflow-y-auto">
+                    {modules.map((module) => {
+                      const moduleTools = getToolsForModule(module.id);
+                      const hasModuleAccess = permissions.modules.has(module.id);
+
+                      return (
+                        <div
+                          key={module.id}
+                          className="border border-gray-200 rounded-lg p-4 bg-gray-50"
+                        >
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                              <div
+                                className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                                  hasModuleAccess
+                                    ? 'bg-green-100 text-green-600'
+                                    : 'bg-gray-200 text-gray-400'
+                                }`}
+                              >
+                                {hasModuleAccess ? (
+                                  <Unlock className="w-5 h-5" />
+                                ) : (
+                                  <Lock className="w-5 h-5" />
+                                )}
+                              </div>
+                              <div>
+                                <h4 className="font-semibold text-gray-900">
+                                  {module.display_name}
+                                </h4>
+                                <p className="text-sm text-gray-600">{module.description}</p>
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => toggleModuleAccess(module.id)}
+                              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                                hasModuleAccess
+                                  ? 'bg-green-600 text-white hover:bg-green-700'
+                                  : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+                              }`}
+                            >
+                              {hasModuleAccess ? 'Enabled' : 'Disabled'}
+                            </button>
+                          </div>
+
+                          {moduleTools.length > 0 && (
+                            <div className="ml-12 space-y-2">
+                              <p className="text-sm font-medium text-gray-700 mb-2">Tools:</p>
+                              {moduleTools.map((tool) => {
+                                const hasToolAccess = permissions.tools.has(tool.id);
+                                return (
+                                  <div
+                                    key={tool.id}
+                                    className="flex items-center justify-between bg-white p-3 rounded-lg border border-gray-200"
+                                  >
+                                    <div>
+                                      <div className="font-medium text-gray-900">
+                                        {tool.display_name}
+                                      </div>
+                                      <div className="text-sm text-gray-600">{tool.description}</div>
+                                    </div>
+                                    <button
+                                      onClick={() => toggleToolAccess(tool.id)}
+                                      className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                                        hasToolAccess
+                                          ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                                          : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                                      }`}
+                                    >
+                                      {hasToolAccess ? 'Enabled' : 'Disabled'}
+                                    </button>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center h-[500px] text-gray-500">
+                  <div className="text-center">
+                    <Shield className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                    <p>Select a user to manage permissions</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
