@@ -5,8 +5,8 @@ import type { Module, Tool } from '../types/permissions';
 
 interface Client {
   id: string;
-  name: string;
   email: string;
+  status: string;
 }
 
 interface PermissionsManagerProps {
@@ -46,7 +46,7 @@ export default function PermissionsManager({ onClose }: PermissionsManagerProps)
       setLoading(true);
 
       const [clientsRes, modulesRes, toolsRes] = await Promise.all([
-        supabase.from('clients').select('id, name, email').order('name'),
+        supabase.from('clients').select('id, email, status').order('email'),
         supabase.from('modules').select('*').order('sort_order'),
         supabase.from('tools').select('*').order('sort_order'),
       ]);
@@ -220,20 +220,36 @@ export default function PermissionsManager({ onClose }: PermissionsManagerProps)
             <div className="lg:col-span-1">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Select User</h3>
               <div className="space-y-2 max-h-[500px] overflow-y-auto">
-                {clients.map((client) => (
-                  <button
-                    key={client.id}
-                    onClick={() => setSelectedClient(client.id)}
-                    className={`w-full text-left p-3 rounded-lg transition-all ${
-                      selectedClient === client.id
-                        ? 'bg-blue-50 border-2 border-blue-500 shadow-sm'
-                        : 'bg-gray-50 border-2 border-transparent hover:border-gray-300'
-                    }`}
-                  >
-                    <div className="font-medium text-gray-900">{client.name}</div>
-                    <div className="text-sm text-gray-600">{client.email}</div>
-                  </button>
-                ))}
+                {clients.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Shield className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                    <p className="text-gray-600 font-medium mb-1">No users found</p>
+                    <p className="text-sm text-gray-500">Please add users first</p>
+                  </div>
+                ) : (
+                  clients.map((client) => (
+                    <button
+                      key={client.id}
+                      onClick={() => setSelectedClient(client.id)}
+                      className={`w-full text-left p-3 rounded-lg transition-all ${
+                        selectedClient === client.id
+                          ? 'bg-blue-50 border-2 border-blue-500 shadow-sm'
+                          : 'bg-gray-50 border-2 border-transparent hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="font-medium text-gray-900">{client.email}</div>
+                      <div className="text-sm text-gray-600">
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                          client.status === 'Active'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {client.status}
+                        </span>
+                      </div>
+                    </button>
+                  ))
+                )}
               </div>
             </div>
 
