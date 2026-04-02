@@ -15,11 +15,11 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const { topic, pain } = await req.json();
+    const { topic, pain, result } = await req.json();
 
-    if (!topic || !pain) {
+    if (!topic || !pain || !result) {
       return new Response(
-        JSON.stringify({ error: "Missing required fields: topic and pain" }),
+        JSON.stringify({ error: "Missing required fields: topic, pain, and result" }),
         {
           status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -38,35 +38,67 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const prompt = `You are a YouTube growth expert for life coaches.
+    const prompt = `You are an expert YouTube scriptwriter for a premium life coach who helps working women (age 27–40) overcome emotional struggles, build confidence, set boundaries, and create peaceful relationships.
 
-Create:
-- 10 high-converting video titles
-- 10 powerful hooks (first 3 seconds)
+Your job is to create a deep, emotionally resonant, high-retention YouTube script (5–8 minutes, continuous format).
 
-Audience:
-Working women dealing with emotional struggles, burnout, relationships.
+Tone:
+- Deep, empathetic
+- Calm but powerful
+- Indian context
+- No hype
+
+SCRIPT STRUCTURE:
+
+[HOOK]
+[PAIN]
+[TRUTH SHIFT]
+[STEP 1]
+[STEP 2]
+[STEP 3]
+[IDENTITY SHIFT]
+[CTA]
+[CLOSING]
 
 Topic: ${topic}
-Pain: ${pain}
+Audience pain: ${pain}
+Desired transformation: ${result}
 
-Guidelines:
-- Emotional triggers
-- Curiosity-based
-- No generic titles
-- Use contrast, tension, and relatability
+OUTPUT:
 
-Format:
+🎬 FULL YOUTUBE SCRIPT
+🎯 Title:
 
-🎯 VIDEO TITLES:
-1.
-2.
+🎬 START RECORDING
+
+[HOOK]
 ...
 
-🔥 HOOKS:
-1.
-2.
-...`;
+[PAIN]
+...
+
+[TRUTH SHIFT]
+...
+
+[STEP 1]
+...
+
+[STEP 2]
+...
+
+[STEP 3]
+...
+
+[IDENTITY SHIFT]
+...
+
+[CTA]
+...
+
+[CLOSING]
+...
+
+🎬 STOP RECORDING`;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -79,15 +111,15 @@ Format:
         messages: [
           {
             role: "system",
-            content: "You are a YouTube growth expert specializing in creating high-converting titles and hooks for life coaches targeting working women.",
+            content: "You are an expert YouTube scriptwriter specializing in creating deep, emotionally resonant scripts for life coaches targeting working women in India. Your scripts are designed for 5-8 minute videos with high retention and emotional impact.",
           },
           {
             role: "user",
             content: prompt,
           },
         ],
-        temperature: 0.8,
-        max_tokens: 2000,
+        temperature: 0.7,
+        max_tokens: 3000,
       }),
     });
 

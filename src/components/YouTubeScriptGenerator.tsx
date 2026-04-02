@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Zap, Loader, Copy, CheckCircle } from 'lucide-react';
+import { Video, Loader, Copy, CheckCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface FormData {
   topic: string;
   pain: string;
+  result: string;
 }
 
-export default function YouTubeHookGenerator() {
+export default function YouTubeScriptGenerator() {
   const [formData, setFormData] = useState<FormData>({
     topic: '',
-    pain: ''
+    pain: '',
+    result: ''
   });
   const [generating, setGenerating] = useState(false);
   const [generatedContent, setGeneratedContent] = useState<string>('');
@@ -63,7 +65,7 @@ export default function YouTubeHookGenerator() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.topic.trim() || !formData.pain.trim()) {
+    if (!formData.topic.trim() || !formData.pain.trim() || !formData.result.trim()) {
       setError('Please fill in all fields');
       return;
     }
@@ -77,7 +79,7 @@ export default function YouTubeHookGenerator() {
         throw new Error('You must be logged in to use this tool');
       }
 
-      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-youtube-hooks`;
+      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-youtube-script`;
 
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -117,9 +119,9 @@ export default function YouTubeHookGenerator() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 p-8 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 p-8 flex items-center justify-center">
         <div className="text-center">
-          <Loader className="w-12 h-12 text-orange-600 animate-spin mx-auto mb-4" />
+          <Loader className="w-12 h-12 text-purple-600 animate-spin mx-auto mb-4" />
           <p className="text-lg text-gray-700">Checking authentication...</p>
         </div>
       </div>
@@ -128,10 +130,10 @@ export default function YouTubeHookGenerator() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 p-8 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 p-8 flex items-center justify-center">
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md text-center">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Zap className="w-8 h-8 text-red-600" />
+            <Video className="w-8 h-8 text-red-600" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Authentication Required</h2>
           <p className="text-gray-600">You must be logged in to use this tool. Please log in and try again.</p>
@@ -141,19 +143,19 @@ export default function YouTubeHookGenerator() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 p-8">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 p-8">
       <div className="max-w-5xl mx-auto">
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-r from-orange-600 to-red-600 p-8 text-white">
+          <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-8 text-white">
             <div className="flex items-center gap-3 mb-3">
               <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
-                <Zap className="w-8 h-8" />
+                <Video className="w-8 h-8" />
               </div>
-              <h1 className="text-3xl font-bold">YouTube Hook & Title Generator</h1>
+              <h1 className="text-3xl font-bold">YouTube Video Script Generator</h1>
             </div>
-            <p className="text-orange-100 text-lg">
-              Generate high-converting hooks and titles that grab attention instantly
+            <p className="text-purple-100 text-lg">
+              Generate full 5-8 minute YouTube scripts for life coaching content
             </p>
           </div>
 
@@ -161,32 +163,47 @@ export default function YouTubeHookGenerator() {
           <div className="p-8">
             {!generatedContent ? (
               <form onSubmit={handleSubmit} className="space-y-8">
-                {/* Question 1 */}
+                {/* Topic */}
                 <div>
                   <label className="block text-lg font-semibold text-gray-900 mb-3">
-                    What is your video topic?
+                    Topic
                   </label>
                   <textarea
                     value={formData.topic}
                     onChange={(e) => handleInputChange('topic', e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all resize-none"
-                    rows={4}
-                    placeholder="e.g., How to overcome burnout as a working mom"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none"
+                    rows={3}
+                    placeholder="e.g., How to stop people-pleasing and start setting boundaries"
                     required
                   />
                 </div>
 
-                {/* Question 2 */}
+                {/* Audience Pain */}
                 <div>
                   <label className="block text-lg font-semibold text-gray-900 mb-3">
-                    What is your audience struggling with?
+                    Audience Pain
                   </label>
                   <textarea
                     value={formData.pain}
                     onChange={(e) => handleInputChange('pain', e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all resize-none"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none"
                     rows={4}
-                    placeholder="e.g., Feeling overwhelmed, exhausted, and guilty about not spending enough time with family"
+                    placeholder="e.g., Feeling guilty when saying no, exhausted from always putting others first, resentful but afraid of conflict"
+                    required
+                  />
+                </div>
+
+                {/* Desired Transformation */}
+                <div>
+                  <label className="block text-lg font-semibold text-gray-900 mb-3">
+                    Desired Transformation
+                  </label>
+                  <textarea
+                    value={formData.result}
+                    onChange={(e) => handleInputChange('result', e.target.value)}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none"
+                    rows={3}
+                    placeholder="e.g., Confident in setting boundaries without guilt, peaceful relationships, more time and energy for themselves"
                     required
                   />
                 </div>
@@ -202,17 +219,17 @@ export default function YouTubeHookGenerator() {
                 <button
                   type="submit"
                   disabled={generating}
-                  className="w-full bg-gradient-to-r from-orange-600 to-red-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:from-orange-700 hover:to-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
+                  className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:from-purple-700 hover:to-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
                 >
                   {generating ? (
                     <>
                       <Loader className="w-6 h-6 animate-spin" />
-                      Generating...
+                      Generating Script...
                     </>
                   ) : (
                     <>
-                      <Zap className="w-6 h-6" />
-                      Generate Hooks & Titles
+                      <Video className="w-6 h-6" />
+                      Generate Full Script
                     </>
                   )}
                 </button>
@@ -224,14 +241,14 @@ export default function YouTubeHookGenerator() {
                 <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded flex items-center gap-3">
                   <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
                   <p className="text-green-700 font-medium">
-                    Your hooks and titles have been generated successfully!
+                    Your full YouTube script has been generated successfully!
                   </p>
                 </div>
 
                 {/* Generated Content */}
                 <div className="bg-gray-50 rounded-lg p-6 border-2 border-gray-200">
                   <div className="prose max-w-none">
-                    <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
+                    <div className="whitespace-pre-wrap text-gray-800 leading-relaxed font-mono text-sm">
                       {generatedContent}
                     </div>
                   </div>
@@ -251,17 +268,17 @@ export default function YouTubeHookGenerator() {
                     ) : (
                       <>
                         <Copy className="w-5 h-5" />
-                        Copy to Clipboard
+                        Copy Script
                       </>
                     )}
                   </button>
 
                   <button
                     onClick={handleNewGeneration}
-                    className="flex-1 bg-gradient-to-r from-orange-600 to-red-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-orange-700 hover:to-red-700 transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                    className="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
                   >
-                    <Zap className="w-5 h-5" />
-                    Generate New
+                    <Video className="w-5 h-5" />
+                    Generate New Script
                   </button>
                 </div>
               </div>
