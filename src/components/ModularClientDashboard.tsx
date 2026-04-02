@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { LogOut, Lock, ChevronDown, ChevronRight } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import PassionCoachingForm from './PassionCoachingForm';
+import ChannelTrailerScriptGenerator from './ChannelTrailerScriptGenerator';
 import { supabase } from '../lib/supabase';
 import type { ModuleWithTools } from '../types/permissions';
 
@@ -239,6 +240,8 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
             </div>
           ) : activeToolRoute === '/passion-coaching' ? (
             <PassionCoachingForm clientId={clientId} />
+          ) : activeToolRoute === '/tools/channel-trailer-script' ? (
+            <ChannelTrailerScriptGenerator />
           ) : (
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
               <h2 className="text-2xl font-bold text-slate-900 mb-4">Tool Coming Soon</h2>
