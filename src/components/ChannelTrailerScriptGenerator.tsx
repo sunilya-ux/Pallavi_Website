@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Video, Loader, Copy, Download, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Video, Loader, Copy, Download, CheckCircle, RefreshCw } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface FormData {
@@ -21,6 +21,7 @@ export default function ChannelTrailerScriptGenerator() {
   const [authLoading, setAuthLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authToken, setAuthToken] = useState<string>('');
+  const resultRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     checkAuth();
@@ -97,11 +98,24 @@ export default function ChannelTrailerScriptGenerator() {
 
       const result = await response.json();
       setGeneratedScript(result.script);
+
+      setTimeout(() => {
+        resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
     } catch (err: any) {
       setError(err.message || 'An error occurred while generating the script');
     } finally {
       setGenerating(false);
     }
+  };
+
+  const handleGenerateNew = () => {
+    setGeneratedScript('');
+    setError('');
+    setFormData({ topic: '', pain: '', transformation: '' });
+    setTimeout(() => {
+      resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   };
 
   const handleCopy = async () => {
@@ -178,7 +192,7 @@ export default function ChannelTrailerScriptGenerator() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-8">
       <div className="max-w-5xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden" ref={resultRef}>
           {/* Header */}
           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-8 text-white">
             <div className="flex items-center gap-3 mb-3">
@@ -301,13 +315,11 @@ export default function ChannelTrailerScriptGenerator() {
                     Download PDF
                   </button>
                   <button
-                    onClick={() => {
-                      setGeneratedScript('');
-                      setFormData({ topic: '', pain: '', transformation: '' });
-                    }}
-                    className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+                    onClick={handleGenerateNew}
+                    className="flex items-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
                   >
-                    New Script
+                    <RefreshCw className="w-4 h-4" />
+                    Generate New
                   </button>
                 </div>
 

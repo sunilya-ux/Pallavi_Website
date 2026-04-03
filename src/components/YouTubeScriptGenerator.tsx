@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Video, Loader, Copy, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Video, Loader, Copy, CheckCircle, RefreshCw } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface FormData {
@@ -21,6 +21,7 @@ export default function YouTubeScriptGenerator() {
   const [authLoading, setAuthLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authToken, setAuthToken] = useState<string>('');
+  const resultRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     checkAuth();
@@ -97,6 +98,10 @@ export default function YouTubeScriptGenerator() {
 
       const result = await response.json();
       setGeneratedContent(result.content);
+
+      setTimeout(() => {
+        resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
     } catch (err: any) {
       setError(err.message || 'An error occurred while generating content');
     } finally {
@@ -112,9 +117,13 @@ export default function YouTubeScriptGenerator() {
     }
   };
 
-  const handleNewGeneration = () => {
+  const handleGenerateNew = () => {
     setGeneratedContent('');
     setError('');
+    setFormData({ topic: '', pain: '', result: '' });
+    setTimeout(() => {
+      resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   };
 
   if (authLoading) {
@@ -145,7 +154,7 @@ export default function YouTubeScriptGenerator() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 p-8">
       <div className="max-w-5xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden" ref={resultRef}>
           {/* Header */}
           <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-8 text-white">
             <div className="flex items-center gap-3 mb-3">
@@ -274,11 +283,11 @@ export default function YouTubeScriptGenerator() {
                   </button>
 
                   <button
-                    onClick={handleNewGeneration}
+                    onClick={handleGenerateNew}
                     className="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
                   >
-                    <Video className="w-5 h-5" />
-                    Generate New Script
+                    <RefreshCw className="w-5 h-5" />
+                    Generate New
                   </button>
                 </div>
               </div>

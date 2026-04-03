@@ -69,6 +69,21 @@ export default function YouTubeChannelDescriptionGenerator() {
   const handleGenerateNew = () => {
     setGeneratedDescription('');
     setError('');
+    setFormData({
+      name: '',
+      audience: '',
+      challenges: '',
+      result: '',
+      experience: '',
+      topics: '',
+      website: '',
+      email: '',
+      social: '',
+      message: '',
+    });
+    setTimeout(() => {
+      resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   };
 
   const handleCopy = async () => {
