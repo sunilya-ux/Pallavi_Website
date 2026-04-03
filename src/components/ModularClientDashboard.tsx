@@ -5,6 +5,7 @@ import PassionCoachingForm from './PassionCoachingForm';
 import ChannelTrailerScriptGenerator from './ChannelTrailerScriptGenerator';
 import YouTubeScriptGenerator from './YouTubeScriptGenerator';
 import YouTubeChannelDescriptionGenerator from './YouTubeChannelDescriptionGenerator';
+import VisionBoardGenerator from './VisionBoardGenerator';
 import { supabase } from '../lib/supabase';
 import type { ModuleWithTools } from '../types/permissions';
 
@@ -248,6 +249,8 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
             <YouTubeScriptGenerator />
           ) : activeToolRoute === '/tools/youtube-channel-description' ? (
             <YouTubeChannelDescriptionGenerator />
+          ) : activeToolRoute === '/tools/vision-board-generator' ? (
+            <VisionBoardGenerator />
           ) : (
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
               <h2 className="text-2xl font-bold text-slate-900 mb-4">Tool Coming Soon</h2>
