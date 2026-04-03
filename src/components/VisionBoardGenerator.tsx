@@ -27,6 +27,8 @@ export default function VisionBoardGenerator() {
   const [generating, setGenerating] = useState(false);
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const [progressStep, setProgressStep] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
 
@@ -76,6 +78,18 @@ export default function VisionBoardGenerator() {
     setGenerating(true);
     setError('');
     setGeneratedImageUrl('');
+    setElapsedTime(0);
+    setProgressStep(0);
+
+    // Timer for elapsed time
+    const timerInterval = setInterval(() => {
+      setElapsedTime(prev => prev + 1);
+    }, 1000);
+
+    // Progress step rotation
+    const progressInterval = setInterval(() => {
+      setProgressStep(prev => (prev + 1) % 4);
+    }, 3000);
 
     try {
       const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-vision-board`;
@@ -114,6 +128,8 @@ export default function VisionBoardGenerator() {
     } catch (err: any) {
       setError(err.message || 'An error occurred while generating your vision board');
     } finally {
+      clearInterval(timerInterval);
+      clearInterval(progressInterval);
       setGenerating(false);
     }
   };
@@ -121,6 +137,8 @@ export default function VisionBoardGenerator() {
   const handleGenerateNew = () => {
     setGeneratedImageUrl('');
     setError('');
+    setElapsedTime(0);
+    setProgressStep(0);
     setFormData({
       financial: '',
       fun: '',
@@ -135,6 +153,13 @@ export default function VisionBoardGenerator() {
       resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
   };
+
+  const progressSteps = [
+    'Analyzing your inputs...',
+    'Designing your vision scenes...',
+    'Rendering high-quality visuals...',
+    'Finalizing your board...'
+  ];
 
   const handleDownload = async () => {
     if (!generatedImageUrl) return;
@@ -190,8 +215,10 @@ export default function VisionBoardGenerator() {
 
                   {!uploadedImage ? (
                     <div
-                      onClick={() => fileInputRef.current?.click()}
-                      className="cursor-pointer bg-white border-2 border-dashed border-amber-300 rounded-lg p-8 text-center hover:border-amber-500 hover:bg-amber-50 transition-all"
+                      onClick={() => !generating && fileInputRef.current?.click()}
+                      className={`bg-white border-2 border-dashed border-amber-300 rounded-lg p-8 text-center transition-all ${
+                        generating ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-amber-500 hover:bg-amber-50'
+                      }`}
                     >
                       <Upload className="w-12 h-12 text-amber-600 mx-auto mb-3" />
                       <p className="text-gray-700 font-medium mb-1">Click to upload image</p>
@@ -202,7 +229,8 @@ export default function VisionBoardGenerator() {
                       <button
                         type="button"
                         onClick={removeUploadedImage}
-                        className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                        disabled={generating}
+                        className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -220,6 +248,7 @@ export default function VisionBoardGenerator() {
                     type="file"
                     accept="image/*"
                     onChange={handleFileUpload}
+                    disabled={generating}
                     className="hidden"
                   />
                 </div>
@@ -231,7 +260,8 @@ export default function VisionBoardGenerator() {
                   <textarea
                     value={formData.financial}
                     onChange={(e) => handleInputChange('financial', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none min-h-[100px]"
+                    disabled={generating}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none min-h-[100px] disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
                     placeholder="e.g., Earn $100K/year, become debt-free, save for investment property..."
                     rows={3}
                   />
@@ -244,7 +274,8 @@ export default function VisionBoardGenerator() {
                   <textarea
                     value={formData.fun}
                     onChange={(e) => handleInputChange('fun', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none min-h-[100px]"
+                    disabled={generating}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none min-h-[100px] disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
                     placeholder="e.g., Travel to Italy, learn to surf, attend concerts, weekend getaways..."
                     rows={3}
                   />
@@ -257,7 +288,8 @@ export default function VisionBoardGenerator() {
                   <textarea
                     value={formData.relationships}
                     onChange={(e) => handleInputChange('relationships', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none min-h-[100px]"
+                    disabled={generating}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none min-h-[100px] disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
                     placeholder="e.g., Stronger marriage, quality time with kids, reconnect with friends..."
                     rows={3}
                   />
@@ -270,7 +302,8 @@ export default function VisionBoardGenerator() {
                   <textarea
                     value={formData.contribution}
                     onChange={(e) => handleInputChange('contribution', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none min-h-[100px]"
+                    disabled={generating}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none min-h-[100px] disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
                     placeholder="e.g., Volunteer work, mentor others, charity donations, make an impact..."
                     rows={3}
                   />
@@ -283,7 +316,8 @@ export default function VisionBoardGenerator() {
                   <textarea
                     value={formData.career}
                     onChange={(e) => handleInputChange('career', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none min-h-[100px]"
+                    disabled={generating}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none min-h-[100px] disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
                     placeholder="e.g., Get promoted, start a business, become a speaker, publish a book..."
                     rows={3}
                   />
@@ -296,7 +330,8 @@ export default function VisionBoardGenerator() {
                   <textarea
                     value={formData.health}
                     onChange={(e) => handleInputChange('health', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none min-h-[100px]"
+                    disabled={generating}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none min-h-[100px] disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
                     placeholder="e.g., Lose 20 lbs, run a marathon, yoga 3x/week, eat healthier..."
                     rows={3}
                   />
@@ -309,7 +344,8 @@ export default function VisionBoardGenerator() {
                   <textarea
                     value={formData.personal}
                     onChange={(e) => handleInputChange('personal', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none min-h-[100px]"
+                    disabled={generating}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none min-h-[100px] disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
                     placeholder="e.g., Learn Spanish, buy dream car, home renovation, spiritual growth..."
                     rows={3}
                   />
@@ -321,23 +357,46 @@ export default function VisionBoardGenerator() {
                   </div>
                 )}
 
-                <button
-                  type="submit"
-                  disabled={generating}
-                  className="w-full bg-gradient-to-r from-amber-600 to-orange-600 text-white py-4 rounded-lg font-semibold text-lg hover:from-amber-700 hover:to-orange-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
-                >
-                  {generating ? (
-                    <>
-                      <Loader className="w-5 h-5 animate-spin" />
-                      Creating your personalized vision board...
-                    </>
-                  ) : (
-                    <>
-                      <Image className="w-5 h-5" />
-                      Generate Vision Board
-                    </>
-                  )}
-                </button>
+                {!generating ? (
+                  <button
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-amber-600 to-orange-600 text-white py-4 rounded-lg font-semibold text-lg hover:from-amber-700 hover:to-orange-700 transition-all flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
+                  >
+                    <Image className="w-5 h-5" />
+                    Generate Vision Board
+                  </button>
+                ) : (
+                  <div className="w-full bg-gradient-to-br from-amber-100 to-orange-100 border-2 border-amber-300 rounded-xl p-8">
+                    <div className="flex flex-col items-center justify-center space-y-6">
+                      <div className="relative">
+                        <Loader className="w-16 h-16 text-amber-600 animate-spin" />
+                        <div className="absolute inset-0 w-16 h-16 border-4 border-amber-200 rounded-full"></div>
+                      </div>
+
+                      <div className="text-center space-y-2">
+                        <h3 className="text-xl font-bold text-gray-900">
+                          Creating your personalized vision board...
+                        </h3>
+                        <p className="text-amber-700 font-semibold text-lg">
+                          {progressSteps[progressStep]}
+                        </p>
+                      </div>
+
+                      <div className="bg-white rounded-lg px-6 py-3 border border-amber-300 shadow-sm">
+                        <p className="text-sm text-gray-600 mb-1">
+                          This may take 20-40 seconds
+                        </p>
+                        <p className="text-amber-600 font-mono font-bold text-center">
+                          {elapsedTime}s elapsed
+                        </p>
+                      </div>
+
+                      <div className="text-center text-sm text-gray-500 max-w-md">
+                        <p>Please wait while we generate your high-quality vision board. Do not refresh or leave this page.</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </form>
             ) : (
               <div className="space-y-6">
