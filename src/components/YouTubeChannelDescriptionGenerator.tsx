@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Loader2, Copy, Download, Youtube } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Loader2, Copy, Download, Youtube, RefreshCw } from 'lucide-react';
 
 export default function YouTubeChannelDescriptionGenerator() {
   const [formData, setFormData] = useState({
@@ -17,6 +17,7 @@ export default function YouTubeChannelDescriptionGenerator() {
   const [generatedDescription, setGeneratedDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const resultRef = useRef<HTMLDivElement>(null);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -53,12 +54,21 @@ export default function YouTubeChannelDescriptionGenerator() {
 
       const data = await response.json();
       setGeneratedDescription(data.description);
+
+      setTimeout(() => {
+        resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
     } catch (err) {
       console.error('Generation error:', err);
       setError(err instanceof Error ? err.message : 'Failed to generate description');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGenerateNew = () => {
+    setGeneratedDescription('');
+    setError('');
   };
 
   const handleCopy = async () => {
@@ -107,7 +117,7 @@ export default function YouTubeChannelDescriptionGenerator() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden" ref={resultRef}>
         <div className="bg-gradient-to-r from-red-600 to-rose-600 p-8 text-white">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
@@ -123,13 +133,15 @@ export default function YouTubeChannelDescriptionGenerator() {
         </div>
 
         <div className="p-8">
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
-              {error}
-            </div>
-          )}
+          {!generatedDescription ? (
+            <>
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+                  {error}
+                </div>
+              )}
 
-          <div className="space-y-6">
+              <div className="space-y-6">
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
                 1. What is your name? <span className="text-red-600">*</span>
@@ -288,34 +300,45 @@ export default function YouTubeChannelDescriptionGenerator() {
               )}
             </button>
           </div>
-
-          {generatedDescription && (
-            <div className="mt-8 space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xl font-bold text-slate-900">Your Channel Description</h3>
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleCopy}
-                    className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg transition-colors"
-                  >
-                    <Copy className="w-4 h-4" />
-                    Copy
-                  </button>
-                  <button
-                    onClick={handleDownloadPDF}
-                    className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
-                  >
-                    <Download className="w-4 h-4" />
-                    Download PDF
-                  </button>
-                </div>
+            </>
+          ) : (
+            <div className="space-y-6">
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={handleCopy}
+                  className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg transition-colors"
+                >
+                  <Copy className="w-4 h-4" />
+                  Copy
+                </button>
+                <button
+                  onClick={handleDownloadPDF}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
+                >
+                  <Download className="w-4 h-4" />
+                  Download PDF
+                </button>
+                <button
+                  onClick={handleGenerateNew}
+                  className="flex items-center gap-2 px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white font-medium rounded-lg transition-colors"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  Generate New
+                </button>
               </div>
 
-              <div className="bg-slate-50 border-2 border-slate-200 rounded-xl p-6">
-                <div className="whitespace-pre-wrap text-slate-800 leading-relaxed">
+              <div className="bg-gradient-to-br from-slate-50 to-red-50 border-2 border-slate-200 rounded-xl p-8">
+                <h3 className="text-2xl font-bold text-slate-900 mb-6">Your Channel Description</h3>
+                <div className="whitespace-pre-wrap text-slate-800 leading-relaxed text-base">
                   {generatedDescription}
                 </div>
               </div>
+
+              {error && (
+                <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+                  {error}
+                </div>
+              )}
             </div>
           )}
         </div>
