@@ -63,17 +63,20 @@ INSTRUCTIONS:
 
     if (uploadedImage) {
       prompt += `
-- User provided a reference photo
-- Analyze the photo for: gender, age range, style, appearance, and overall vibe
-- Create a visually similar person inspired by the uploaded image (not an exact copy)
-- Maintain consistent visual representation of this similar-looking person across all scenes
-- The person should appear confident, successful, and happy in each life area
-- Use the photo as style reference and inspiration, not for exact face replication`;
+- User provided a reference photo for personalization
+- Analyze the photo for: gender, age range, style, appearance, overall vibe, ethnicity, and physical characteristics
+- Create a visually similar representation inspired by the uploaded image
+- The generated person should have similar characteristics (gender, approximate age, style, general appearance)
+- Maintain visual consistency of this inspired representation across different goal scenes
+- The person should appear confident, successful, and happy achieving their goals
+- Important: This is a stylistic interpretation, not exact facial replication
+- Use the reference to inform overall aesthetic and demographic representation`;
     } else {
       prompt += `
 - No user photo provided
-- Generate a generic high-quality vision board with symbolic imagery
-- Use diverse, aspirational visuals that represent the goals`;
+- Generate a premium vision board with symbolic imagery representing success and achievement
+- Use diverse, aspirational visuals that universally represent the goals
+- Focus on scenes of success, achievement, and fulfillment`;
     }
 
     prompt += `
