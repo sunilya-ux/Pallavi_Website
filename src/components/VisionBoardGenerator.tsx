@@ -86,10 +86,10 @@ export default function VisionBoardGenerator() {
       setElapsedTime(prev => prev + 1);
     }, 1000);
 
-    // Progress step rotation
+    // Progress message rotation every 5 seconds
     const progressInterval = setInterval(() => {
       setProgressStep(prev => (prev + 1) % 4);
-    }, 3000);
+    }, 5000);
 
     try {
       const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-vision-board`;
@@ -154,11 +154,11 @@ export default function VisionBoardGenerator() {
     }, 100);
   };
 
-  const progressSteps = [
-    'Analyzing your inputs...',
-    'Designing your vision scenes...',
-    'Rendering high-quality visuals...',
-    'Finalizing your board...'
+  const progressMessages = [
+    'Analyzing your life goals...',
+    'Designing your dream life scenes...',
+    'Creating high-quality visuals...',
+    'Finalizing your vision board...'
   ];
 
   const handleDownload = async () => {
@@ -366,33 +366,46 @@ export default function VisionBoardGenerator() {
                     Generate Vision Board
                   </button>
                 ) : (
-                  <div className="w-full bg-gradient-to-br from-amber-100 to-orange-100 border-2 border-amber-300 rounded-xl p-8">
-                    <div className="flex flex-col items-center justify-center space-y-6">
+                  <div className="w-full bg-gradient-to-br from-amber-50 via-orange-50 to-amber-50 border-2 border-amber-300 rounded-2xl p-12 shadow-inner">
+                    <div className="flex flex-col items-center justify-center space-y-8">
                       <div className="relative">
-                        <Loader className="w-16 h-16 text-amber-600 animate-spin" />
-                        <div className="absolute inset-0 w-16 h-16 border-4 border-amber-200 rounded-full"></div>
+                        <div className="absolute inset-0 w-20 h-20 bg-amber-200 rounded-full blur-xl opacity-50 animate-pulse"></div>
+                        <Loader className="relative w-20 h-20 text-amber-600 animate-spin" strokeWidth={2.5} />
                       </div>
 
-                      <div className="text-center space-y-2">
-                        <h3 className="text-xl font-bold text-gray-900">
+                      <div className="text-center space-y-3">
+                        <h3 className="text-2xl font-bold text-gray-900">
                           Creating your personalized vision board...
                         </h3>
-                        <p className="text-amber-700 font-semibold text-lg">
-                          {progressSteps[progressStep]}
+                        <p className="text-amber-700 font-semibold text-xl min-h-[2rem] transition-all duration-500">
+                          {progressMessages[progressStep]}
                         </p>
                       </div>
 
-                      <div className="bg-white rounded-lg px-6 py-3 border border-amber-300 shadow-sm">
-                        <p className="text-sm text-gray-600 mb-1">
-                          This may take 20-40 seconds
-                        </p>
-                        <p className="text-amber-600 font-mono font-bold text-center">
-                          {elapsedTime}s elapsed
+                      <div className="bg-white rounded-xl px-8 py-4 border-2 border-amber-300 shadow-lg">
+                        <div className="flex items-center gap-3">
+                          <div className="text-2xl">⏱</div>
+                          <div>
+                            <p className="text-sm text-gray-600 mb-1">
+                              Generating...
+                            </p>
+                            <p className="text-amber-600 font-mono font-bold text-2xl">
+                              {elapsedTime}s
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-amber-100 border border-amber-300 rounded-lg px-6 py-3">
+                        <p className="text-sm text-amber-900 font-medium text-center">
+                          Usually takes 20–40 seconds
                         </p>
                       </div>
 
-                      <div className="text-center text-sm text-gray-500 max-w-md">
-                        <p>Please wait while we generate your high-quality vision board. Do not refresh or leave this page.</p>
+                      <div className="text-center text-sm text-gray-600 max-w-md bg-white/50 backdrop-blur-sm rounded-lg px-6 py-4 border border-gray-200">
+                        <p className="leading-relaxed">
+                          Please wait while we create your high-quality vision board. Do not refresh or leave this page.
+                        </p>
                       </div>
                     </div>
                   </div>
