@@ -178,9 +178,15 @@ export default function VisionBoardGenerator() {
                   <label className="block text-lg font-semibold text-gray-900 mb-3">
                     Upload Your Photo (Optional)
                   </label>
-                  <p className="text-sm text-gray-600 mb-4">
+                  <p className="text-sm text-gray-600 mb-2">
                     Upload your photo to personalize your vision board
                   </p>
+                  <div className="bg-amber-100 border border-amber-300 rounded-lg p-3 mb-4">
+                    <p className="text-xs text-amber-900 leading-relaxed">
+                      Your vision board will be personalized based on your photo.
+                      Exact face replication may vary, but overall style and identity will be preserved.
+                    </p>
+                  </div>
 
                   {!uploadedImage ? (
                     <div

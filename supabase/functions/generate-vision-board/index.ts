@@ -63,11 +63,12 @@ INSTRUCTIONS:
 
     if (uploadedImage) {
       prompt += `
-- User provided their photo (analyze the face and identity)
-- Extract user's face features and preserve identity consistently
-- Place the user naturally in relevant scenes throughout the vision board
-- Replace backgrounds completely while keeping user's face recognizable
-- Ensure the user appears confident, successful, and happy in each scene`;
+- User provided a reference photo
+- Analyze the photo for: gender, age range, style, appearance, and overall vibe
+- Create a visually similar person inspired by the uploaded image (not an exact copy)
+- Maintain consistent visual representation of this similar-looking person across all scenes
+- The person should appear confident, successful, and happy in each life area
+- Use the photo as style reference and inspiration, not for exact face replication`;
     } else {
       prompt += `
 - No user photo provided
