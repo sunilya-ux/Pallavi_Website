@@ -7,6 +7,7 @@ import PermissionsManager from './PermissionsManager';
 import PassionCoachingForm from './PassionCoachingForm';
 import ChannelTrailerScriptGenerator from './ChannelTrailerScriptGenerator';
 import YouTubeScriptGenerator from './YouTubeScriptGenerator';
+import YouTubeChannelDescriptionGenerator from './YouTubeChannelDescriptionGenerator';
 import type { ModuleWithTools } from '../types/permissions';
 
 interface DashboardProps {
@@ -92,6 +93,10 @@ export default function Dashboard({ userEmail }: DashboardProps) {
 
     if (activeToolRoute === '/tools/youtube-script-generator') {
       return <YouTubeScriptGenerator />;
+    }
+
+    if (activeToolRoute === '/tools/youtube-channel-description') {
+      return <YouTubeChannelDescriptionGenerator />;
     }
 
     return (
