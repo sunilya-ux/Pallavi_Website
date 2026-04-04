@@ -10,6 +10,7 @@ import YouTubeScriptGenerator from './YouTubeScriptGenerator';
 import YouTubeChannelDescriptionGenerator from './YouTubeChannelDescriptionGenerator';
 import VisionBoardGenerator from './VisionBoardGenerator';
 import SmartGoalGenerator from './SmartGoalGenerator';
+import GoalCreator from './GoalCreator';
 import type { ModuleWithTools } from '../types/permissions';
 
 interface DashboardProps {
@@ -107,6 +108,10 @@ export default function Dashboard({ userEmail }: DashboardProps) {
 
     if (activeToolRoute === 'smart-goal-generator') {
       return <SmartGoalGenerator />;
+    }
+
+    if (activeToolRoute === 'goal-creator') {
+      return <GoalCreator />;
     }
 
     return (

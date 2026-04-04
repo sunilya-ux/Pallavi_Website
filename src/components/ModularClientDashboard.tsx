@@ -7,6 +7,7 @@ import YouTubeScriptGenerator from './YouTubeScriptGenerator';
 import YouTubeChannelDescriptionGenerator from './YouTubeChannelDescriptionGenerator';
 import VisionBoardGenerator from './VisionBoardGenerator';
 import SmartGoalGenerator from './SmartGoalGenerator';
+import GoalCreator from './GoalCreator';
 import { supabase } from '../lib/supabase';
 import type { ModuleWithTools } from '../types/permissions';
 
@@ -254,6 +255,8 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
             <VisionBoardGenerator />
           ) : activeToolRoute === 'smart-goal-generator' ? (
             <SmartGoalGenerator />
+          ) : activeToolRoute === 'goal-creator' ? (
+            <GoalCreator />
           ) : (
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
               <h2 className="text-2xl font-bold text-slate-900 mb-4">Tool Coming Soon</h2>
