@@ -156,135 +156,133 @@ export default function YouTubeScriptGenerator() {
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden" ref={resultRef}>
         {/* Header */}
         <div className="p-6 sm:p-8">
-          <h1 className="text-page-title text-slate-900 mb-2">YouTube Video Script Generator</h1>
-          <p className="text-sm text-slate-600 font-normal">
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">
+            YouTube Video Script Generator
+          </h2>
+          <p className="text-slate-600 mb-8">
             Generate full 5-8 minute YouTube scripts for life coaching content
           </p>
-        </div>
 
-          {/* Form */}
-          <div className="border-t border-slate-200 p-6 sm:p-8">
-            {!generatedContent ? (
-              <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
-                {/* Topic */}
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Topic
-                  </label>
-                  <textarea
-                    value={formData.topic}
-                    onChange={(e) => handleInputChange('topic', e.target.value)}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none text-sm"
-                    rows={3}
-                    placeholder="e.g., How to stop people-pleasing and start setting boundaries"
-                    required
-                  />
-                </div>
+          {error && (
+            <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+              <p className="text-sm text-red-800">{error}</p>
+            </div>
+          )}
 
-                {/* Audience Pain */}
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Audience Pain
-                  </label>
-                  <textarea
-                    value={formData.pain}
-                    onChange={(e) => handleInputChange('pain', e.target.value)}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none text-sm"
-                    rows={4}
-                    placeholder="e.g., Feeling guilty when saying no, exhausted from always putting others first, resentful but afraid of conflict"
-                    required
-                  />
-                </div>
+          {!generatedContent ? (
+            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
+              {/* Topic */}
+              <div className="space-y-2">
+                <label className="block text-sm sm:text-base font-semibold text-slate-900">
+                  Topic
+                </label>
+                <textarea
+                  value={formData.topic}
+                  onChange={(e) => handleInputChange('topic', e.target.value)}
+                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
+                  rows={3}
+                  placeholder="e.g., How to stop people-pleasing and start setting boundaries"
+                  required
+                />
+              </div>
 
-                {/* Desired Transformation */}
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Desired Transformation
-                  </label>
-                  <textarea
-                    value={formData.result}
-                    onChange={(e) => handleInputChange('result', e.target.value)}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none text-sm"
-                    rows={3}
-                    placeholder="e.g., Confident in setting boundaries without guilt, peaceful relationships, more time and energy for themselves"
-                    required
-                  />
-                </div>
+              {/* Audience Pain */}
+              <div className="space-y-2">
+                <label className="block text-sm sm:text-base font-semibold text-slate-900">
+                  Audience Pain
+                </label>
+                <textarea
+                  value={formData.pain}
+                  onChange={(e) => handleInputChange('pain', e.target.value)}
+                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
+                  rows={4}
+                  placeholder="e.g., Feeling guilty when saying no, exhausted from always putting others first, resentful but afraid of conflict"
+                  required
+                />
+              </div>
 
-                {/* Error Message */}
-                {error && (
-                  <div className="bg-red-50 border border-red-200 p-4 rounded-lg text-sm">
-                    <p className="text-red-700">{error}</p>
-                  </div>
+              {/* Desired Transformation */}
+              <div className="space-y-2">
+                <label className="block text-sm sm:text-base font-semibold text-slate-900">
+                  Desired Transformation
+                </label>
+                <textarea
+                  value={formData.result}
+                  onChange={(e) => handleInputChange('result', e.target.value)}
+                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
+                  rows={3}
+                  placeholder="e.g., Confident in setting boundaries without guilt, peaceful relationships, more time and energy for themselves"
+                  required
+                />
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={generating}
+                className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-4 rounded-lg font-semibold hover:shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {generating ? (
+                  <>
+                    <Loader className="w-5 h-5 animate-spin" />
+                    Generating Script...
+                  </>
+                ) : (
+                  <>
+                    <Video className="w-5 h-5" />
+                    Generate Full Script
+                  </>
                 )}
+              </button>
+            </form>
+          ) : (
+            /* Results */
+            <div className="space-y-6">
+              {/* Success Message */}
+              <div className="bg-green-50 border border-green-200 p-4 rounded-lg flex items-center gap-3">
+                <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                <p className="text-sm text-green-700 font-medium">
+                  Your full YouTube script has been generated successfully!
+                </p>
+              </div>
 
-                {/* Submit Button */}
+              {/* Generated Content */}
+              <div className="bg-slate-50 rounded-lg p-6 sm:p-8 border border-slate-200">
+                <div className="whitespace-pre-wrap text-slate-800 leading-relaxed">
+                  {generatedContent}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
                 <button
-                  type="submit"
-                  disabled={generating}
-                  className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-4 rounded-lg font-semibold hover:shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  onClick={handleCopy}
+                  className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                 >
-                  {generating ? (
+                  {copied ? (
                     <>
-                      <Loader className="w-5 h-5 animate-spin" />
-                      Generating Script...
+                      <CheckCircle className="w-4 h-4" />
+                      Copied!
                     </>
                   ) : (
                     <>
-                      <Video className="w-5 h-5" />
-                      Generate Full Script
+                      <Copy className="w-4 h-4" />
+                      Copy Script
                     </>
                   )}
                 </button>
-              </form>
-            ) : (
-              /* Results */
-              <div className="space-y-6">
-                {/* Success Message */}
-                <div className="bg-green-50 border border-green-200 p-4 rounded-lg flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
-                  <p className="text-sm text-green-700 font-medium">
-                    Your full YouTube script has been generated successfully!
-                  </p>
-                </div>
 
-                {/* Generated Content */}
-                <div className="bg-slate-50 rounded-lg p-6 sm:p-8 border border-slate-200">
-                  <div className="whitespace-pre-wrap text-slate-800 leading-relaxed text-sm">
-                    {generatedContent}
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex gap-3">
-                  <button
-                    onClick={handleCopy}
-                    className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm"
-                  >
-                    {copied ? (
-                      <>
-                        <CheckCircle className="w-4 h-4" />
-                        Copied!
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-4 h-4" />
-                        Copy Script
-                      </>
-                    )}
-                  </button>
-
-                  <button
-                    onClick={handleGenerateNew}
-                    className="flex-1 bg-slate-600 hover:bg-slate-700 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm"
-                  >
-                    <RefreshCw className="w-4 h-4" />
-                    Generate New
-                  </button>
-                </div>
+                <button
+                  onClick={handleGenerateNew}
+                  className="flex-1 bg-slate-600 hover:bg-slate-700 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  Generate New
+                </button>
               </div>
-            )}
-          </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -194,24 +194,29 @@ export default function ChannelTrailerScriptGenerator() {
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden" ref={resultRef}>
         {/* Header */}
         <div className="p-6 sm:p-8">
-          <h1 className="text-page-title text-slate-900 mb-2">Channel Trailer Script Generator</h1>
-          <p className="text-sm text-slate-600 font-normal">
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">
+            Channel Trailer Script Generator
+          </h2>
+          <p className="text-slate-600 mb-8">
             Create a powerful 5–8 minute YouTube script that deeply connects with your audience
           </p>
-        </div>
 
-          {/* Form */}
-          <div className="border-t border-slate-200 p-6 sm:p-8">
-            {!generatedScript ? (
-              <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
-                {/* Question 1 */}
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    What is your video topic?
-                  </label>
-                  <p className="text-xs text-slate-600 mb-3 font-normal">
-                    Example: Why you feel guilty setting boundaries
-                  </p>
+          {error && (
+            <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+              <p className="text-sm text-red-800">{error}</p>
+            </div>
+          )}
+
+          {!generatedScript ? (
+            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
+              {/* Question 1 */}
+              <div className="space-y-2">
+                <label className="block text-sm sm:text-base font-semibold text-slate-900">
+                  What is your video topic?
+                </label>
+                <p className="text-sm text-slate-600">
+                  Example: Why you feel guilty setting boundaries
+                </p>
                   <textarea
                     value={formData.topic}
                     onChange={(e) => handleInputChange('topic', e.target.value)}
@@ -221,68 +226,61 @@ export default function ChannelTrailerScriptGenerator() {
                   />
                 </div>
 
-                {/* Question 2 */}
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    What is the core pain your audience is facing?
-                  </label>
-                  <p className="text-xs text-slate-600 mb-3 font-normal">
-                    Example: People pleasing, guilt, emotional exhaustion
-                  </p>
-                  <textarea
-                    value={formData.pain}
-                    onChange={(e) => handleInputChange('pain', e.target.value)}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none text-sm"
-                    placeholder="Describe the core pain..."
-                    rows={3}
-                  />
-                </div>
+              {/* Question 2 */}
+              <div className="space-y-2">
+                <label className="block text-sm sm:text-base font-semibold text-slate-900">
+                  What is the core pain your audience is facing?
+                </label>
+                <p className="text-sm text-slate-600">
+                  Example: People pleasing, guilt, emotional exhaustion
+                </p>
+                <textarea
+                  value={formData.pain}
+                  onChange={(e) => handleInputChange('pain', e.target.value)}
+                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
+                  placeholder="Describe the core pain..."
+                  rows={3}
+                />
+              </div>
 
-                {/* Question 3 */}
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    What transformation do you want to give them?
-                  </label>
-                  <p className="text-xs text-slate-600 mb-3 font-normal">
-                    Example: Confident boundary setting without guilt
-                  </p>
-                  <textarea
-                    value={formData.transformation}
-                    onChange={(e) => handleInputChange('transformation', e.target.value)}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none text-sm"
-                    placeholder="Describe the desired transformation..."
-                    rows={3}
-                  />
-                </div>
+              {/* Question 3 */}
+              <div className="space-y-2">
+                <label className="block text-sm sm:text-base font-semibold text-slate-900">
+                  What transformation do you want to give them?
+                </label>
+                <p className="text-sm text-slate-600">
+                  Example: Confident boundary setting without guilt
+                </p>
+                <textarea
+                  value={formData.transformation}
+                  onChange={(e) => handleInputChange('transformation', e.target.value)}
+                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
+                  placeholder="Describe the desired transformation..."
+                  rows={3}
+                />
+              </div>
 
-                {/* Error Message */}
-                {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg text-sm">
-                    {error}
-                  </div>
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={generating}
+                className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-4 rounded-lg font-semibold hover:shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {generating ? (
+                  <>
+                    <Loader className="w-5 h-5 animate-spin" />
+                    Creating your script...
+                  </>
+                ) : (
+                  <>
+                    <Video className="w-5 h-5" />
+                    Generate Script
+                  </>
                 )}
-
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={generating}
-                  className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-4 rounded-lg font-semibold hover:shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  {generating ? (
-                    <>
-                      <Loader className="w-5 h-5 animate-spin" />
-                      Creating your script...
-                    </>
-                  ) : (
-                    <>
-                      <Video className="w-5 h-5" />
-                      Generate Script
-                    </>
-                  )}
-                </button>
-              </form>
-            ) : (
-              <div className="space-y-6">
+              </button>
+            </form>
+          ) : (
+            <div className="space-y-6">
                 {/* Action Buttons */}
                 <div className="flex gap-3 justify-end">
                   <button
@@ -317,19 +315,12 @@ export default function ChannelTrailerScriptGenerator() {
                   </button>
                 </div>
 
-                {/* Generated Script */}
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 sm:p-8">
-                  <pre className="whitespace-pre-wrap font-sans text-slate-800 leading-relaxed text-sm">
-                    {generatedScript}
-                  </pre>
-                </div>
-
-                {/* Error Message */}
-                {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg text-sm">
-                    {error}
-                  </div>
-                )}
+              {/* Generated Script */}
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 sm:p-8">
+                <pre className="whitespace-pre-wrap font-sans text-slate-800 leading-relaxed">
+                  {generatedScript}
+                </pre>
+              </div>
               </div>
             )}
           </div>
