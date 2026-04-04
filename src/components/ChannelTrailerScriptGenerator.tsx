@@ -166,10 +166,10 @@ export default function ChannelTrailerScriptGenerator() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-8 flex items-center justify-center">
-        <div className="text-center">
-          <Loader className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
-          <p className="text-lg text-gray-700">Checking authentication...</p>
+      <div className="max-w-3xl mx-auto">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center">
+          <Loader className="w-12 h-12 text-emerald-600 animate-spin mx-auto mb-4" />
+          <p className="text-slate-700">Checking authentication...</p>
         </div>
       </div>
     );
@@ -177,51 +177,45 @@ export default function ChannelTrailerScriptGenerator() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-8 flex items-center justify-center">
-        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md text-center">
+      <div className="max-w-3xl mx-auto">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Video className="w-8 h-8 text-red-600" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Authentication Required</h2>
-          <p className="text-gray-600">You must be logged in to use this tool. Please log in and try again.</p>
+          <h2 className="text-xl font-semibold text-slate-900 mb-2">Authentication Required</h2>
+          <p className="text-sm text-slate-600">You must be logged in to use this tool. Please log in and try again.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-8">
-      <div className="max-w-5xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden" ref={resultRef}>
-          {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-8 text-white">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
-                <Video className="w-8 h-8" />
-              </div>
-              <h1 className="text-3xl font-bold">Channel Trailer Script Generator</h1>
-            </div>
-            <p className="text-blue-100 text-lg">
-              Create a powerful 5–8 minute YouTube script that deeply connects with your audience
-            </p>
-          </div>
+    <div className="max-w-3xl mx-auto space-y-6">
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden" ref={resultRef}>
+        {/* Header */}
+        <div className="p-6 sm:p-8">
+          <h1 className="text-page-title text-slate-900 mb-2">Channel Trailer Script Generator</h1>
+          <p className="text-sm text-slate-600 font-normal">
+            Create a powerful 5–8 minute YouTube script that deeply connects with your audience
+          </p>
+        </div>
 
           {/* Form */}
-          <div className="p-8">
+          <div className="border-t border-slate-200 p-6 sm:p-8">
             {!generatedScript ? (
-              <form onSubmit={handleSubmit} className="space-y-8">
+              <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
                 {/* Question 1 */}
                 <div>
-                  <label className="block text-lg font-semibold text-gray-900 mb-3">
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
                     What is your video topic?
                   </label>
-                  <p className="text-sm text-gray-600 mb-3">
+                  <p className="text-xs text-slate-600 mb-3 font-normal">
                     Example: Why you feel guilty setting boundaries
                   </p>
                   <textarea
                     value={formData.topic}
                     onChange={(e) => handleInputChange('topic', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none min-h-[80px]"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none text-sm"
                     placeholder="Enter your video topic..."
                     rows={3}
                   />
@@ -229,16 +223,16 @@ export default function ChannelTrailerScriptGenerator() {
 
                 {/* Question 2 */}
                 <div>
-                  <label className="block text-lg font-semibold text-gray-900 mb-3">
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
                     What is the core pain your audience is facing?
                   </label>
-                  <p className="text-sm text-gray-600 mb-3">
+                  <p className="text-xs text-slate-600 mb-3 font-normal">
                     Example: People pleasing, guilt, emotional exhaustion
                   </p>
                   <textarea
                     value={formData.pain}
                     onChange={(e) => handleInputChange('pain', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none min-h-[80px]"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none text-sm"
                     placeholder="Describe the core pain..."
                     rows={3}
                   />
@@ -246,16 +240,16 @@ export default function ChannelTrailerScriptGenerator() {
 
                 {/* Question 3 */}
                 <div>
-                  <label className="block text-lg font-semibold text-gray-900 mb-3">
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
                     What transformation do you want to give them?
                   </label>
-                  <p className="text-sm text-gray-600 mb-3">
+                  <p className="text-xs text-slate-600 mb-3 font-normal">
                     Example: Confident boundary setting without guilt
                   </p>
                   <textarea
                     value={formData.transformation}
                     onChange={(e) => handleInputChange('transformation', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none min-h-[80px]"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none text-sm"
                     placeholder="Describe the desired transformation..."
                     rows={3}
                   />
@@ -263,7 +257,7 @@ export default function ChannelTrailerScriptGenerator() {
 
                 {/* Error Message */}
                 {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+                  <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg text-sm">
                     {error}
                   </div>
                 )}
@@ -272,7 +266,7 @@ export default function ChannelTrailerScriptGenerator() {
                 <button
                   type="submit"
                   disabled={generating}
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-lg font-semibold text-lg hover:from-blue-700 hover:to-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
+                  className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-4 rounded-lg font-semibold hover:shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {generating ? (
                     <>
@@ -293,7 +287,7 @@ export default function ChannelTrailerScriptGenerator() {
                 <div className="flex gap-3 justify-end">
                   <button
                     onClick={handleCopy}
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors text-sm font-medium"
                   >
                     {copied ? (
                       <>
@@ -309,14 +303,14 @@ export default function ChannelTrailerScriptGenerator() {
                   </button>
                   <button
                     onClick={handleDownloadPDF}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors text-sm font-medium"
                   >
                     <Download className="w-4 h-4" />
                     Download PDF
                   </button>
                   <button
                     onClick={handleGenerateNew}
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors text-sm font-medium"
                   >
                     <RefreshCw className="w-4 h-4" />
                     Generate New
@@ -324,22 +318,21 @@ export default function ChannelTrailerScriptGenerator() {
                 </div>
 
                 {/* Generated Script */}
-                <div className="bg-gradient-to-br from-gray-50 to-blue-50 border border-gray-200 rounded-xl p-8">
-                  <pre className="whitespace-pre-wrap font-sans text-gray-800 leading-relaxed text-base">
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 sm:p-8">
+                  <pre className="whitespace-pre-wrap font-sans text-slate-800 leading-relaxed text-sm">
                     {generatedScript}
                   </pre>
                 </div>
 
                 {/* Error Message */}
                 {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+                  <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg text-sm">
                     {error}
                   </div>
                 )}
               </div>
             )}
           </div>
-        </div>
       </div>
     </div>
   );

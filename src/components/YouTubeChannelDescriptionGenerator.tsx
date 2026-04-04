@@ -131,32 +131,25 @@ export default function YouTubeChannelDescriptionGenerator() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto">
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden" ref={resultRef}>
-        <div className="bg-gradient-to-r from-red-600 to-rose-600 p-8 text-white">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-              <Youtube className="w-7 h-7" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold">YouTube Channel Description Generator</h1>
-            </div>
-          </div>
-          <p className="text-red-50 text-lg">
+    <div className="max-w-3xl mx-auto space-y-6">
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden" ref={resultRef}>
+        <div className="p-6 sm:p-8">
+          <h1 className="text-page-title text-slate-900 mb-2">YouTube Channel Description Generator</h1>
+          <p className="text-sm text-slate-600 font-normal">
             Create a clear, engaging, and personalized YouTube channel description based on your niche and audience.
           </p>
         </div>
 
-        <div className="p-8">
+        <div className="border-t border-slate-200 p-6 sm:p-8">
           {!generatedDescription ? (
             <>
               {error && (
-                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm">
                   {error}
                 </div>
               )}
 
-              <div className="space-y-6">
+              <div className="space-y-6 sm:space-y-8">
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
                 1. What is your name? <span className="text-red-600">*</span>
@@ -166,7 +159,7 @@ export default function YouTubeChannelDescriptionGenerator() {
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-red-500 focus:outline-none transition-colors"
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-colors text-sm"
                 placeholder="Your name or channel name"
               />
             </div>
@@ -180,7 +173,7 @@ export default function YouTubeChannelDescriptionGenerator() {
                 value={formData.audience}
                 onChange={handleInputChange}
                 rows={3}
-                className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-red-500 focus:outline-none transition-colors resize-none"
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-colors resize-none text-sm"
                 placeholder="e.g., Aspiring entrepreneurs, busy parents, fitness beginners..."
               />
             </div>
@@ -194,7 +187,7 @@ export default function YouTubeChannelDescriptionGenerator() {
                 value={formData.challenges}
                 onChange={handleInputChange}
                 rows={3}
-                className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-red-500 focus:outline-none transition-colors resize-none"
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-colors resize-none text-sm"
                 placeholder="Describe the main problems or struggles they experience"
               />
             </div>
@@ -208,7 +201,7 @@ export default function YouTubeChannelDescriptionGenerator() {
                 value={formData.result}
                 onChange={handleInputChange}
                 rows={3}
-                className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-red-500 focus:outline-none transition-colors resize-none"
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-colors resize-none text-sm"
                 placeholder="What outcomes or changes do you help them create?"
               />
             </div>
@@ -222,7 +215,7 @@ export default function YouTubeChannelDescriptionGenerator() {
                 value={formData.experience}
                 onChange={handleInputChange}
                 rows={3}
-                className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-red-500 focus:outline-none transition-colors resize-none"
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-colors resize-none text-sm"
                 placeholder="Your background, achievements, certifications, or expertise"
               />
             </div>
@@ -236,7 +229,7 @@ export default function YouTubeChannelDescriptionGenerator() {
                 value={formData.topics}
                 onChange={handleInputChange}
                 rows={3}
-                className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-red-500 focus:outline-none transition-colors resize-none"
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-colors resize-none text-sm"
                 placeholder="Main themes, content pillars, or subject areas you'll cover"
               />
             </div>
@@ -250,7 +243,7 @@ export default function YouTubeChannelDescriptionGenerator() {
                 name="website"
                 value={formData.website}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-red-500 focus:outline-none transition-colors"
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-colors text-sm"
                 placeholder="https://yourwebsite.com"
               />
             </div>
@@ -264,7 +257,7 @@ export default function YouTubeChannelDescriptionGenerator() {
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-red-500 focus:outline-none transition-colors"
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-colors text-sm"
                 placeholder="your@email.com"
               />
             </div>
@@ -278,7 +271,7 @@ export default function YouTubeChannelDescriptionGenerator() {
                 value={formData.social}
                 onChange={handleInputChange}
                 rows={3}
-                className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-red-500 focus:outline-none transition-colors resize-none"
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-colors resize-none text-sm"
                 placeholder="Instagram, Twitter, LinkedIn, TikTok links..."
               />
             </div>
@@ -292,7 +285,7 @@ export default function YouTubeChannelDescriptionGenerator() {
                 value={formData.message}
                 onChange={handleInputChange}
                 rows={3}
-                className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-red-500 focus:outline-none transition-colors resize-none"
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-colors resize-none text-sm"
                 placeholder="A personal note, invitation, or call to action"
               />
             </div>
@@ -300,7 +293,7 @@ export default function YouTubeChannelDescriptionGenerator() {
             <button
               onClick={handleGenerate}
               disabled={loading}
-              className="w-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-red-600/30 flex items-center justify-center gap-3"
+              className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold py-4 rounded-lg hover:shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -321,36 +314,36 @@ export default function YouTubeChannelDescriptionGenerator() {
               <div className="flex gap-3 justify-end">
                 <button
                   onClick={handleCopy}
-                  className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg transition-colors text-sm"
                 >
                   <Copy className="w-4 h-4" />
                   Copy
                 </button>
                 <button
                   onClick={handleDownloadPDF}
-                  className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors text-sm"
                 >
                   <Download className="w-4 h-4" />
                   Download PDF
                 </button>
                 <button
                   onClick={handleGenerateNew}
-                  className="flex items-center gap-2 px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white font-medium rounded-lg transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white font-medium rounded-lg transition-colors text-sm"
                 >
                   <RefreshCw className="w-4 h-4" />
                   Generate New
                 </button>
               </div>
 
-              <div className="bg-gradient-to-br from-slate-50 to-red-50 border-2 border-slate-200 rounded-xl p-8">
-                <h3 className="text-2xl font-bold text-slate-900 mb-6">Your Channel Description</h3>
-                <div className="whitespace-pre-wrap text-slate-800 leading-relaxed text-base">
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 sm:p-8">
+                <h3 className="text-section-title text-slate-900 mb-4">Your Channel Description</h3>
+                <div className="whitespace-pre-wrap text-slate-800 leading-relaxed text-sm">
                   {generatedDescription}
                 </div>
               </div>
 
               {error && (
-                <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+                <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm">
                   {error}
                 </div>
               )}
