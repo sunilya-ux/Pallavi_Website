@@ -419,22 +419,43 @@ export default function GoalCreator() {
             </p>
           </div>
 
-          <div className="p-8 space-y-6">
+          <div className="p-8 space-y-8">
             {completedSteps.map((stepData, index) => (
-              <div key={index} className="border-l-4 border-emerald-500 pl-6 py-4 bg-emerald-50 rounded-r-lg">
-                <div className="flex items-start gap-3 mb-3">
-                  <Check className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-1" />
-                  <div className="flex-1">
-                    <p className="font-semibold text-gray-900 mb-2">{stepData.question}</p>
-                    <p className="text-gray-700">{stepData.answer}</p>
-                    {stepData.step === 'dream' && (
-                      <div className="mt-3 p-3 bg-white rounded-lg border border-emerald-200">
-                        <p className="text-sm font-medium text-emerald-800">
-                          Got it — here's your dream: <span className="font-bold">{stepData.answer}</span>
-                        </p>
-                      </div>
-                    )}
+              <div key={index} className="bg-gradient-to-br from-emerald-50 to-green-50 border-2 border-emerald-300 rounded-xl shadow-sm overflow-hidden">
+                <div className="bg-emerald-100 px-6 py-3 border-b-2 border-emerald-300">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-emerald-600 rounded-full flex items-center justify-center">
+                      <Check className="w-5 h-5 text-white" />
+                    </div>
+                    <p className="font-bold text-emerald-900 text-lg">
+                      {stepData.step === 'dream' && 'Step 1: Your Dream'}
+                      {stepData.step === 'specific' && 'Step 2: Specific Goal'}
+                      {stepData.step === 'measurable' && 'Step 3: Measurable'}
+                      {stepData.step === 'achievable' && 'Step 4: Achievable'}
+                      {stepData.step === 'relevant' && 'Step 5: Relevant'}
+                      {stepData.step === 'timebound' && 'Step 6: Time-bound'}
+                      {stepData.step === 'emotional-check' && 'Step 7: Emotional Check'}
+                    </p>
                   </div>
+                </div>
+                <div className="p-6">
+                  <div className="mb-4">
+                    <p className="text-sm font-semibold text-gray-600 mb-2">Question:</p>
+                    <p className="text-base text-gray-900 font-medium">{stepData.question}</p>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 border-2 border-emerald-200">
+                    <p className="text-sm font-semibold text-gray-600 mb-2">Your Answer:</p>
+                    <p className="text-base text-gray-900 leading-relaxed">{stepData.answer}</p>
+                  </div>
+                  {stepData.step === 'dream' && (
+                    <div className="mt-4 p-4 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-lg">
+                      <p className="text-sm font-bold text-white flex items-center gap-2">
+                        <Check className="w-4 h-4" />
+                        Got it — here's your dream:
+                      </p>
+                      <p className="text-white text-base mt-1 font-medium">{stepData.answer}</p>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -535,41 +556,59 @@ export default function GoalCreator() {
             )}
 
             {currentStep !== 'smart-goal-draft' && currentStep !== 'final-result' && !isGenerating && (
-              <div className="bg-gradient-to-br from-white to-emerald-50 border-2 border-emerald-200 rounded-xl p-6">
-                <label className="block text-lg font-bold text-gray-900 mb-4">
-                  {getStepQuestion(currentStep)}
-                </label>
+              <div className="bg-gradient-to-br from-white to-blue-50 border-2 border-blue-300 rounded-xl shadow-lg overflow-hidden animate-fadeIn">
+                <div className="bg-blue-100 px-6 py-3 border-b-2 border-blue-300">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                      <ArrowRight className="w-5 h-5 text-white" />
+                    </div>
+                    <p className="font-bold text-blue-900 text-lg">
+                      {currentStep === 'dream' && 'Step 1: Your Dream'}
+                      {currentStep === 'specific' && 'Step 2: Specific Goal'}
+                      {currentStep === 'measurable' && 'Step 3: Measurable'}
+                      {currentStep === 'achievable' && 'Step 4: Achievable'}
+                      {currentStep === 'relevant' && 'Step 5: Relevant'}
+                      {currentStep === 'timebound' && 'Step 6: Time-bound'}
+                      {currentStep === 'emotional-check' && 'Step 7: Emotional Check'}
+                    </p>
+                  </div>
+                </div>
+                <div className="p-6">
+                  <label className="block text-lg font-bold text-gray-900 mb-5">
+                    {getStepQuestion(currentStep)}
+                  </label>
 
-                {currentStep === 'timebound' ? (
-                  <input
-                    type="date"
-                    value={currentAnswer}
-                    onChange={(e) => setCurrentAnswer(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-lg"
-                  />
-                ) : (
-                  <textarea
-                    value={currentAnswer}
-                    onChange={(e) => setCurrentAnswer(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none text-lg"
-                    placeholder="Type your answer here..."
-                    rows={4}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && e.ctrlKey) {
-                        handleSubmitAnswer();
-                      }
-                    }}
-                  />
-                )}
+                  {currentStep === 'timebound' ? (
+                    <input
+                      type="date"
+                      value={currentAnswer}
+                      onChange={(e) => setCurrentAnswer(e.target.value)}
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-lg transition-all"
+                    />
+                  ) : (
+                    <textarea
+                      value={currentAnswer}
+                      onChange={(e) => setCurrentAnswer(e.target.value)}
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none text-lg transition-all"
+                      placeholder="Type your answer here..."
+                      rows={5}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && e.ctrlKey) {
+                          handleSubmitAnswer();
+                        }
+                      }}
+                    />
+                  )}
 
-                <button
-                  onClick={handleSubmitAnswer}
-                  disabled={!currentAnswer.trim()}
-                  className="mt-4 w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg font-semibold text-lg hover:from-emerald-700 hover:to-teal-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-                >
-                  Continue
-                  <ArrowRight className="w-5 h-5" />
-                </button>
+                  <button
+                    onClick={handleSubmitAnswer}
+                    disabled={!currentAnswer.trim()}
+                    className="mt-5 w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg font-bold text-lg hover:from-emerald-700 hover:to-teal-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg transform hover:scale-[1.02]"
+                  >
+                    Continue
+                    <ArrowRight className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
             )}
 
