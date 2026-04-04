@@ -343,17 +343,17 @@ export default function GoalCreator() {
 
   if (currentStep === 'final-result' && finalResult) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 p-8">
+      <div className="min-h-screen bg-gradient-to-br from-[#E6F4FF] to-[#F0F8FF] p-8">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-            <div className="bg-gradient-to-r from-emerald-600 to-teal-600 p-8 text-white">
+            <div className="bg-gradient-to-r from-[#66B2FF] to-[#3399FF] p-8 text-white">
               <div className="flex items-center gap-3 mb-3">
                 <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
                   <Target className="w-8 h-8" />
                 </div>
                 <h1 className="text-3xl font-bold">Your SMART Goal Plan</h1>
               </div>
-              <p className="text-emerald-100 text-lg">
+              <p className="text-blue-100 text-lg">
                 Your personalized goal with actionable steps
               </p>
             </div>
@@ -369,21 +369,21 @@ export default function GoalCreator() {
                 </button>
                 <button
                   onClick={handleDownloadPDF}
-                  className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-[#3399FF] hover:bg-[#1a5490] text-white rounded-lg transition-colors"
                 >
                   <Download className="w-4 h-4" />
                   Download PDF
                 </button>
                 <button
                   onClick={handleStartOver}
-                  className="flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-[#66B2FF] hover:bg-[#3399FF] text-white rounded-lg transition-colors"
                 >
                   <RefreshCw className="w-4 h-4" />
                   Generate New
                 </button>
               </div>
 
-              <div className="bg-gradient-to-br from-gray-50 to-emerald-50 border border-gray-200 rounded-xl p-8">
+              <div className="bg-gradient-to-br from-gray-50 to-[#E6F4FF] border border-[#B3DAFF] rounded-xl p-8">
                 <div className="prose prose-lg max-w-none">
                   <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
                     {finalResult}
@@ -404,30 +404,30 @@ export default function GoalCreator() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 p-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#E6F4FF] to-[#F0F8FF] p-8">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div className="bg-gradient-to-r from-emerald-600 to-teal-600 p-8 text-white">
+          <div className="bg-gradient-to-r from-[#66B2FF] to-[#3399FF] p-8 text-white">
             <div className="flex items-center gap-3 mb-3">
               <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
                 <Target className="w-8 h-8" />
               </div>
               <h1 className="text-3xl font-bold">Goal Creator</h1>
             </div>
-            <p className="text-emerald-100 text-lg">
+            <p className="text-blue-100 text-lg">
               Step-by-step guided process to create your SMART goal
             </p>
           </div>
 
           <div className="p-8 space-y-8">
             {completedSteps.map((stepData, index) => (
-              <div key={index} className="bg-gradient-to-br from-emerald-50 to-green-50 border-2 border-emerald-300 rounded-xl shadow-sm overflow-hidden">
-                <div className="bg-emerald-100 px-6 py-3 border-b-2 border-emerald-300">
+              <div key={index} className="bg-gradient-to-br from-[#E6F4FF] to-[#F0F8FF] border-2 border-[#B3DAFF] rounded-xl shadow-sm overflow-hidden">
+                <div className="bg-[#E6F4FF] px-6 py-3 border-b-2 border-[#B3DAFF]">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-emerald-600 rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 bg-[#3399FF] rounded-full flex items-center justify-center">
                       <Check className="w-5 h-5 text-white" />
                     </div>
-                    <p className="font-bold text-emerald-900 text-lg">
+                    <p className="font-bold text-[#1a5490] text-lg">
                       {stepData.step === 'dream' && 'Step 1: Your Dream'}
                       {stepData.step === 'specific' && 'Step 2: Specific Goal'}
                       {stepData.step === 'measurable' && 'Step 3: Measurable'}
@@ -443,12 +443,12 @@ export default function GoalCreator() {
                     <p className="text-sm font-semibold text-gray-600 mb-2">Question:</p>
                     <p className="text-base text-gray-900 font-medium">{stepData.question}</p>
                   </div>
-                  <div className="bg-white rounded-lg p-4 border-2 border-emerald-200">
+                  <div className="bg-white rounded-lg p-4 border-2 border-[#B3DAFF]">
                     <p className="text-sm font-semibold text-gray-600 mb-2">Your Answer:</p>
                     <p className="text-base text-gray-900 leading-relaxed">{stepData.answer}</p>
                   </div>
                   {stepData.step === 'dream' && (
-                    <div className="mt-4 p-4 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-lg">
+                    <div className="mt-4 p-4 bg-gradient-to-r from-[#66B2FF] to-[#3399FF] rounded-lg">
                       <p className="text-sm font-bold text-white flex items-center gap-2">
                         <Check className="w-4 h-4" />
                         Got it — here's your dream:
@@ -461,11 +461,11 @@ export default function GoalCreator() {
             ))}
 
             {isGenerating && (
-              <div className="bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-50 border-2 border-emerald-300 rounded-2xl p-12 shadow-inner">
+              <div className="bg-gradient-to-br from-[#E6F4FF] via-[#F0F8FF] to-[#E6F4FF] border-2 border-[#B3DAFF] rounded-2xl p-12 shadow-inner">
                 <div className="flex flex-col items-center justify-center space-y-6">
                   <div className="relative">
-                    <div className="absolute inset-0 w-16 h-16 bg-emerald-200 rounded-full blur-xl opacity-50 animate-pulse"></div>
-                    <Loader className="relative w-16 h-16 text-emerald-600 animate-spin" strokeWidth={2.5} />
+                    <div className="absolute inset-0 w-16 h-16 bg-[#B3DAFF] rounded-full blur-xl opacity-50 animate-pulse"></div>
+                    <Loader className="relative w-16 h-16 text-[#3399FF] animate-spin" strokeWidth={2.5} />
                   </div>
                   <p className="text-xl font-bold text-gray-900">
                     Building your SMART goal...
@@ -476,12 +476,12 @@ export default function GoalCreator() {
 
             {currentStep === 'smart-goal-draft' && smartGoalDraft && !isGenerating && (
               <div className="space-y-6">
-                <div className="bg-gradient-to-br from-teal-50 to-emerald-50 border-2 border-teal-300 rounded-xl p-8">
+                <div className="bg-gradient-to-br from-[#E6F4FF] to-[#F0F8FF] border-2 border-[#B3DAFF] rounded-xl p-8">
                   <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <Target className="w-6 h-6 text-teal-600" />
+                    <Target className="w-6 h-6 text-[#3399FF]" />
                     Your SMART Goal Draft
                   </h3>
-                  <div className="bg-white rounded-lg p-6 border-2 border-teal-200">
+                  <div className="bg-white rounded-lg p-6 border-2 border-[#B3DAFF]">
                     <p className="text-lg text-gray-800 leading-relaxed font-medium">
                       {smartGoalDraft}
                     </p>
@@ -495,7 +495,7 @@ export default function GoalCreator() {
                       <textarea
                         value={refinementRequest}
                         onChange={(e) => setRefinementRequest(e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#66B2FF] focus:border-transparent resize-none"
                         placeholder="e.g., Make it more specific about the revenue target, adjust the timeline, focus more on the learning aspect..."
                         rows={3}
                       />
@@ -505,14 +505,14 @@ export default function GoalCreator() {
                       <button
                         onClick={handleRefineGoal}
                         disabled={!refinementRequest.trim()}
-                        className="flex items-center gap-2 px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+                        className="flex items-center gap-2 px-6 py-3 bg-[#66B2FF] hover:bg-[#3399FF] text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
                       >
                         <RefreshCw className="w-5 h-5" />
                         Refine Goal
                       </button>
                       <button
                         onClick={handleLockGoal}
-                        className="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors font-semibold"
+                        className="flex items-center gap-2 px-6 py-3 bg-[#3399FF] hover:bg-[#1a5490] text-white rounded-lg transition-colors font-semibold"
                       >
                         <Lock className="w-5 h-5" />
                         Lock Goal
@@ -547,7 +547,7 @@ export default function GoalCreator() {
                   </button>
                   <button
                     onClick={handleProceedWithGoal}
-                    className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors font-semibold"
+                    className="px-6 py-3 bg-[#3399FF] hover:bg-[#1a5490] text-white rounded-lg transition-colors font-semibold"
                   >
                     Proceed Anyway
                   </button>
@@ -556,13 +556,13 @@ export default function GoalCreator() {
             )}
 
             {currentStep !== 'smart-goal-draft' && currentStep !== 'final-result' && !isGenerating && (
-              <div className="bg-gradient-to-br from-white to-blue-50 border-2 border-blue-300 rounded-xl shadow-lg overflow-hidden animate-fadeIn">
-                <div className="bg-blue-100 px-6 py-3 border-b-2 border-blue-300">
+              <div className="bg-gradient-to-br from-white to-[#F0F8FF] border-2 border-[#66B2FF] rounded-xl shadow-lg overflow-hidden animate-fadeIn">
+                <div className="bg-[#E6F4FF] px-6 py-3 border-b-2 border-[#B3DAFF]">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 bg-[#66B2FF] rounded-full flex items-center justify-center">
                       <ArrowRight className="w-5 h-5 text-white" />
                     </div>
-                    <p className="font-bold text-blue-900 text-lg">
+                    <p className="font-bold text-[#1a5490] text-lg">
                       {currentStep === 'dream' && 'Step 1: Your Dream'}
                       {currentStep === 'specific' && 'Step 2: Specific Goal'}
                       {currentStep === 'measurable' && 'Step 3: Measurable'}
@@ -583,13 +583,13 @@ export default function GoalCreator() {
                       type="date"
                       value={currentAnswer}
                       onChange={(e) => setCurrentAnswer(e.target.value)}
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-lg transition-all"
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-[#66B2FF] focus:border-[#66B2FF] text-lg transition-all"
                     />
                   ) : (
                     <textarea
                       value={currentAnswer}
                       onChange={(e) => setCurrentAnswer(e.target.value)}
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none text-lg transition-all"
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-[#66B2FF] focus:border-[#66B2FF] resize-none text-lg transition-all"
                       placeholder="Type your answer here..."
                       rows={5}
                       onKeyDown={(e) => {
@@ -603,7 +603,7 @@ export default function GoalCreator() {
                   <button
                     onClick={handleSubmitAnswer}
                     disabled={!currentAnswer.trim()}
-                    className="mt-5 w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg font-bold text-lg hover:from-emerald-700 hover:to-teal-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg transform hover:scale-[1.02]"
+                    className="mt-5 w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-[#66B2FF] to-[#3399FF] text-white rounded-lg font-bold text-lg hover:from-[#3399FF] hover:to-[#1a5490] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg transform hover:scale-[1.02]"
                   >
                     Continue
                     <ArrowRight className="w-5 h-5" />
