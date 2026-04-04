@@ -172,19 +172,21 @@ export default function SmartGoalGenerator() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 p-8">
+    <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-5xl mx-auto">
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden" ref={resultRef}>
-          <div className="bg-gradient-to-r from-blue-600 to-cyan-600 p-8 text-white">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
-                <Target className="w-8 h-8" />
+          <div className="bg-gradient-to-br from-[#F8FAFC] to-[#F0F4F8] border-b border-gray-200 px-8 py-5">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gray-100 rounded-lg">
+                <Target className="w-6 h-6 text-gray-700" />
               </div>
-              <h1 className="text-3xl font-bold">SMART Goal Generator</h1>
+              <div>
+                <h1 className="text-xl font-semibold text-gray-900">SMART Goal Generator</h1>
+                <p className="text-sm text-gray-600 mt-0.5">
+                  Turn your dream into a clear, actionable SMART goal with execution plan
+                </p>
+              </div>
             </div>
-            <p className="text-blue-100 text-lg">
-              Turn your dream into a clear, actionable, and trackable SMART goal with step-by-step execution plan
-            </p>
           </div>
 
           <div className="p-8">

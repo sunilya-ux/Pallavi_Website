@@ -343,19 +343,21 @@ export default function GoalCreator() {
 
   if (currentStep === 'final-result' && finalResult) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#E6F4FF] to-[#F0F8FF] p-8">
+      <div className="min-h-screen bg-gray-50 p-8">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-            <div className="bg-gradient-to-r from-[#66B2FF] to-[#3399FF] p-8 text-white">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
-                  <Target className="w-8 h-8" />
+            <div className="bg-gradient-to-br from-[#F8FAFC] to-[#F0F4F8] border-b border-gray-200 px-8 py-5">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gray-100 rounded-lg">
+                  <Target className="w-6 h-6 text-gray-700" />
                 </div>
-                <h1 className="text-3xl font-bold">Your SMART Goal Plan</h1>
+                <div>
+                  <h1 className="text-xl font-semibold text-gray-900">Your SMART Goal Plan</h1>
+                  <p className="text-sm text-gray-600 mt-0.5">
+                    Your personalized goal with actionable steps
+                  </p>
+                </div>
               </div>
-              <p className="text-blue-100 text-lg">
-                Your personalized goal with actionable steps
-              </p>
             </div>
 
             <div className="p-8">
@@ -404,19 +406,21 @@ export default function GoalCreator() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#E6F4FF] to-[#F0F8FF] p-8">
+    <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div className="bg-gradient-to-r from-[#66B2FF] to-[#3399FF] p-8 text-white">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
-                <Target className="w-8 h-8" />
+          <div className="bg-gradient-to-br from-[#F8FAFC] to-[#F0F4F8] border-b border-gray-200 px-8 py-5">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gray-100 rounded-lg">
+                <Target className="w-6 h-6 text-gray-700" />
               </div>
-              <h1 className="text-3xl font-bold">Goal Creator</h1>
+              <div>
+                <h1 className="text-xl font-semibold text-gray-900">Goal Creator</h1>
+                <p className="text-sm text-gray-600 mt-0.5">
+                  Step-by-step guided process to create your SMART goal
+                </p>
+              </div>
             </div>
-            <p className="text-blue-100 text-lg">
-              Step-by-step guided process to create your SMART goal
-            </p>
           </div>
 
           <div className="p-8 space-y-8">

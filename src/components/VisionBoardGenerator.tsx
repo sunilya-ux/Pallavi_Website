@@ -181,19 +181,21 @@ export default function VisionBoardGenerator() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 p-8">
+    <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-5xl mx-auto">
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden" ref={resultRef}>
-          <div className="bg-gradient-to-r from-amber-600 to-orange-600 p-8 text-white">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
-                <Image className="w-8 h-8" />
+          <div className="bg-gradient-to-br from-[#F8FAFC] to-[#F0F4F8] border-b border-gray-200 px-8 py-5">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gray-100 rounded-lg">
+                <Image className="w-6 h-6 text-gray-700" />
               </div>
-              <h1 className="text-3xl font-bold">Vision Board Generator</h1>
+              <div>
+                <h1 className="text-xl font-semibold text-gray-900">Vision Board Generator</h1>
+                <p className="text-sm text-gray-600 mt-0.5">
+                  Create a personalized vision board based on your life goals
+                </p>
+              </div>
             </div>
-            <p className="text-amber-100 text-lg">
-              Create a personalized, powerful vision board based on your life goals
-            </p>
           </div>
 
           <div className="p-8">
