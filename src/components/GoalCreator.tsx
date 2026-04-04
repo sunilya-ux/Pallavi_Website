@@ -352,8 +352,8 @@ export default function GoalCreator() {
                   <Target className="w-6 h-6 text-gray-700" />
                 </div>
                 <div>
-                  <h1 className="text-xl font-semibold text-gray-900">Your SMART Goal Plan</h1>
-                  <p className="text-sm text-gray-600 mt-0.5">
+                  <h1 className="text-page-title text-gray-900">Your SMART Goal Plan</h1>
+                  <p className="text-sm text-gray-600 mt-0.5 font-normal">
                     Your personalized goal with actionable steps
                   </p>
                 </div>
@@ -415,8 +415,8 @@ export default function GoalCreator() {
                 <Target className="w-6 h-6 text-gray-700" />
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-gray-900">Goal Creator</h1>
-                <p className="text-sm text-gray-600 mt-0.5">
+                <h1 className="text-page-title text-gray-900">Goal Creator</h1>
+                <p className="text-sm text-gray-600 mt-0.5 font-normal">
                   Step-by-step guided process to create your SMART goal
                 </p>
               </div>

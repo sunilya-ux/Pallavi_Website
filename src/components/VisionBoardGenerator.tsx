@@ -190,8 +190,8 @@ export default function VisionBoardGenerator() {
                 <Image className="w-6 h-6 text-gray-700" />
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-gray-900">Vision Board Generator</h1>
-                <p className="text-sm text-gray-600 mt-0.5">
+                <h1 className="text-page-title text-gray-900">Vision Board Generator</h1>
+                <p className="text-sm text-gray-600 mt-0.5 font-normal">
                   Create a personalized vision board based on your life goals
                 </p>
               </div>

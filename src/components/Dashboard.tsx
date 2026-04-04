@@ -116,16 +116,16 @@ export default function Dashboard({ userEmail }: DashboardProps) {
 
     return (
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-        <h1 className="text-3xl font-bold text-slate-900 mb-4">
+        <h1 className="text-2xl font-semibold text-slate-900 mb-3">
           Welcome to Admin Dashboard
         </h1>
-        <p className="text-slate-600 text-lg mb-8">
+        <p className="text-body text-slate-600 mb-8">
           Manage your coaching business, clients, and access all your tools from here.
         </p>
 
         <div className="space-y-6">
           <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-6 border-2 border-emerald-200">
-            <h3 className="text-xl font-bold text-slate-900 mb-2">Quick Actions</h3>
+            <h3 className="text-section-title text-slate-900 mb-3">Quick Actions</h3>
             <div className="grid md:grid-cols-2 gap-4 mt-4">
               <button
                 onClick={() => setActiveSection('clients')}
@@ -135,8 +135,8 @@ export default function Dashboard({ userEmail }: DashboardProps) {
                   <Users className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <p className="font-semibold text-slate-900">Manage Clients</p>
-                  <p className="text-sm text-slate-600">Add and manage client accounts</p>
+                  <p className="text-sm font-semibold text-slate-900">Manage Clients</p>
+                  <p className="text-xs text-slate-600">Add and manage client accounts</p>
                 </div>
               </button>
 
@@ -148,16 +148,16 @@ export default function Dashboard({ userEmail }: DashboardProps) {
                   <Shield className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <p className="font-semibold text-slate-900">Access Control</p>
-                  <p className="text-sm text-slate-600">Manage tool permissions</p>
+                  <p className="text-sm font-semibold text-slate-900">Access Control</p>
+                  <p className="text-xs text-slate-600">Manage tool permissions</p>
                 </div>
               </button>
             </div>
           </div>
 
           <div className="bg-slate-50 rounded-xl p-6">
-            <h3 className="text-xl font-bold text-slate-900 mb-4">Available Tools</h3>
-            <p className="text-slate-600 mb-4">Select a tool from the sidebar to get started.</p>
+            <h3 className="text-section-title text-slate-900 mb-4">Available Tools</h3>
+            <p className="text-body text-slate-600 mb-4">Select a tool from the sidebar to get started.</p>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {modules.map(module => (
                 <div key={module.id} className="bg-white rounded-lg p-4 border border-slate-200">
@@ -166,9 +166,9 @@ export default function Dashboard({ userEmail }: DashboardProps) {
                       const IconComponent = getIconComponent(module.icon);
                       return <IconComponent className="w-5 h-5 text-slate-600" />;
                     })()}
-                    <h4 className="font-semibold text-slate-900">{module.display_name}</h4>
+                    <h4 className="text-sm font-semibold text-slate-900">{module.display_name}</h4>
                   </div>
-                  <p className="text-sm text-slate-600">{module.tools.length} tool{module.tools.length !== 1 ? 's' : ''}</p>
+                  <p className="text-xs text-slate-600">{module.tools.length} tool{module.tools.length !== 1 ? 's' : ''}</p>
                 </div>
               ))}
             </div>
@@ -186,29 +186,29 @@ export default function Dashboard({ userEmail }: DashboardProps) {
         } bg-gradient-to-b from-slate-900 to-slate-800 text-white transition-all duration-300 overflow-hidden flex flex-col`}
       >
         <div className="p-6 border-b border-slate-700">
-          <h2 className="text-xl font-bold text-emerald-400">Admin Panel</h2>
-          <p className="text-sm text-slate-400 mt-1 truncate">{userEmail}</p>
+          <h2 className="text-lg font-semibold text-emerald-400">Admin Panel</h2>
+          <p className="text-xs text-slate-400 mt-1 truncate font-normal">{userEmail}</p>
         </div>
 
-        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           <button
             onClick={() => setActiveSection('clients')}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors w-full text-left ${
+            className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors w-full text-left text-menu ${
               activeSection === 'clients'
-                ? 'bg-emerald-600 text-white'
-                : 'text-slate-300 hover:bg-slate-700'
+                ? 'bg-emerald-600 text-white font-medium'
+                : 'text-slate-300 hover:bg-slate-700 font-medium'
             }`}
           >
             <Users className="w-5 h-5" />
-            <span className="font-medium">Clients</span>
+            <span>Clients</span>
           </button>
 
           <button
             onClick={() => setShowPermissionsModal(true)}
-            className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors w-full text-left text-slate-300 hover:bg-slate-700"
+            className="flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors w-full text-left text-menu text-slate-300 hover:bg-slate-700 font-medium"
           >
             <Shield className="w-5 h-5" />
-            <span className="font-medium">Access Control</span>
+            <span>Access Control</span>
           </button>
 
           <div className="border-t border-slate-700 my-2 pt-2">
@@ -223,11 +223,11 @@ export default function Dashboard({ userEmail }: DashboardProps) {
                   <div key={module.id} className="mb-1">
                     <button
                       onClick={() => toggleModule(module.id)}
-                      className="flex items-center justify-between gap-3 px-4 py-3 rounded-lg transition-colors w-full text-left text-slate-300 hover:bg-slate-700"
+                      className="flex items-center justify-between gap-3 px-4 py-2.5 rounded-lg transition-colors w-full text-left text-menu text-slate-300 hover:bg-slate-700 font-medium"
                     >
                       <div className="flex items-center gap-3">
                         <IconComponent className="w-5 h-5" />
-                        <span className="font-medium">{module.display_name}</span>
+                        <span>{module.display_name}</span>
                       </div>
                       {isExpanded ? (
                         <ChevronDown className="w-4 h-4" />
@@ -246,7 +246,7 @@ export default function Dashboard({ userEmail }: DashboardProps) {
                             <button
                               key={tool.id}
                               onClick={() => handleToolClick(tool.route)}
-                              className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors w-full text-left text-sm ${
+                              className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors w-full text-left text-sm font-medium ${
                                 isActive
                                   ? 'bg-emerald-600 text-white'
                                   : 'text-slate-400 hover:bg-slate-700 hover:text-slate-200'
@@ -269,10 +269,10 @@ export default function Dashboard({ userEmail }: DashboardProps) {
         <div className="p-4 border-t border-slate-700">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-700 transition-colors w-full text-left text-red-400 hover:text-red-300"
+            className="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-700 transition-colors w-full text-left text-menu text-red-400 hover:text-red-300 font-medium"
           >
             <LogOut className="w-5 h-5" />
-            <span className="font-medium">Logout</span>
+            <span>Logout</span>
           </button>
         </div>
       </aside>
@@ -294,9 +294,9 @@ export default function Dashboard({ userEmail }: DashboardProps) {
             <div className="flex items-center gap-4">
               <div className="text-right">
                 <p className="text-sm font-medium text-slate-900">Welcome</p>
-                <p className="text-xs text-slate-500">{userEmail}</p>
+                <p className="text-xs text-slate-500 font-normal">{userEmail}</p>
               </div>
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center text-white font-bold">
+              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center text-white font-semibold">
                 {userEmail[0].toUpperCase()}
               </div>
             </div>

@@ -181,8 +181,8 @@ export default function SmartGoalGenerator() {
                 <Target className="w-6 h-6 text-gray-700" />
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-gray-900">SMART Goal Generator</h1>
-                <p className="text-sm text-gray-600 mt-0.5">
+                <h1 className="text-page-title text-gray-900">SMART Goal Generator</h1>
+                <p className="text-sm text-gray-600 mt-0.5 font-normal">
                   Turn your dream into a clear, actionable SMART goal with execution plan
                 </p>
               </div>
