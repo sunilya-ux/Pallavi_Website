@@ -140,7 +140,7 @@ export default function PassionRoadmapCreator() {
             Passion Roadmap Creator
           </h2>
           <p className="text-slate-600 mb-8">
-            Generate a 12-month roadmap based on your passion
+            Create your personalized 1-year roadmap based on your passion
           </p>
 
           {error && (

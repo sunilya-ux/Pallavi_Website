@@ -46,157 +46,132 @@ Start with:
 
 🎯 YOUR GOAL
 
-• Target Outcome: __________________
-• Current Level: __________________
-• Income Goal: __________________
-• Why this matters: __________________
+📝 Fill This:
+
+• Target Outcome:
+  __________________________
+
+• Current Level:
+  __________________________
+
+• Income Goal:
+  __________________________
+
+• Why this matters:
+  __________________________
 
 ------------------------------------------------
 
 📅 MONTH 1 — READINESS (JANUARY STYLE)
 
 Focus:
-• Business vision ready
-• Strategy ready
-• Research complete
+• Vision clarity
+• Strategy readiness
+• Research completed
 
 Action Steps:
-✔ Identify your passion clearly
-✔ Learn basics of [passion]
+✔ Understand basics of [passion]
+✔ Identify your direction
 ✔ Join learning resources
 
 ------------------------------------------------
 
 📅 MONTH 2 — MARKET RESEARCH
 
-Focus:
-• Understanding market demand
-• Identifying target audience
-
 Action Steps:
-✔ Draft prototype idea
 ✔ Identify target audience
-✔ Research demand & competition
+✔ Study demand & competition
+✔ Define opportunity
+
+📝 Fill This:
+
+• Target Audience:
+  __________________________
+
+• Market Gap:
+  __________________________
 
 ------------------------------------------------
 
 📅 MONTH 3 — PROTOTYPE ACTION
 
-Focus:
-• First execution
-• Learning from mistakes
-
 Action Steps:
-✔ Execute first version
+✔ Start first execution
 ✔ Track learnings
-✔ Note strengths & weaknesses
+✔ Identify strengths & weaknesses
 
 ------------------------------------------------
 
-📅 MONTH 4 — BUSINESS FOUNDATION
-
-Focus:
-• System improvement
-• Goal setting
+📅 MONTH 4 — FOUNDATION
 
 Action Steps:
-✔ Improve system/process
-✔ Set realistic income goals
-✔ Create small actionable tasks
+✔ Improve process/system
+✔ Set realistic goals
+✔ Create small tasks
 
 ------------------------------------------------
 
-📅 MONTH 5 — SALES & MARKETING
-
-Focus:
-• Building presence
-• Revenue tracking
+📅 MONTH 5 — SALES & VISIBILITY
 
 Action Steps:
-✔ Build presence (online/offline)
+✔ Build online/offline presence
 ✔ Work on USP
-✔ Track revenue
+✔ Track initial results
 
 ------------------------------------------------
 
-📅 MONTH 6 — REVENUE GOALS
-
-Focus:
-• Defining milestones
-• Planning ahead
+📅 MONTH 6 — REVENUE SETUP
 
 Action Steps:
-✔ Define revenue milestones
-✔ Plan next 6 months
-✔ Add contingency plan
+✔ Define income milestones
+✔ Plan next phase
+✔ Add contingency
 
 ------------------------------------------------
 
-📅 MONTH 7 — MILESTONE
-
-Focus:
-• Re-evaluation
-• Clarity improvement
+📅 MONTH 7 — CLARITY MILESTONE
 
 Action Steps:
-✔ Re-evaluate goals
-✔ Improve clarity
+✔ Refine goals
+✔ Improve direction
 
 ------------------------------------------------
 
-📅 MONTH 8 — SCALE EXECUTION
-
-Focus:
-• Alignment with goals
-• Progress achievement
+📅 MONTH 8 — SCALE PHASE
 
 Action Steps:
-✔ Align activities with goals
-✔ Achieve 50% progress
+✔ Align execution with goals
+✔ Reach 50% progress
 
 ------------------------------------------------
 
-📅 MONTH 9 — PERFORMANCE CHECK
-
-Focus:
-• Optimization
-• Goal achievement
+📅 MONTH 9 — OPTIMIZATION
 
 Action Steps:
-✔ Achieve 60–70% goals
-✔ Optimize strategy
+✔ Improve performance
+✔ Reach 60–70% progress
 
 ------------------------------------------------
 
 📅 MONTH 10 — GROWTH PUSH
 
-Focus:
-• Revenue acceleration
-
 Action Steps:
-✔ Target 80% revenue goals
+✔ Target 80% results
 
 ------------------------------------------------
 
 📅 MONTH 11 — NEAR COMPLETION
 
-Focus:
-• Final push
-
 Action Steps:
-✔ Achieve 95% goals
+✔ Target 95% completion
 
 ------------------------------------------------
 
-📅 MONTH 12 — SUCCESS & CELEBRATION
-
-Focus:
-• Results enjoyment
-• Reflection
+📅 MONTH 12 — SUCCESS & REFLECTION
 
 Action Steps:
-✔ Enjoy results
-✔ Reflect and reset
+✔ Celebrate progress
+✔ Reflect and plan next level
 
 ------------------------------------------------
 
@@ -204,20 +179,20 @@ PERSONALIZATION RULE (MANDATORY):
 
 Adapt roadmap based on passion:
 
-- Bodybuilding → gym, diet, workouts
+- Bodybuilding → workouts, diet, gym
 - Freelancing → clients, skills, portfolio
-- Content → content, audience, growth
+- Content Creation → audience, consistency
 - Job → resume, interviews, skills
 
-Replace ALL generic terms with passion-specific terms.
+Replace ALL generic terms with passion-specific terms throughout the entire roadmap.
 
 ------------------------------------------------
 
 STYLE RULES:
 
 - Workbook style
-- Bullet points only
-- Clean layout
+- Bullet points
+- Clean spacing
 - No long paragraphs
 
 ------------------------------------------------
