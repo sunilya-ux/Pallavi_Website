@@ -9,6 +9,7 @@ import VisionBoardGenerator from './VisionBoardGenerator';
 import SmartGoalGenerator from './SmartGoalGenerator';
 import GoalCreator from './GoalCreator';
 import PassionRoadmapCreator from './PassionRoadmapCreator';
+import RoadmapCreator from './RoadmapCreator';
 import { supabase } from '../lib/supabase';
 import type { ModuleWithTools } from '../types/permissions';
 
@@ -260,6 +261,8 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
             <GoalCreator />
           ) : activeToolRoute === 'passion-roadmap-creator' ? (
             <PassionRoadmapCreator clientId={clientId} />
+          ) : activeToolRoute === 'roadmap-creator' ? (
+            <RoadmapCreator clientId={clientId} />
           ) : (
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
               <h2 className="text-2xl font-bold text-slate-900 mb-4">Tool Coming Soon</h2>

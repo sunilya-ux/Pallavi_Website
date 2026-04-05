@@ -12,6 +12,7 @@ import VisionBoardGenerator from './VisionBoardGenerator';
 import SmartGoalGenerator from './SmartGoalGenerator';
 import GoalCreator from './GoalCreator';
 import PassionRoadmapCreator from './PassionRoadmapCreator';
+import RoadmapCreator from './RoadmapCreator';
 import type { ModuleWithTools } from '../types/permissions';
 
 interface DashboardProps {
@@ -117,6 +118,10 @@ export default function Dashboard({ userEmail }: DashboardProps) {
 
     if (activeToolRoute === 'passion-roadmap-creator') {
       return <PassionRoadmapCreator clientId="admin" />;
+    }
+
+    if (activeToolRoute === 'roadmap-creator') {
+      return <RoadmapCreator clientId="admin" />;
     }
 
     return (
