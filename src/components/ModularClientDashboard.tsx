@@ -259,7 +259,7 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
           ) : activeToolRoute === 'goal-creator' ? (
             <GoalCreator />
           ) : activeToolRoute === 'passion-roadmap-creator' ? (
-            <PassionRoadmapCreator />
+            <PassionRoadmapCreator clientId={clientId} />
           ) : (
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
               <h2 className="text-2xl font-bold text-slate-900 mb-4">Tool Coming Soon</h2>

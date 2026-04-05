@@ -11,6 +11,7 @@ import YouTubeChannelDescriptionGenerator from './YouTubeChannelDescriptionGener
 import VisionBoardGenerator from './VisionBoardGenerator';
 import SmartGoalGenerator from './SmartGoalGenerator';
 import GoalCreator from './GoalCreator';
+import PassionRoadmapCreator from './PassionRoadmapCreator';
 import type { ModuleWithTools } from '../types/permissions';
 
 interface DashboardProps {
@@ -112,6 +113,10 @@ export default function Dashboard({ userEmail }: DashboardProps) {
 
     if (activeToolRoute === 'goal-creator') {
       return <GoalCreator />;
+    }
+
+    if (activeToolRoute === 'passion-roadmap-creator') {
+      return <PassionRoadmapCreator clientId="admin" />;
     }
 
     return (
