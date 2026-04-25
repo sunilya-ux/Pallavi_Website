@@ -10,6 +10,7 @@ import SmartGoalGenerator from './SmartGoalGenerator';
 import GoalCreator from './GoalCreator';
 import PassionRoadmapCreator from './PassionRoadmapCreator';
 import RoadmapCreator from './RoadmapCreator';
+import BigMoneyContentGenerator from './BigMoneyContentGenerator';
 import { supabase } from '../lib/supabase';
 import type { ModuleWithTools } from '../types/permissions';
 
@@ -263,6 +264,8 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
             <PassionRoadmapCreator clientId={clientId} />
           ) : activeToolRoute === 'roadmap-creator' ? (
             <RoadmapCreator clientId={clientId} />
+          ) : activeToolRoute === 'big-money-content-generator' ? (
+            <BigMoneyContentGenerator clientId={clientId} />
           ) : (
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
               <h2 className="text-2xl font-bold text-slate-900 mb-4">Tool Coming Soon</h2>
