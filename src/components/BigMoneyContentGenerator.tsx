@@ -5,23 +5,6 @@ interface BigMoneyContentGeneratorProps {
   clientId: string;
 }
 
-interface DayEntry {
-  day: string;
-  theme: string;
-  post_type: string;
-  idea: string;
-  caption: string;
-  hashtags: string[];
-  hook: string;
-  notes: string;
-  time: string;
-}
-
-interface WeekPlan {
-  week_plan: DayEntry[];
-  final_note: string;
-}
-
 const PROGRESS_MESSAGES = [
   "Analyzing your niche and topic...",
   "Crafting Monday's inspirational post...",
@@ -34,16 +17,6 @@ const PROGRESS_MESSAGES = [
   "Almost done..."
 ];
 
-const ROW_COLORS: Record<string, { bg: string; badge: string }> = {
-  Monday:    { bg: 'bg-rose-50',    badge: 'bg-rose-100 text-rose-700' },
-  Tuesday:   { bg: 'bg-sky-50',     badge: 'bg-sky-100 text-sky-700' },
-  Wednesday: { bg: 'bg-amber-50',   badge: 'bg-amber-100 text-amber-700' },
-  Thursday:  { bg: 'bg-emerald-50', badge: 'bg-emerald-100 text-emerald-700' },
-  Friday:    { bg: 'bg-cyan-50',    badge: 'bg-cyan-100 text-cyan-700' },
-  Saturday:  { bg: 'bg-orange-50',  badge: 'bg-orange-100 text-orange-700' },
-  Sunday:    { bg: 'bg-teal-50',    badge: 'bg-teal-100 text-teal-700' },
-};
-
 export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGeneratorProps) {
   const [formData, setFormData] = useState({
     niche: '',
@@ -54,14 +27,12 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
   });
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState('');
-  const [plan, setPlan] = useState<WeekPlan | null>(null);
-  const [rawText, setRawText] = useState('');
+  const [aiContent, setAiContent] = useState('');
   const [copied, setCopied] = useState(false);
   const [showForm, setShowForm] = useState(true);
   const [progressMessageIndex, setProgressMessageIndex] = useState(0);
   const [exportingPDF, setExportingPDF] = useState(false);
   const [exportMessage, setExportMessage] = useState('');
-  const [expandedCaptions, setExpandedCaptions] = useState<Record<number, boolean>>({});
   const resultRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -70,21 +41,16 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
     if (generating) {
       setProgressMessageIndex(0);
       interval = setInterval(() => {
-        setProgressMessageIndex((prev) =>
-          prev < PROGRESS_MESSAGES.length - 1 ? prev + 1 : prev
-        );
+        setProgressMessageIndex((prev) => {
+          if (prev < PROGRESS_MESSAGES.length - 1) return prev + 1;
+          return prev;
+        });
       }, 4000);
     }
-    return () => { if (interval) clearInterval(interval); };
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, [generating]);
-
-  const planToText = (p: WeekPlan): string => {
-    const lines = p.week_plan.map((d) =>
-      `${d.day} - ${d.theme}\nPost Type: ${d.post_type}\nContent Idea: ${d.idea}\nCaption:\n${d.caption}\nHashtags: ${d.hashtags.join(' ')}\nVideo Hook: ${d.hook}\nNotes: ${d.notes}\nBest Time: ${d.time}`
-    );
-    return lines.join('\n\n------------------------------------------------\n\n') +
-      '\n\n' + (p.final_note || '');
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,12 +62,11 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
     }
 
     setGenerating(true);
-    setPlan(null);
-    setRawText('');
-    setExpandedCaptions({});
+    setAiContent('');
 
     try {
       abortControllerRef.current = new AbortController();
+
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
@@ -130,9 +95,8 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
         throw new Error(errorData.error || 'Failed to generate content');
       }
 
-      const data: WeekPlan = await response.json();
-      setPlan(data);
-      setRawText(planToText(data));
+      const data = await response.json();
+      setAiContent(data.content);
       setShowForm(false);
 
       setTimeout(() => {
@@ -153,7 +117,7 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(rawText);
+      await navigator.clipboard.writeText(aiContent);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -163,37 +127,58 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
 
   const handleRegenerate = () => {
     setGenerating(true);
-    setPlan(null);
-    setRawText('');
+    setAiContent('');
+
     const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
     handleSubmit(fakeEvent);
   };
 
   const handleGenerateNew = () => {
-    setPlan(null);
-    setRawText('');
+    setAiContent('');
     setShowForm(true);
     setError('');
-    setExpandedCaptions({});
-    setFormData({ niche: '', topic: '', inspirationalStory: '', menteeStory: '', extraInstructions: '' });
+    setFormData({
+      niche: '',
+      topic: '',
+      inspirationalStory: '',
+      menteeStory: '',
+      extraInstructions: '',
+    });
   };
 
   const handleCancelGeneration = () => {
-    if (abortControllerRef.current) abortControllerRef.current.abort();
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
   };
 
   const handleDownloadPDF = async () => {
     setExportingPDF(true);
     setExportMessage('');
+
     try {
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-      const response = await fetch(`${supabaseUrl}/functions/v1/generate-pdf`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${supabaseAnonKey}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: rawText, title: 'Big Money Content Plan - 7 Day Instagram Strategy' }),
-      });
-      if (!response.ok) throw new Error('Failed to generate PDF');
+
+      const response = await fetch(
+        `${supabaseUrl}/functions/v1/generate-pdf`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${supabaseAnonKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            content: aiContent,
+            title: 'Big Money Content Plan - 7 Day Instagram Strategy',
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to generate PDF');
+      }
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -203,6 +188,7 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
+
       setExportMessage('PDF downloaded successfully!');
       setTimeout(() => setExportMessage(''), 3000);
     } catch (error) {
@@ -218,15 +204,10 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const toggleCaption = (idx: number) => {
-    setExpandedCaptions((prev) => ({ ...prev, [idx]: !prev[idx] }));
-  };
-
   return (
-    <div className="space-y-6">
-      {/* ---- FORM ---- */}
+    <div className="max-w-3xl mx-auto space-y-6">
       {showForm && !generating && (
-        <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
               <DollarSign className="w-6 h-6 text-amber-600" />
@@ -246,13 +227,50 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
-            <FormField label="1. What's your niche?" placeholder="e.g., Life coaching, Fitness training, Business mentoring" value={formData.niche} onChange={(v) => handleChange('niche', v)} type="short" />
-            <FormField label="2. What topic are you talking about?" placeholder="e.g., Building confidence, Overcoming fear, Starting a side hustle" value={formData.topic} onChange={(v) => handleChange('topic', v)} type="short" />
-            <FormField label="3. Your inspirational story?" placeholder="Share your personal journey or transformation story. This will be used in Monday's inspirational post and Friday's social proof content." value={formData.inspirationalStory} onChange={(v) => handleChange('inspirationalStory', v)} type="long" />
-            <FormField label="4. Your mentee's story?" placeholder="Share a success story from someone you've mentored or coached. This will be woven into value posts and social proof content." value={formData.menteeStory} onChange={(v) => handleChange('menteeStory', v)} type="long" />
-            <FormField label="5. Any extra instructions?" placeholder="Add any specific angles, themes, upcoming events, offers, or tone preferences you want reflected in this week's content plan." value={formData.extraInstructions} onChange={(v) => handleChange('extraInstructions', v)} type="long" />
+            <FormField
+              label="1. What's your niche?"
+              placeholder="e.g., Life coaching, Fitness training, Business mentoring"
+              value={formData.niche}
+              onChange={(value) => handleChange('niche', value)}
+              type="short"
+            />
 
-            <button type="submit" className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white py-4 rounded-lg font-semibold hover:shadow-lg hover:shadow-amber-500/30 transition-all duration-300 flex items-center justify-center gap-2">
+            <FormField
+              label="2. What topic are you talking about?"
+              placeholder="e.g., Building confidence, Overcoming fear, Starting a side hustle"
+              value={formData.topic}
+              onChange={(value) => handleChange('topic', value)}
+              type="short"
+            />
+
+            <FormField
+              label="3. Your inspirational story?"
+              placeholder="Share your personal journey or transformation story. This will be used in Monday's inspirational post and Friday's social proof content."
+              value={formData.inspirationalStory}
+              onChange={(value) => handleChange('inspirationalStory', value)}
+              type="long"
+            />
+
+            <FormField
+              label="4. Your mentee's story?"
+              placeholder="Share a success story from someone you've mentored or coached. This will be woven into value posts and social proof content."
+              value={formData.menteeStory}
+              onChange={(value) => handleChange('menteeStory', value)}
+              type="long"
+            />
+
+            <FormField
+              label="5. Any more instructions, ideas, or suggestions for this week's content?"
+              placeholder="Add any specific angles, themes, upcoming events, offers, or tone preferences you want reflected in this week's content plan."
+              value={formData.extraInstructions}
+              onChange={(value) => handleChange('extraInstructions', value)}
+              type="long"
+            />
+
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white py-4 rounded-lg font-semibold hover:shadow-lg hover:shadow-amber-500/30 transition-all duration-300 flex items-center justify-center gap-2"
+            >
               <Sparkles className="w-5 h-5" />
               Generate Content Plan
             </button>
@@ -260,9 +278,8 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
         </div>
       )}
 
-      {/* ---- GENERATING ---- */}
       {generating && (
-        <div className="max-w-3xl mx-auto bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl shadow-sm border border-amber-200 p-12 sm:p-16">
+        <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl shadow-sm border border-amber-200 p-12 sm:p-16">
           <div className="max-w-lg mx-auto text-center space-y-8">
             <div className="flex justify-center">
               <div className="relative">
@@ -275,16 +292,21 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
                 {PROGRESS_MESSAGES[progressMessageIndex]}
               </h2>
               <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
-                {progressMessageIndex < PROGRESS_MESSAGES.length - 1 ? "This usually takes about 30-60 seconds." : "Almost there -- thank you for waiting."}
+                {progressMessageIndex < PROGRESS_MESSAGES.length - 1
+                  ? "This usually takes about 30-60 seconds."
+                  : "Almost there -- thank you for waiting."}
               </p>
             </div>
             <div className="pt-2">
               <div className="flex items-center justify-center gap-2 mb-6">
-                <div className="w-2 h-2 bg-amber-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <div className="w-2 h-2 bg-amber-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <div className="w-2 h-2 bg-amber-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                <div className="w-2 h-2 bg-amber-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-2 h-2 bg-amber-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-2 h-2 bg-amber-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
               </div>
-              <button onClick={handleCancelGeneration} className="inline-flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 rounded-lg transition-all shadow-sm hover:shadow-md border border-slate-200 font-medium">
+              <button
+                onClick={handleCancelGeneration}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 rounded-lg transition-all shadow-sm hover:shadow-md border border-slate-200 font-medium"
+              >
                 <X className="w-4 h-4" />
                 <span>Cancel Generation</span>
               </button>
@@ -293,127 +315,101 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
         </div>
       )}
 
-      {/* ---- RESULTS TABLE ---- */}
-      {plan && !showForm && (
-        <div ref={resultRef}>
-          <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl shadow-lg border border-amber-200 p-5 sm:p-6 mb-4">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-11 h-11 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <CheckCircle className="w-6 h-6 text-amber-600" />
-              </div>
-              <div>
-                <h3 className="text-xl sm:text-2xl font-bold text-slate-900">Your 7-Day Content Plan is Ready</h3>
-                <p className="text-sm text-slate-600 mt-0.5">Ready to copy and use for your Instagram strategy</p>
+      {aiContent && !showForm && (
+        <div ref={resultRef} className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl shadow-lg border border-amber-200 p-6 sm:p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex-shrink-0">
+              <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+                <CheckCircle className="w-7 h-7 text-amber-600" />
               </div>
             </div>
+            <div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-slate-900">
+                Your 7-Day Content Plan is Ready
+              </h3>
+              <p className="text-sm text-slate-600 mt-1">
+                Ready to copy and use for your Instagram strategy
+              </p>
+            </div>
+          </div>
 
-            {/* Table */}
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden mb-5">
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse" style={{ minWidth: 1100 }}>
-                  <thead>
-                    <tr className="bg-slate-800">
-                      {['Day & Theme', 'Post Type', 'Content Idea', 'Caption', 'Hashtags', 'Video Hook', 'Notes', 'Time'].map((h) => (
-                        <th key={h} className="px-4 py-3.5 text-left text-[11px] font-semibold text-slate-300 uppercase tracking-wider border-r border-slate-700 last:border-r-0">
-                          {h}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {plan.week_plan.map((entry, idx) => {
-                      const colors = ROW_COLORS[entry.day] || { bg: 'bg-white', badge: 'bg-slate-100 text-slate-700' };
-                      const isExpanded = expandedCaptions[idx];
-                      const captionText = (entry.caption || '').replace(/\\n/g, '\n');
-                      const showToggle = captionText.length > 200;
-                      const displayCaption = showToggle && !isExpanded ? captionText.slice(0, 200) + '...' : captionText;
-
-                      return (
-                        <tr key={idx} className={`${colors.bg} border-b border-slate-200 last:border-b-0 hover:brightness-[0.97] transition-all`}>
-                          {/* Day & Theme */}
-                          <td className="px-4 py-4 align-top border-r border-slate-100 w-[150px] min-w-[150px]">
-                            <span className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-bold ${colors.badge} mb-1`}>
-                              {entry.day}
-                            </span>
-                            <p className="text-[11px] text-slate-500 leading-snug mt-0.5">{entry.theme}</p>
-                          </td>
-                          {/* Post Type */}
-                          <td className="px-4 py-4 align-top border-r border-slate-100 w-[90px] min-w-[90px]">
-                            <span className="inline-block px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-xs font-semibold">
-                              {entry.post_type}
-                            </span>
-                          </td>
-                          {/* Content Idea */}
-                          <td className="px-4 py-4 align-top border-r border-slate-100 w-[170px] min-w-[170px]">
-                            <p className="text-xs text-slate-700 leading-relaxed">{entry.idea}</p>
-                          </td>
-                          {/* Caption */}
-                          <td className="px-4 py-4 align-top border-r border-slate-100 w-[320px] min-w-[320px]">
-                            <div className="text-xs text-slate-700 leading-relaxed whitespace-pre-wrap">{displayCaption}</div>
-                            {showToggle && (
-                              <button onClick={() => toggleCaption(idx)} className="mt-1 text-[11px] font-medium text-amber-600 hover:text-amber-700 transition-colors">
-                                {isExpanded ? 'Show less' : 'Read full caption'}
-                              </button>
-                            )}
-                          </td>
-                          {/* Hashtags */}
-                          <td className="px-4 py-4 align-top border-r border-slate-100 w-[150px] min-w-[150px]">
-                            <div className="flex flex-wrap gap-1">
-                              {(entry.hashtags || []).map((tag, i) => (
-                                <span key={i} className={`inline-block text-[10px] px-1.5 py-0.5 rounded ${colors.badge} font-medium`}>
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          </td>
-                          {/* Video Hook */}
-                          <td className="px-4 py-4 align-top border-r border-slate-100 w-[140px] min-w-[140px]">
-                            <p className="text-xs text-slate-700 leading-relaxed font-medium">{entry.hook}</p>
-                          </td>
-                          {/* Notes */}
-                          <td className="px-4 py-4 align-top border-r border-slate-100 w-[150px] min-w-[150px]">
-                            <p className="text-[11px] text-slate-600 leading-relaxed">{entry.notes}</p>
-                          </td>
-                          {/* Time */}
-                          <td className="px-4 py-4 align-top w-[90px] min-w-[90px]">
-                            <span className="text-xs font-semibold text-slate-700">{entry.time}</span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+          <div className="bg-white rounded-lg p-6 sm:p-8 mb-6 shadow-sm">
+            <div className="prose prose-slate max-w-none">
+              <div className="whitespace-pre-wrap text-slate-700 leading-relaxed text-base">
+                {aiContent}
               </div>
             </div>
+          </div>
 
-            {/* Final note */}
-            {plan.final_note && (
-              <div className="text-center py-2.5 px-5 bg-slate-100 rounded-lg border border-slate-200 mb-5">
-                <p className="text-sm font-medium text-slate-600 italic">{plan.final_note}</p>
-              </div>
-            )}
+          <div className="space-y-4">
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={handleCopy}
+                className="flex items-center gap-2 px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-all shadow-sm hover:shadow-md font-medium"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-5 h-5" />
+                    <span>Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-5 h-5" />
+                    <span>Copy Content</span>
+                  </>
+                )}
+              </button>
+              <button
+                onClick={handleRegenerate}
+                disabled={generating}
+                className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 rounded-lg transition-all shadow-sm hover:shadow-md border border-slate-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <RotateCcw className="w-5 h-5" />
+                <span>Regenerate</span>
+              </button>
+              <button
+                onClick={handleGenerateNew}
+                className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 rounded-lg transition-all shadow-sm hover:shadow-md border border-slate-200 font-medium"
+              >
+                <Sparkles className="w-5 h-5" />
+                <span>Generate New</span>
+              </button>
+            </div>
 
-            {/* Actions */}
-            <div className="space-y-4">
-              <div className="flex flex-wrap gap-3">
-                <button onClick={handleCopy} className="flex items-center gap-2 px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-all shadow-sm hover:shadow-md font-medium">
-                  {copied ? <><Check className="w-5 h-5" /><span>Copied!</span></> : <><Copy className="w-5 h-5" /><span>Copy</span></>}
-                </button>
-                <button onClick={handleDownloadPDF} disabled={exportingPDF} className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 rounded-lg transition-all shadow-sm hover:shadow-md border border-slate-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed">
-                  {exportingPDF ? <><Loader className="w-5 h-5 animate-spin" /><span>Preparing PDF...</span></> : <><Download className="w-5 h-5" /><span>Download PDF</span></>}
-                </button>
-                <button onClick={handleRegenerate} disabled={generating} className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 rounded-lg transition-all shadow-sm hover:shadow-md border border-slate-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed">
-                  <RotateCcw className="w-5 h-5" /><span>Regenerate</span>
-                </button>
-                <button onClick={handleGenerateNew} className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 rounded-lg transition-all shadow-sm hover:shadow-md border border-slate-200 font-medium">
-                  <Sparkles className="w-5 h-5" /><span>Generate New</span>
-                </button>
-              </div>
+            <div className="pt-2 border-t border-amber-200">
+              <p className="text-sm text-slate-600 mb-3">Export your content plan:</p>
+
               {exportMessage && (
-                <div className={`p-3 rounded-lg text-sm ${exportMessage.includes('success') ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-red-50 text-red-800 border border-red-200'}`}>
+                <div className={`mb-3 p-3 rounded-lg text-sm ${
+                  exportMessage.includes('success') || exportMessage.includes('exported')
+                    ? 'bg-amber-50 text-amber-800 border border-amber-200'
+                    : exportMessage.includes('Failed') || exportMessage.includes('error')
+                    ? 'bg-red-50 text-red-800 border border-red-200'
+                    : 'bg-blue-50 text-blue-800 border border-blue-200'
+                }`}>
                   {exportMessage}
                 </div>
               )}
+
+              <div className="flex flex-wrap gap-3">
+                <button
+                  onClick={handleDownloadPDF}
+                  disabled={exportingPDF}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-all shadow-sm font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {exportingPDF ? (
+                    <>
+                      <Loader className="w-4 h-4 animate-spin" />
+                      <span>Preparing PDF...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-4 h-4" />
+                      <span>Download as PDF</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -443,11 +439,26 @@ function FormField({ label, placeholder, value, onChange, type }: FormFieldProps
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm sm:text-base font-semibold text-slate-900">{label}</label>
+      <label className="block text-sm sm:text-base font-semibold text-slate-900">
+        {label}
+      </label>
       {type === 'short' ? (
-        <input type="text" value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all text-slate-900 placeholder:text-slate-400" />
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all text-slate-900 placeholder:text-slate-400"
+        />
       ) : (
-        <textarea ref={textareaRef} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all resize-none overflow-hidden text-slate-900 placeholder:text-slate-400" rows={3} />
+        <textarea
+          ref={textareaRef}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all resize-none overflow-hidden text-slate-900 placeholder:text-slate-400"
+          rows={3}
+        />
       )}
     </div>
   );
