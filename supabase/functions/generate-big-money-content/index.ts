@@ -42,104 +42,66 @@ Deno.serve(async (req: Request) => {
       throw new Error("OpenAI API key not configured");
     }
 
-    const systemPrompt = `You are a world-class social media strategist and copywriter specializing in high-engagement Instagram content for life coaches, mentors, and thought leaders.
+    const systemPrompt = `You are a world-class Instagram content strategist specializing in high-engagement content for life coaches, mentors, and thought leaders.
 
-You will receive 5 inputs from the user:
-1. Niche
-2. Topic
-3. Inspirational Story
-4. Mentee's Story
-5. Extra Instructions / Ideas / Suggestions
+You will receive 5 inputs. DO NOT ask any questions. DO NOT skip any field. Generate the full output directly.
 
-DO NOT ask any questions. Generate the full output directly.
+WEEKLY STRUCTURE (fixed, do not change):
+- Monday: Inspirational (Mindset to Storytelling)
+- Tuesday: Value Post - Achievement Story (Problem-Solution)
+- Wednesday: Myth Busting
+- Thursday: Value Post - Viral Content
+- Friday: Social Proof
+- Saturday: Live Video / Expertise
+- Sunday: Fun / Viral
 
-CONTENT RULES — Follow this EXACT weekly structure:
-
-Monday — Inspirational (Mindset → Storytelling)
-Tuesday — Value Post – Achievement Story (Problem-Solution)
-Wednesday — Myth Busting
-Thursday — Value Post – Viral Content
-Friday — Social Proof
-Saturday — Live Video / Expertise
-Sunday — Fun / Viral
-
-DO NOT change the structure.
-
-CAPTION RULES (VERY IMPORTANT):
+CAPTION RULES:
 - Minimum 200 words per caption
 - Hook in first line
-- Short 1-line sentences
-- Story-driven flow
-- Use connectors: and…, but then…, what if…
+- Short 1-line sentences with story-driven flow
+- Use connectors: and..., but then..., what if...
 - No bullet points inside caption
-- Multi-line readable format with spacing between lines
-- Do NOT use "<br>" tags
-- Do NOT write captions as dense paragraph blocks
-- Each sentence on its own line with a blank line between groups of 2-3 sentences
+- Use \\n for line breaks between sentences
 - Add CTA at end
 - Minimal emojis
 
-PERSONALIZATION LOGIC:
-- Niche → content positioning
-- Topic → central theme
-- Inspirational story → Monday + Friday
-- Mentee story → Tuesday + Social Proof
-- Extra instructions → tone + angle
+PERSONALIZATION:
+- Niche = content positioning
+- Topic = central theme
+- Inspirational story = Monday + Friday
+- Mentee story = Tuesday + Social Proof
+- Extra instructions = tone + angle
 
-OUTPUT FORMAT (STRICT — TABLE STYLE):
+OUTPUT: Return ONLY valid JSON. No markdown. No code fences. No explanation text before or after. Just the raw JSON object.
 
-IMPORTANT FORMATTING RULES:
-- Output MUST be in table-style rows, NOT section blocks
-- Column headers appear ONLY ONCE at the top
-- Each day = ONE ROW separated by a dashed line
-- Do NOT repeat headings for each day
-- Do NOT use markdown table syntax
-- Do NOT use "|" pipe symbols
-- Keep spacing aligned and clean
+The JSON must match this exact structure:
 
-Start with this EXACT header row:
+{
+  "week_plan": [
+    {
+      "day": "Monday",
+      "theme": "Inspirational (Mindset → Storytelling)",
+      "post_type": "Reel",
+      "idea": "personalized content idea",
+      "caption": "200+ word story-format caption with \\n line breaks",
+      "hashtags": ["#tag1", "#tag2", "#tag3", "#tag4", "#tag5"],
+      "hook": "short punchy video text hook",
+      "notes": "growth strategy insight",
+      "time": "7:30 AM EST"
+    }
+  ],
+  "final_note": "Update strategies quarterly to match algorithm shifts."
+}
 
-Day & Theme    Post Type    Content Idea    Caption (200+ words + CTA)    Hashtags    Video Text Hook    Growth Stage Notes    Best Posting Time
+The week_plan array MUST contain exactly 7 objects, one for each day Monday through Sunday, in order.`;
 
-Then a separator line: ------------------------------------------------
+    const userPrompt = `Generate my 7-day Instagram content plan:
 
-Then for EACH DAY, output ONE ROW in this format:
-
-------------------------------------------------
-Monday — Inspirational (Mindset → Storytelling)
-Reel
-[Personalized content idea based on niche + stories]
-[Full 200+ word caption in multi-line readable story format with spacing between lines]
-[Relevant hashtags]
-[Short punchy hook for video text overlay]
-[Strategy insight for this day]
-[Best posting time with timezone note]
-------------------------------------------------
-Tuesday — Value Post – Achievement Story (Problem-Solution)
-Carousel
-[Content idea]
-[Caption]
-[Hashtags]
-[Hook]
-[Notes]
-[Time]
-------------------------------------------------
-
-Continue this SAME structure for ALL 7 DAYS (Monday through Sunday).
-
-FINAL LINE (MANDATORY):
-After the Sunday row, end with exactly:
-"Update strategies quarterly to match algorithm shifts."`;
-
-    const userPrompt = `Here are my inputs:
-
-1. Niche: ${niche}
-2. Topic: ${topic}
-3. My Inspirational Story: ${inspirationalStory}
-4. My Mentee's Story: ${menteeStory}
-5. Extra Instructions/Ideas/Suggestions: ${extraInstructions}
-
-Generate my complete 7-day Instagram content plan now.`;
+Niche: ${niche}
+Topic: ${topic}
+My Inspirational Story: ${inspirationalStory}
+My Mentee's Story: ${menteeStory}
+Extra Instructions: ${extraInstructions}`;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -154,7 +116,8 @@ Generate my complete 7-day Instagram content plan now.`;
           { role: "user", content: userPrompt },
         ],
         temperature: 0.8,
-        max_tokens: 6000,
+        max_tokens: 8000,
+        response_format: { type: "json_object" },
       }),
     });
 
@@ -165,9 +128,21 @@ Generate my complete 7-day Instagram content plan now.`;
     }
 
     const data = await response.json();
-    const content = data.choices[0].message.content;
+    const raw = data.choices[0].message.content;
 
-    return new Response(JSON.stringify({ content }), {
+    let parsed;
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      console.error("Failed to parse AI JSON:", raw);
+      throw new Error("AI returned invalid JSON");
+    }
+
+    if (!parsed.week_plan || !Array.isArray(parsed.week_plan)) {
+      throw new Error("AI response missing week_plan array");
+    }
+
+    return new Response(JSON.stringify(parsed), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

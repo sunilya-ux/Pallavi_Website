@@ -1,8 +1,25 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { CheckCircle, Loader, Copy, Check, RotateCcw, Sparkles, Download, X, DollarSign } from 'lucide-react';
 
 interface BigMoneyContentGeneratorProps {
   clientId: string;
+}
+
+interface DayEntry {
+  day: string;
+  theme: string;
+  post_type: string;
+  idea: string;
+  caption: string;
+  hashtags: string[];
+  hook: string;
+  notes: string;
+  time: string;
+}
+
+interface WeekPlan {
+  week_plan: DayEntry[];
+  final_note: string;
 }
 
 const PROGRESS_MESSAGES = [
@@ -17,6 +34,16 @@ const PROGRESS_MESSAGES = [
   "Almost done..."
 ];
 
+const ROW_COLORS: Record<string, { bg: string; badge: string }> = {
+  Monday:    { bg: 'bg-rose-50',    badge: 'bg-rose-100 text-rose-700' },
+  Tuesday:   { bg: 'bg-sky-50',     badge: 'bg-sky-100 text-sky-700' },
+  Wednesday: { bg: 'bg-amber-50',   badge: 'bg-amber-100 text-amber-700' },
+  Thursday:  { bg: 'bg-emerald-50', badge: 'bg-emerald-100 text-emerald-700' },
+  Friday:    { bg: 'bg-cyan-50',    badge: 'bg-cyan-100 text-cyan-700' },
+  Saturday:  { bg: 'bg-orange-50',  badge: 'bg-orange-100 text-orange-700' },
+  Sunday:    { bg: 'bg-teal-50',    badge: 'bg-teal-100 text-teal-700' },
+};
+
 export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGeneratorProps) {
   const [formData, setFormData] = useState({
     niche: '',
@@ -27,12 +54,14 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
   });
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState('');
-  const [aiContent, setAiContent] = useState('');
+  const [plan, setPlan] = useState<WeekPlan | null>(null);
+  const [rawText, setRawText] = useState('');
   const [copied, setCopied] = useState(false);
   const [showForm, setShowForm] = useState(true);
   const [progressMessageIndex, setProgressMessageIndex] = useState(0);
   const [exportingPDF, setExportingPDF] = useState(false);
   const [exportMessage, setExportMessage] = useState('');
+  const [expandedCaptions, setExpandedCaptions] = useState<Record<number, boolean>>({});
   const resultRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -41,16 +70,21 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
     if (generating) {
       setProgressMessageIndex(0);
       interval = setInterval(() => {
-        setProgressMessageIndex((prev) => {
-          if (prev < PROGRESS_MESSAGES.length - 1) return prev + 1;
-          return prev;
-        });
+        setProgressMessageIndex((prev) =>
+          prev < PROGRESS_MESSAGES.length - 1 ? prev + 1 : prev
+        );
       }, 4000);
     }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
+    return () => { if (interval) clearInterval(interval); };
   }, [generating]);
+
+  const planToText = (p: WeekPlan): string => {
+    const lines = p.week_plan.map((d) =>
+      `${d.day} - ${d.theme}\nPost Type: ${d.post_type}\nContent Idea: ${d.idea}\nCaption:\n${d.caption}\nHashtags: ${d.hashtags.join(' ')}\nVideo Hook: ${d.hook}\nNotes: ${d.notes}\nBest Time: ${d.time}`
+    );
+    return lines.join('\n\n------------------------------------------------\n\n') +
+      '\n\n' + (p.final_note || '');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,11 +96,12 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
     }
 
     setGenerating(true);
-    setAiContent('');
+    setPlan(null);
+    setRawText('');
+    setExpandedCaptions({});
 
     try {
       abortControllerRef.current = new AbortController();
-
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
@@ -95,8 +130,9 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
         throw new Error(errorData.error || 'Failed to generate content');
       }
 
-      const data = await response.json();
-      setAiContent(data.content);
+      const data: WeekPlan = await response.json();
+      setPlan(data);
+      setRawText(planToText(data));
       setShowForm(false);
 
       setTimeout(() => {
@@ -117,7 +153,7 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(aiContent);
+      await navigator.clipboard.writeText(rawText);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -127,58 +163,37 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
 
   const handleRegenerate = () => {
     setGenerating(true);
-    setAiContent('');
-
+    setPlan(null);
+    setRawText('');
     const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
     handleSubmit(fakeEvent);
   };
 
   const handleGenerateNew = () => {
-    setAiContent('');
+    setPlan(null);
+    setRawText('');
     setShowForm(true);
     setError('');
-    setFormData({
-      niche: '',
-      topic: '',
-      inspirationalStory: '',
-      menteeStory: '',
-      extraInstructions: '',
-    });
+    setExpandedCaptions({});
+    setFormData({ niche: '', topic: '', inspirationalStory: '', menteeStory: '', extraInstructions: '' });
   };
 
   const handleCancelGeneration = () => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
+    if (abortControllerRef.current) abortControllerRef.current.abort();
   };
 
   const handleDownloadPDF = async () => {
     setExportingPDF(true);
     setExportMessage('');
-
     try {
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-      const response = await fetch(
-        `${supabaseUrl}/functions/v1/generate-pdf`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${supabaseAnonKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            content: aiContent,
-            title: 'Big Money Content Plan - 7 Day Instagram Strategy',
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to generate PDF');
-      }
-
+      const response = await fetch(`${supabaseUrl}/functions/v1/generate-pdf`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${supabaseAnonKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: rawText, title: 'Big Money Content Plan - 7 Day Instagram Strategy' }),
+      });
+      if (!response.ok) throw new Error('Failed to generate PDF');
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -188,7 +203,6 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-
       setExportMessage('PDF downloaded successfully!');
       setTimeout(() => setExportMessage(''), 3000);
     } catch (error) {
@@ -204,8 +218,13 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const toggleCaption = (idx: number) => {
+    setExpandedCaptions((prev) => ({ ...prev, [idx]: !prev[idx] }));
+  };
+
   return (
     <div className="space-y-6">
+      {/* ---- FORM ---- */}
       {showForm && !generating && (
         <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8">
           <div className="flex items-center gap-3 mb-2">
@@ -227,50 +246,13 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
-            <FormField
-              label="1. What's your niche?"
-              placeholder="e.g., Life coaching, Fitness training, Business mentoring"
-              value={formData.niche}
-              onChange={(value) => handleChange('niche', value)}
-              type="short"
-            />
+            <FormField label="1. What's your niche?" placeholder="e.g., Life coaching, Fitness training, Business mentoring" value={formData.niche} onChange={(v) => handleChange('niche', v)} type="short" />
+            <FormField label="2. What topic are you talking about?" placeholder="e.g., Building confidence, Overcoming fear, Starting a side hustle" value={formData.topic} onChange={(v) => handleChange('topic', v)} type="short" />
+            <FormField label="3. Your inspirational story?" placeholder="Share your personal journey or transformation story. This will be used in Monday's inspirational post and Friday's social proof content." value={formData.inspirationalStory} onChange={(v) => handleChange('inspirationalStory', v)} type="long" />
+            <FormField label="4. Your mentee's story?" placeholder="Share a success story from someone you've mentored or coached. This will be woven into value posts and social proof content." value={formData.menteeStory} onChange={(v) => handleChange('menteeStory', v)} type="long" />
+            <FormField label="5. Any extra instructions?" placeholder="Add any specific angles, themes, upcoming events, offers, or tone preferences you want reflected in this week's content plan." value={formData.extraInstructions} onChange={(v) => handleChange('extraInstructions', v)} type="long" />
 
-            <FormField
-              label="2. What topic are you talking about?"
-              placeholder="e.g., Building confidence, Overcoming fear, Starting a side hustle"
-              value={formData.topic}
-              onChange={(value) => handleChange('topic', value)}
-              type="short"
-            />
-
-            <FormField
-              label="3. Your inspirational story?"
-              placeholder="Share your personal journey or transformation story. This will be used in Monday's inspirational post and Friday's social proof content."
-              value={formData.inspirationalStory}
-              onChange={(value) => handleChange('inspirationalStory', value)}
-              type="long"
-            />
-
-            <FormField
-              label="4. Your mentee's story?"
-              placeholder="Share a success story from someone you've mentored or coached. This will be woven into value posts and social proof content."
-              value={formData.menteeStory}
-              onChange={(value) => handleChange('menteeStory', value)}
-              type="long"
-            />
-
-            <FormField
-              label="5. Any more instructions, ideas, or suggestions for this week's content?"
-              placeholder="Add any specific angles, themes, upcoming events, offers, or tone preferences you want reflected in this week's content plan."
-              value={formData.extraInstructions}
-              onChange={(value) => handleChange('extraInstructions', value)}
-              type="long"
-            />
-
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white py-4 rounded-lg font-semibold hover:shadow-lg hover:shadow-amber-500/30 transition-all duration-300 flex items-center justify-center gap-2"
-            >
+            <button type="submit" className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white py-4 rounded-lg font-semibold hover:shadow-lg hover:shadow-amber-500/30 transition-all duration-300 flex items-center justify-center gap-2">
               <Sparkles className="w-5 h-5" />
               Generate Content Plan
             </button>
@@ -278,6 +260,7 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
         </div>
       )}
 
+      {/* ---- GENERATING ---- */}
       {generating && (
         <div className="max-w-3xl mx-auto bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl shadow-sm border border-amber-200 p-12 sm:p-16">
           <div className="max-w-lg mx-auto text-center space-y-8">
@@ -292,21 +275,16 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
                 {PROGRESS_MESSAGES[progressMessageIndex]}
               </h2>
               <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
-                {progressMessageIndex < PROGRESS_MESSAGES.length - 1
-                  ? "This usually takes about 30-60 seconds."
-                  : "Almost there -- thank you for waiting."}
+                {progressMessageIndex < PROGRESS_MESSAGES.length - 1 ? "This usually takes about 30-60 seconds." : "Almost there -- thank you for waiting."}
               </p>
             </div>
             <div className="pt-2">
               <div className="flex items-center justify-center gap-2 mb-6">
-                <div className="w-2 h-2 bg-amber-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                <div className="w-2 h-2 bg-amber-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                <div className="w-2 h-2 bg-amber-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                <div className="w-2 h-2 bg-amber-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                <div className="w-2 h-2 bg-amber-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                <div className="w-2 h-2 bg-amber-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
               </div>
-              <button
-                onClick={handleCancelGeneration}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 rounded-lg transition-all shadow-sm hover:shadow-md border border-slate-200 font-medium"
-              >
+              <button onClick={handleCancelGeneration} className="inline-flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 rounded-lg transition-all shadow-sm hover:shadow-md border border-slate-200 font-medium">
                 <X className="w-4 h-4" />
                 <span>Cancel Generation</span>
               </button>
@@ -315,388 +293,129 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
         </div>
       )}
 
-      {aiContent && !showForm && (
-        <div ref={resultRef} className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl shadow-lg border border-amber-200 p-6 sm:p-8">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="flex-shrink-0">
-              <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
-                <CheckCircle className="w-7 h-7 text-amber-600" />
+      {/* ---- RESULTS TABLE ---- */}
+      {plan && !showForm && (
+        <div ref={resultRef}>
+          <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl shadow-lg border border-amber-200 p-5 sm:p-6 mb-4">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-11 h-11 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <CheckCircle className="w-6 h-6 text-amber-600" />
+              </div>
+              <div>
+                <h3 className="text-xl sm:text-2xl font-bold text-slate-900">Your 7-Day Content Plan is Ready</h3>
+                <p className="text-sm text-slate-600 mt-0.5">Ready to copy and use for your Instagram strategy</p>
               </div>
             </div>
-            <div>
-              <h3 className="text-2xl sm:text-3xl font-bold text-slate-900">
-                Your 7-Day Content Plan is Ready
-              </h3>
-              <p className="text-sm text-slate-600 mt-1">
-                Ready to copy and use for your Instagram strategy
-              </p>
+
+            {/* Table */}
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden mb-5">
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse" style={{ minWidth: 1100 }}>
+                  <thead>
+                    <tr className="bg-slate-800">
+                      {['Day & Theme', 'Post Type', 'Content Idea', 'Caption', 'Hashtags', 'Video Hook', 'Notes', 'Time'].map((h) => (
+                        <th key={h} className="px-4 py-3.5 text-left text-[11px] font-semibold text-slate-300 uppercase tracking-wider border-r border-slate-700 last:border-r-0">
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {plan.week_plan.map((entry, idx) => {
+                      const colors = ROW_COLORS[entry.day] || { bg: 'bg-white', badge: 'bg-slate-100 text-slate-700' };
+                      const isExpanded = expandedCaptions[idx];
+                      const captionText = (entry.caption || '').replace(/\\n/g, '\n');
+                      const showToggle = captionText.length > 200;
+                      const displayCaption = showToggle && !isExpanded ? captionText.slice(0, 200) + '...' : captionText;
+
+                      return (
+                        <tr key={idx} className={`${colors.bg} border-b border-slate-200 last:border-b-0 hover:brightness-[0.97] transition-all`}>
+                          {/* Day & Theme */}
+                          <td className="px-4 py-4 align-top border-r border-slate-100 w-[150px] min-w-[150px]">
+                            <span className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-bold ${colors.badge} mb-1`}>
+                              {entry.day}
+                            </span>
+                            <p className="text-[11px] text-slate-500 leading-snug mt-0.5">{entry.theme}</p>
+                          </td>
+                          {/* Post Type */}
+                          <td className="px-4 py-4 align-top border-r border-slate-100 w-[90px] min-w-[90px]">
+                            <span className="inline-block px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-xs font-semibold">
+                              {entry.post_type}
+                            </span>
+                          </td>
+                          {/* Content Idea */}
+                          <td className="px-4 py-4 align-top border-r border-slate-100 w-[170px] min-w-[170px]">
+                            <p className="text-xs text-slate-700 leading-relaxed">{entry.idea}</p>
+                          </td>
+                          {/* Caption */}
+                          <td className="px-4 py-4 align-top border-r border-slate-100 w-[320px] min-w-[320px]">
+                            <div className="text-xs text-slate-700 leading-relaxed whitespace-pre-wrap">{displayCaption}</div>
+                            {showToggle && (
+                              <button onClick={() => toggleCaption(idx)} className="mt-1 text-[11px] font-medium text-amber-600 hover:text-amber-700 transition-colors">
+                                {isExpanded ? 'Show less' : 'Read full caption'}
+                              </button>
+                            )}
+                          </td>
+                          {/* Hashtags */}
+                          <td className="px-4 py-4 align-top border-r border-slate-100 w-[150px] min-w-[150px]">
+                            <div className="flex flex-wrap gap-1">
+                              {(entry.hashtags || []).map((tag, i) => (
+                                <span key={i} className={`inline-block text-[10px] px-1.5 py-0.5 rounded ${colors.badge} font-medium`}>
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          </td>
+                          {/* Video Hook */}
+                          <td className="px-4 py-4 align-top border-r border-slate-100 w-[140px] min-w-[140px]">
+                            <p className="text-xs text-slate-700 leading-relaxed font-medium">{entry.hook}</p>
+                          </td>
+                          {/* Notes */}
+                          <td className="px-4 py-4 align-top border-r border-slate-100 w-[150px] min-w-[150px]">
+                            <p className="text-[11px] text-slate-600 leading-relaxed">{entry.notes}</p>
+                          </td>
+                          {/* Time */}
+                          <td className="px-4 py-4 align-top w-[90px] min-w-[90px]">
+                            <span className="text-xs font-semibold text-slate-700">{entry.time}</span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
 
-          <ContentTable content={aiContent} />
+            {/* Final note */}
+            {plan.final_note && (
+              <div className="text-center py-2.5 px-5 bg-slate-100 rounded-lg border border-slate-200 mb-5">
+                <p className="text-sm font-medium text-slate-600 italic">{plan.final_note}</p>
+              </div>
+            )}
 
-          <div className="space-y-4">
-            <div className="flex flex-wrap gap-3">
-              <button
-                onClick={handleCopy}
-                className="flex items-center gap-2 px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-all shadow-sm hover:shadow-md font-medium"
-              >
-                {copied ? (
-                  <>
-                    <Check className="w-5 h-5" />
-                    <span>Copied!</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-5 h-5" />
-                    <span>Copy Content</span>
-                  </>
-                )}
-              </button>
-              <button
-                onClick={handleRegenerate}
-                disabled={generating}
-                className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 rounded-lg transition-all shadow-sm hover:shadow-md border border-slate-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <RotateCcw className="w-5 h-5" />
-                <span>Regenerate</span>
-              </button>
-              <button
-                onClick={handleGenerateNew}
-                className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 rounded-lg transition-all shadow-sm hover:shadow-md border border-slate-200 font-medium"
-              >
-                <Sparkles className="w-5 h-5" />
-                <span>Generate New</span>
-              </button>
-            </div>
-
-            <div className="pt-2 border-t border-amber-200">
-              <p className="text-sm text-slate-600 mb-3">Export your content plan:</p>
-
+            {/* Actions */}
+            <div className="space-y-4">
+              <div className="flex flex-wrap gap-3">
+                <button onClick={handleCopy} className="flex items-center gap-2 px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-all shadow-sm hover:shadow-md font-medium">
+                  {copied ? <><Check className="w-5 h-5" /><span>Copied!</span></> : <><Copy className="w-5 h-5" /><span>Copy</span></>}
+                </button>
+                <button onClick={handleDownloadPDF} disabled={exportingPDF} className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 rounded-lg transition-all shadow-sm hover:shadow-md border border-slate-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+                  {exportingPDF ? <><Loader className="w-5 h-5 animate-spin" /><span>Preparing PDF...</span></> : <><Download className="w-5 h-5" /><span>Download PDF</span></>}
+                </button>
+                <button onClick={handleRegenerate} disabled={generating} className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 rounded-lg transition-all shadow-sm hover:shadow-md border border-slate-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+                  <RotateCcw className="w-5 h-5" /><span>Regenerate</span>
+                </button>
+                <button onClick={handleGenerateNew} className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 rounded-lg transition-all shadow-sm hover:shadow-md border border-slate-200 font-medium">
+                  <Sparkles className="w-5 h-5" /><span>Generate New</span>
+                </button>
+              </div>
               {exportMessage && (
-                <div className={`mb-3 p-3 rounded-lg text-sm ${
-                  exportMessage.includes('success') || exportMessage.includes('exported')
-                    ? 'bg-amber-50 text-amber-800 border border-amber-200'
-                    : exportMessage.includes('Failed') || exportMessage.includes('error')
-                    ? 'bg-red-50 text-red-800 border border-red-200'
-                    : 'bg-blue-50 text-blue-800 border border-blue-200'
-                }`}>
+                <div className={`p-3 rounded-lg text-sm ${exportMessage.includes('success') ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-red-50 text-red-800 border border-red-200'}`}>
                   {exportMessage}
                 </div>
               )}
-
-              <div className="flex flex-wrap gap-3">
-                <button
-                  onClick={handleDownloadPDF}
-                  disabled={exportingPDF}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-all shadow-sm font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {exportingPDF ? (
-                    <>
-                      <Loader className="w-4 h-4 animate-spin" />
-                      <span>Preparing PDF...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Download className="w-4 h-4" />
-                      <span>Download as PDF</span>
-                    </>
-                  )}
-                </button>
-              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-const DAY_STRIPE_COLORS: Record<string, string> = {
-  monday: 'bg-rose-50',
-  tuesday: 'bg-sky-50',
-  wednesday: 'bg-amber-50',
-  thursday: 'bg-emerald-50',
-  friday: 'bg-cyan-50',
-  saturday: 'bg-orange-50',
-  sunday: 'bg-teal-50',
-};
-
-const DAY_BADGE_COLORS: Record<string, string> = {
-  monday: 'bg-rose-100 text-rose-700',
-  tuesday: 'bg-sky-100 text-sky-700',
-  wednesday: 'bg-amber-100 text-amber-700',
-  thursday: 'bg-emerald-100 text-emerald-700',
-  friday: 'bg-cyan-100 text-cyan-700',
-  saturday: 'bg-orange-100 text-orange-700',
-  sunday: 'bg-teal-100 text-teal-700',
-};
-
-interface DayRow {
-  dayTheme: string;
-  postType: string;
-  contentIdea: string;
-  caption: string;
-  hashtags: string;
-  videoHook: string;
-  growthNotes: string;
-  bestTime: string;
-}
-
-function parseDayRows(content: string): { rows: DayRow[]; footer: string } {
-  const dayPatterns = [
-    /monday/i, /tuesday/i, /wednesday/i, /thursday/i,
-    /friday/i, /saturday/i, /sunday/i,
-  ];
-
-  const lines = content.split('\n');
-  const dayStartIndices: number[] = [];
-
-  for (let i = 0; i < lines.length; i++) {
-    const trimmed = lines[i].trim();
-    if (trimmed.startsWith('---') || trimmed.startsWith('**Day') || trimmed === '') continue;
-    for (const pattern of dayPatterns) {
-      if (pattern.test(trimmed) && (trimmed.includes('—') || trimmed.includes('-'))) {
-        const lowerTrimmed = trimmed.toLowerCase();
-        if (dayPatterns.some(p => lowerTrimmed.match(new RegExp('^\\**\\s*' + p.source)))) {
-          dayStartIndices.push(i);
-          break;
-        }
-      }
-    }
-  }
-
-  if (dayStartIndices.length === 0) {
-    return { rows: [], footer: '' };
-  }
-
-  const rows: DayRow[] = [];
-  let footer = '';
-
-  for (let d = 0; d < dayStartIndices.length; d++) {
-    const startIdx = dayStartIndices[d];
-    const endIdx = d + 1 < dayStartIndices.length
-      ? dayStartIndices[d + 1]
-      : lines.length;
-
-    const dayLines = lines.slice(startIdx, endIdx)
-      .filter(l => !l.trim().startsWith('---'))
-      .filter(l => l.trim() !== '');
-
-    if (dayLines.length === 0) continue;
-
-    const dayTheme = dayLines[0].trim().replace(/^\*+|\*+$/g, '');
-    const remaining = dayLines.slice(1);
-
-    const fieldLabels = [
-      { keys: ['post type'], field: 'postType' },
-      { keys: ['content idea'], field: 'contentIdea' },
-      { keys: ['caption'], field: 'caption' },
-      { keys: ['hashtag'], field: 'hashtags' },
-      { keys: ['video text hook', 'video hook', 'hook'], field: 'videoHook' },
-      { keys: ['growth stage', 'growth notes'], field: 'growthNotes' },
-      { keys: ['best posting time', 'posting time'], field: 'bestTime' },
-    ];
-
-    const sections: Record<string, string[]> = {};
-    let currentField = '';
-
-    for (const line of remaining) {
-      const lower = line.trim().toLowerCase().replace(/^\*+|\*+$/g, '');
-      let matched = false;
-
-      for (const fl of fieldLabels) {
-        for (const key of fl.keys) {
-          if (lower.startsWith(key) || lower.includes(key + ':')) {
-            currentField = fl.field;
-            const colonIdx = line.indexOf(':');
-            const afterColon = colonIdx >= 0 ? line.slice(colonIdx + 1).trim() : '';
-            if (afterColon) {
-              sections[currentField] = [afterColon];
-            } else {
-              sections[currentField] = [];
-            }
-            matched = true;
-            break;
-          }
-        }
-        if (matched) break;
-      }
-
-      if (!matched && currentField) {
-        if (!sections[currentField]) sections[currentField] = [];
-        sections[currentField].push(line.trim());
-      }
-    }
-
-    const getField = (field: string) => (sections[field] || []).join('\n').trim();
-
-    let postType = getField('postType');
-    if (!postType && remaining.length > 0) {
-      const first = remaining[0].trim().toLowerCase();
-      if (['reel', 'carousel', 'static', 'live', 'story'].some(t => first.includes(t))) {
-        postType = remaining[0].trim();
-      }
-    }
-
-    rows.push({
-      dayTheme,
-      postType: postType || '',
-      contentIdea: getField('contentIdea'),
-      caption: getField('caption'),
-      hashtags: getField('hashtags'),
-      videoHook: getField('videoHook'),
-      growthNotes: getField('growthNotes'),
-      bestTime: getField('bestTime'),
-    });
-  }
-
-  const afterLastDay = lines.slice(dayStartIndices[dayStartIndices.length - 1]).join('\n');
-  const updateMatch = afterLastDay.match(/update strategies quarterly[^\n]*/i);
-  if (updateMatch) {
-    footer = updateMatch[0].trim();
-  }
-
-  return { rows, footer };
-}
-
-function getDayKey(dayTheme: string): string {
-  const lower = dayTheme.toLowerCase();
-  for (const day of Object.keys(DAY_STRIPE_COLORS)) {
-    if (lower.startsWith(day)) return day;
-  }
-  return 'monday';
-}
-
-const COLUMNS = [
-  { label: 'Day & Theme', width: 'w-[160px] min-w-[160px]' },
-  { label: 'Post Type', width: 'w-[90px] min-w-[90px]' },
-  { label: 'Content Idea', width: 'w-[180px] min-w-[180px]' },
-  { label: 'Caption', width: 'w-[340px] min-w-[340px]' },
-  { label: 'Hashtags', width: 'w-[160px] min-w-[160px]' },
-  { label: 'Video Hook', width: 'w-[140px] min-w-[140px]' },
-  { label: 'Notes', width: 'w-[160px] min-w-[160px]' },
-  { label: 'Time', width: 'w-[100px] min-w-[100px]' },
-];
-
-function ContentTable({ content }: { content: string }) {
-  const { rows, footer } = useMemo(() => parseDayRows(content), [content]);
-  const [expandedCaptions, setExpandedCaptions] = useState<Record<number, boolean>>({});
-
-  if (rows.length === 0) {
-    return (
-      <div className="bg-white rounded-lg p-6 sm:p-8 mb-6 shadow-sm">
-        <div className="whitespace-pre-wrap text-slate-700 leading-relaxed text-base">
-          {content}
-        </div>
-      </div>
-    );
-  }
-
-  const toggleCaption = (idx: number) => {
-    setExpandedCaptions(prev => ({ ...prev, [idx]: !prev[idx] }));
-  };
-
-  return (
-    <div className="mb-6 space-y-3">
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-slate-800">
-                {COLUMNS.map((col) => (
-                  <th
-                    key={col.label}
-                    className={`${col.width} px-4 py-3 text-left text-xs font-semibold text-slate-200 uppercase tracking-wider border-r border-slate-700 last:border-r-0`}
-                  >
-                    {col.label}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row, idx) => {
-                const dayKey = getDayKey(row.dayTheme);
-                const stripe = DAY_STRIPE_COLORS[dayKey] || 'bg-white';
-                const badge = DAY_BADGE_COLORS[dayKey] || 'bg-slate-100 text-slate-700';
-                const isExpanded = expandedCaptions[idx];
-                const captionPreview = row.caption.length > 180 && !isExpanded
-                  ? row.caption.slice(0, 180) + '...'
-                  : row.caption;
-
-                const dayName = row.dayTheme.split(/[—\-]/)[0].trim();
-                const theme = row.dayTheme.includes('—')
-                  ? row.dayTheme.split('—').slice(1).join('—').trim()
-                  : row.dayTheme.includes(' - ')
-                    ? row.dayTheme.split(' - ').slice(1).join(' - ').trim()
-                    : '';
-
-                return (
-                  <tr
-                    key={idx}
-                    className={`${stripe} border-b border-slate-200 last:border-b-0 hover:brightness-[0.97] transition-all`}
-                  >
-                    <td className={`${COLUMNS[0].width} px-4 py-4 align-top border-r border-slate-200`}>
-                      <span className={`inline-block px-2.5 py-1 rounded-md text-xs font-bold ${badge} mb-1.5`}>
-                        {dayName}
-                      </span>
-                      {theme && (
-                        <p className="text-xs text-slate-500 leading-snug">{theme}</p>
-                      )}
-                    </td>
-                    <td className={`${COLUMNS[1].width} px-4 py-4 align-top border-r border-slate-200`}>
-                      <span className="inline-block px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-xs font-semibold">
-                        {row.postType}
-                      </span>
-                    </td>
-                    <td className={`${COLUMNS[2].width} px-4 py-4 align-top border-r border-slate-200`}>
-                      <p className="text-sm text-slate-700 leading-relaxed">{row.contentIdea}</p>
-                    </td>
-                    <td className={`${COLUMNS[3].width} px-4 py-4 align-top border-r border-slate-200`}>
-                      <div className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">
-                        {captionPreview}
-                      </div>
-                      {row.caption.length > 180 && (
-                        <button
-                          onClick={() => toggleCaption(idx)}
-                          className="mt-1.5 text-xs font-medium text-amber-600 hover:text-amber-700 transition-colors"
-                        >
-                          {isExpanded ? 'Show less' : 'Read full caption'}
-                        </button>
-                      )}
-                    </td>
-                    <td className={`${COLUMNS[4].width} px-4 py-4 align-top border-r border-slate-200`}>
-                      <div className="flex flex-wrap gap-1">
-                        {row.hashtags.split(/\s+/).filter(t => t.startsWith('#')).map((tag, i) => (
-                          <span key={i} className={`inline-block text-[10px] px-1.5 py-0.5 rounded ${badge} font-medium`}>
-                            {tag}
-                          </span>
-                        ))}
-                        {!row.hashtags.includes('#') && (
-                          <span className="text-xs text-slate-600">{row.hashtags}</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className={`${COLUMNS[5].width} px-4 py-4 align-top border-r border-slate-200`}>
-                      <p className="text-sm text-slate-700 leading-relaxed font-medium">{row.videoHook}</p>
-                    </td>
-                    <td className={`${COLUMNS[6].width} px-4 py-4 align-top border-r border-slate-200`}>
-                      <p className="text-xs text-slate-600 leading-relaxed">{row.growthNotes}</p>
-                    </td>
-                    <td className={`${COLUMNS[7].width} px-4 py-4 align-top`}>
-                      <span className="text-xs font-semibold text-slate-700">{row.bestTime}</span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {footer && (
-        <div className="text-center py-3 px-6 bg-slate-100 rounded-lg border border-slate-200">
-          <p className="text-sm font-medium text-slate-600 italic">{footer}</p>
         </div>
       )}
     </div>
@@ -724,26 +443,11 @@ function FormField({ label, placeholder, value, onChange, type }: FormFieldProps
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm sm:text-base font-semibold text-slate-900">
-        {label}
-      </label>
+      <label className="block text-sm sm:text-base font-semibold text-slate-900">{label}</label>
       {type === 'short' ? (
-        <input
-          type="text"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all text-slate-900 placeholder:text-slate-400"
-        />
+        <input type="text" value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all text-slate-900 placeholder:text-slate-400" />
       ) : (
-        <textarea
-          ref={textareaRef}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all resize-none overflow-hidden text-slate-900 placeholder:text-slate-400"
-          rows={3}
-        />
+        <textarea ref={textareaRef} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all resize-none overflow-hidden text-slate-900 placeholder:text-slate-400" rows={3} />
       )}
     </div>
   );
