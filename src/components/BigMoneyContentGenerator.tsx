@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { CheckCircle, Loader, Copy, Check, RotateCcw, Sparkles, Download, X, DollarSign } from 'lucide-react';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { CheckCircle, Loader, Copy, Check, RotateCcw, Sparkles, Download, X, DollarSign, Calendar, Type, Lightbulb, FileText, Hash, Zap, TrendingUp, Clock } from 'lucide-react';
 
 interface BigMoneyContentGeneratorProps {
   clientId: string;
@@ -333,13 +333,7 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
             </div>
           </div>
 
-          <div className="bg-white rounded-lg p-6 sm:p-8 mb-6 shadow-sm">
-            <div className="prose prose-slate max-w-none">
-              <div className="whitespace-pre-wrap text-slate-700 leading-relaxed text-base">
-                {aiContent}
-              </div>
-            </div>
-          </div>
+          <ContentTable content={aiContent} />
 
           <div className="space-y-4">
             <div className="flex flex-wrap gap-3">
@@ -412,6 +406,254 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
               </div>
             </div>
           </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const DAY_COLORS: Record<string, { bg: string; border: string; badge: string; text: string }> = {
+  monday: { bg: 'bg-rose-50', border: 'border-rose-200', badge: 'bg-rose-100 text-rose-700', text: 'text-rose-700' },
+  tuesday: { bg: 'bg-sky-50', border: 'border-sky-200', badge: 'bg-sky-100 text-sky-700', text: 'text-sky-700' },
+  wednesday: { bg: 'bg-amber-50', border: 'border-amber-200', badge: 'bg-amber-100 text-amber-700', text: 'text-amber-700' },
+  thursday: { bg: 'bg-emerald-50', border: 'border-emerald-200', badge: 'bg-emerald-100 text-emerald-700', text: 'text-emerald-700' },
+  friday: { bg: 'bg-cyan-50', border: 'border-cyan-200', badge: 'bg-cyan-100 text-cyan-700', text: 'text-cyan-700' },
+  saturday: { bg: 'bg-orange-50', border: 'border-orange-200', badge: 'bg-orange-100 text-orange-700', text: 'text-orange-700' },
+  sunday: { bg: 'bg-teal-50', border: 'border-teal-200', badge: 'bg-teal-100 text-teal-700', text: 'text-teal-700' },
+};
+
+const FIELD_META = [
+  { key: 'postType', label: 'Post Type', icon: Type },
+  { key: 'contentIdea', label: 'Content Idea', icon: Lightbulb },
+  { key: 'caption', label: 'Caption', icon: FileText },
+  { key: 'hashtags', label: 'Hashtags', icon: Hash },
+  { key: 'videoHook', label: 'Video Text Hook', icon: Zap },
+  { key: 'growthNotes', label: 'Growth Stage Notes', icon: TrendingUp },
+  { key: 'bestTime', label: 'Best Posting Time', icon: Clock },
+];
+
+interface DayRow {
+  dayTheme: string;
+  postType: string;
+  contentIdea: string;
+  caption: string;
+  hashtags: string;
+  videoHook: string;
+  growthNotes: string;
+  bestTime: string;
+}
+
+function parseDayRows(content: string): { rows: DayRow[]; footer: string } {
+  const dayPatterns = [
+    /monday/i, /tuesday/i, /wednesday/i, /thursday/i,
+    /friday/i, /saturday/i, /sunday/i,
+  ];
+
+  const lines = content.split('\n');
+  const dayStartIndices: number[] = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i].trim();
+    if (trimmed.startsWith('---')) continue;
+    for (const pattern of dayPatterns) {
+      if (pattern.test(trimmed) && trimmed.includes('—')) {
+        dayStartIndices.push(i);
+        break;
+      }
+    }
+  }
+
+  if (dayStartIndices.length === 0) {
+    return { rows: [], footer: '' };
+  }
+
+  const rows: DayRow[] = [];
+  let footer = '';
+
+  for (let d = 0; d < dayStartIndices.length; d++) {
+    const startIdx = dayStartIndices[d];
+    const endIdx = d + 1 < dayStartIndices.length
+      ? dayStartIndices[d + 1]
+      : lines.length;
+
+    const dayLines = lines.slice(startIdx, endIdx)
+      .filter(l => !l.trim().startsWith('---'))
+      .filter(l => l.trim() !== '');
+
+    if (dayLines.length === 0) continue;
+
+    const dayTheme = dayLines[0].trim();
+    const remaining = dayLines.slice(1);
+
+    const fieldLabels = [
+      { keys: ['post type'], field: 'postType' },
+      { keys: ['content idea'], field: 'contentIdea' },
+      { keys: ['caption'], field: 'caption' },
+      { keys: ['hashtag'], field: 'hashtags' },
+      { keys: ['video text hook', 'hook'], field: 'videoHook' },
+      { keys: ['growth stage', 'growth notes'], field: 'growthNotes' },
+      { keys: ['best posting time', 'posting time'], field: 'bestTime' },
+    ];
+
+    const sections: Record<string, string[]> = {};
+    let currentField = '';
+
+    for (const line of remaining) {
+      const lower = line.trim().toLowerCase();
+      let matched = false;
+
+      for (const fl of fieldLabels) {
+        for (const key of fl.keys) {
+          if (lower.startsWith(key) || lower.includes(key + ':')) {
+            currentField = fl.field;
+            const colonIdx = line.indexOf(':');
+            const afterColon = colonIdx >= 0 ? line.slice(colonIdx + 1).trim() : '';
+            if (afterColon) {
+              sections[currentField] = [afterColon];
+            } else {
+              sections[currentField] = [];
+            }
+            matched = true;
+            break;
+          }
+        }
+        if (matched) break;
+      }
+
+      if (!matched && currentField) {
+        if (!sections[currentField]) sections[currentField] = [];
+        sections[currentField].push(line.trim());
+      }
+    }
+
+    const getField = (field: string) => (sections[field] || []).join('\n').trim();
+
+    let postType = getField('postType');
+    if (!postType && remaining.length > 0) {
+      const first = remaining[0].trim().toLowerCase();
+      if (['reel', 'carousel', 'static', 'live', 'story'].some(t => first.includes(t))) {
+        postType = remaining[0].trim();
+      }
+    }
+
+    rows.push({
+      dayTheme,
+      postType: postType || '',
+      contentIdea: getField('contentIdea'),
+      caption: getField('caption'),
+      hashtags: getField('hashtags'),
+      videoHook: getField('videoHook'),
+      growthNotes: getField('growthNotes'),
+      bestTime: getField('bestTime'),
+    });
+  }
+
+  const lastDayEnd = dayStartIndices.length > 0
+    ? dayStartIndices[dayStartIndices.length - 1]
+    : lines.length;
+  const afterLastDay = lines.slice(lastDayEnd).join('\n');
+  const updateMatch = afterLastDay.match(/update strategies quarterly[^\n]*/i);
+  if (updateMatch) {
+    footer = updateMatch[0].trim();
+  }
+
+  return { rows, footer };
+}
+
+function ContentTable({ content }: { content: string }) {
+  const { rows, footer } = useMemo(() => parseDayRows(content), [content]);
+
+  if (rows.length === 0) {
+    return (
+      <div className="bg-white rounded-lg p-6 sm:p-8 mb-6 shadow-sm">
+        <div className="whitespace-pre-wrap text-slate-700 leading-relaxed text-base">
+          {content}
+        </div>
+      </div>
+    );
+  }
+
+  const getDayKey = (dayTheme: string) => {
+    const lower = dayTheme.toLowerCase();
+    for (const day of Object.keys(DAY_COLORS)) {
+      if (lower.startsWith(day)) return day;
+    }
+    return 'monday';
+  };
+
+  return (
+    <div className="space-y-4 mb-6">
+      <div className="hidden sm:grid grid-cols-8 gap-2 px-4 py-3 bg-slate-800 rounded-lg text-xs font-semibold text-slate-200 uppercase tracking-wider">
+        <div className="col-span-1 flex items-center gap-1"><Calendar className="w-3 h-3" /> Day</div>
+        <div className="col-span-1 flex items-center gap-1"><Type className="w-3 h-3" /> Type</div>
+        <div className="col-span-1 flex items-center gap-1"><Lightbulb className="w-3 h-3" /> Idea</div>
+        <div className="col-span-2 flex items-center gap-1"><FileText className="w-3 h-3" /> Caption</div>
+        <div className="col-span-1 flex items-center gap-1"><Hash className="w-3 h-3" /> Tags</div>
+        <div className="col-span-1 flex items-center gap-1"><Zap className="w-3 h-3" /> Hook</div>
+        <div className="col-span-1 flex items-center gap-1"><Clock className="w-3 h-3" /> Time</div>
+      </div>
+
+      {rows.map((row, idx) => {
+        const dayKey = getDayKey(row.dayTheme);
+        const colors = DAY_COLORS[dayKey] || DAY_COLORS.monday;
+
+        return (
+          <div
+            key={idx}
+            className={`${colors.bg} ${colors.border} border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200`}
+          >
+            <div className={`px-4 py-3 ${colors.border} border-b flex items-center gap-3`}>
+              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${colors.badge}`}>
+                <Calendar className="w-3.5 h-3.5" />
+                {row.dayTheme.split('—')[0].trim()}
+              </span>
+              <span className="text-sm font-medium text-slate-700">
+                {row.dayTheme.includes('—') ? row.dayTheme.split('—').slice(1).join('—').trim() : ''}
+              </span>
+            </div>
+
+            <div className="p-4 space-y-3">
+              {FIELD_META.map(({ key, label, icon: Icon }) => {
+                const value = row[key as keyof DayRow];
+                if (!value || key === 'dayTheme') return null;
+
+                return (
+                  <div key={key} className="flex gap-3">
+                    <div className="flex-shrink-0 w-32 sm:w-36">
+                      <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                        <Icon className="w-3.5 h-3.5" />
+                        {label}
+                      </span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      {key === 'caption' ? (
+                        <div className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">
+                          {value}
+                        </div>
+                      ) : key === 'hashtags' ? (
+                        <div className="flex flex-wrap gap-1.5">
+                          {value.split(/\s+/).filter(t => t.startsWith('#')).map((tag, i) => (
+                            <span key={i} className={`inline-block text-xs px-2 py-0.5 rounded-full ${colors.badge} font-medium`}>
+                              {tag}
+                            </span>
+                          ))}
+                          {!value.includes('#') && <span className="text-sm text-slate-700">{value}</span>}
+                        </div>
+                      ) : (
+                        <span className="text-sm text-slate-700">{value}</span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+
+      {footer && (
+        <div className="text-center py-4 px-6 bg-slate-100 rounded-lg border border-slate-200">
+          <p className="text-sm font-medium text-slate-600 italic">{footer}</p>
         </div>
       )}
     </div>

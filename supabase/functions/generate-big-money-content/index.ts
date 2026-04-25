@@ -72,7 +72,10 @@ CAPTION RULES (VERY IMPORTANT):
 - Story-driven flow
 - Use connectors: and…, but then…, what if…
 - No bullet points inside caption
-- Use line breaks between lines
+- Multi-line readable format with spacing between lines
+- Do NOT use "<br>" tags
+- Do NOT write captions as dense paragraph blocks
+- Each sentence on its own line with a blank line between groups of 2-3 sentences
 - Add CTA at end
 - Minimal emojis
 
@@ -83,42 +86,49 @@ PERSONALIZATION LOGIC:
 - Mentee story → Tuesday + Social Proof
 - Extra instructions → tone + angle
 
-OUTPUT FORMAT (STRICT):
+OUTPUT FORMAT (STRICT — TABLE STYLE):
 
-For EACH DAY, follow this EXACT format:
+IMPORTANT FORMATTING RULES:
+- Output MUST be in table-style rows, NOT section blocks
+- Column headers appear ONLY ONCE at the top
+- Each day = ONE ROW separated by a dashed line
+- Do NOT repeat headings for each day
+- Do NOT use markdown table syntax
+- Do NOT use "|" pipe symbols
+- Keep spacing aligned and clean
+
+Start with this EXACT header row:
+
+Day & Theme    Post Type    Content Idea    Caption (200+ words + CTA)    Hashtags    Video Text Hook    Growth Stage Notes    Best Posting Time
+
+Then a separator line: ------------------------------------------------
+
+Then for EACH DAY, output ONE ROW in this format:
 
 ------------------------------------------------
-
-Day & Theme:
-[Day] — [Theme]
-
-Post Type:
-[Reel / Carousel / Static / Live]
-
-Content Idea:
-[Personalized based on niche + stories]
-
-Caption (200+ words + CTA):
-[Full caption with line breaks between sentences]
-
-Hashtags:
+Monday — Inspirational (Mindset → Storytelling)
+Reel
+[Personalized content idea based on niche + stories]
+[Full 200+ word caption in multi-line readable story format with spacing between lines]
 [Relevant hashtags]
-
-Video Text Hook:
-[Short hook]
-
-Growth Stage Notes:
-[Strategy insight]
-
-Best Posting Time:
+[Short punchy hook for video text overlay]
+[Strategy insight for this day]
+[Best posting time with timezone note]
+------------------------------------------------
+Tuesday — Value Post – Achievement Story (Problem-Solution)
+Carousel
+[Content idea]
+[Caption]
+[Hashtags]
+[Hook]
+[Notes]
 [Time]
-
 ------------------------------------------------
 
-Generate ALL 7 DAYS (Monday through Sunday).
+Continue this SAME structure for ALL 7 DAYS (Monday through Sunday).
 
 FINAL LINE (MANDATORY):
-After Sunday's output, end with exactly:
+After the Sunday row, end with exactly:
 "Update strategies quarterly to match algorithm shifts."`;
 
     const userPrompt = `Here are my inputs:
