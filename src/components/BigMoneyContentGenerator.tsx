@@ -269,10 +269,16 @@ export default function BigMoneyContentGenerator({ clientId }: BigMoneyContentGe
     try {
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      const { entries: pdfEntries, footer: pdfFooter } = parseSections(aiContent);
       const response = await fetch(`${supabaseUrl}/functions/v1/generate-pdf`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${supabaseAnonKey}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: aiContent, title: 'Big Money Content Plan - 7 Day Instagram Strategy' }),
+        body: JSON.stringify({
+          content: aiContent,
+          title: 'Big Money Content Plan - 7 Day Instagram Strategy',
+          structuredDays: pdfEntries,
+          finalNote: pdfFooter,
+        }),
       });
       if (!response.ok) throw new Error('Failed to generate PDF');
       const blob = await response.blob();

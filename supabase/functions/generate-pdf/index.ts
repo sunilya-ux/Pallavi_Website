@@ -4,132 +4,343 @@ import { jsPDF } from "npm:jspdf@2.5.1";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
+  "Access-Control-Allow-Headers":
+    "Content-Type, Authorization, X-Client-Info, Apikey",
 };
+
+interface DayEntry {
+  day: string;
+  theme: string;
+  postType: string;
+  idea: string;
+  caption: string;
+  hashtags: string;
+  hook: string;
+  notes: string;
+  time: string;
+}
 
 interface RequestBody {
   content: string;
   title?: string;
+  structuredDays?: DayEntry[];
+  finalNote?: string;
 }
+
+const DAY_COLORS: Record<string, { r: number; g: number; b: number }> = {
+  monday:    { r: 254, g: 242, b: 242 },
+  tuesday:   { r: 240, g: 249, b: 255 },
+  wednesday: { r: 255, g: 251, b: 235 },
+  thursday:  { r: 236, g: 253, b: 245 },
+  friday:    { r: 236, g: 254, b: 255 },
+  saturday:  { r: 255, g: 247, b: 237 },
+  sunday:    { r: 240, g: 253, b: 250 },
+};
+
+const DAY_ACCENT: Record<string, { r: number; g: number; b: number }> = {
+  monday:    { r: 190, g: 18,  b: 60  },
+  tuesday:   { r: 2,   g: 132, b: 199 },
+  wednesday: { r: 180, g: 83,  b: 9   },
+  thursday:  { r: 5,   g: 150, b: 105 },
+  friday:    { r: 8,   g: 145, b: 178 },
+  saturday:  { r: 194, g: 65,  b: 12  },
+  sunday:    { r: 13,  g: 148, b: 136 },
+};
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
-    return new Response(null, {
-      status: 200,
-      headers: corsHeaders,
-    });
+    return new Response(null, { status: 200, headers: corsHeaders });
   }
 
   try {
     const body: RequestBody = await req.json();
-    const { content, title = "Passion Coaching Content" } = body;
+    const {
+      content,
+      title = "Passion Coaching Content",
+      structuredDays,
+      finalNote,
+    } = body;
 
-    if (!content) {
+    if (!content && (!structuredDays || structuredDays.length === 0)) {
       throw new Error("Content is required");
     }
 
-    const doc = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: "a4",
-    });
-
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const margins = { top: 20, bottom: 20, left: 20, right: 20 };
-    const maxWidth = pageWidth - margins.left - margins.right;
-    let currentY = margins.top;
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(18);
-    doc.text(title, margins.left, currentY);
-    currentY += 12;
-
-    doc.setLineWidth(0.5);
-    doc.line(margins.left, currentY, pageWidth - margins.right, currentY);
-    currentY += 8;
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(11);
-
-    const lines = content.split('\n');
-    
-    for (let i = 0; i < lines.length; i++) {
-      let line = lines[i];
-      
-      if (line.trim() === '') {
-        currentY += 4;
-        continue;
-      }
-
-      const isHeading = /^#+\s/.test(line) || /^\[\d+\]/.test(line) || line.toUpperCase() === line && line.length > 0 && line.length < 60;
-      
-      if (isHeading) {
-        if (currentY > margins.top + 20) {
-          currentY += 5;
-        }
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(13);
-        line = line.replace(/^#+\s*/, '').replace(/^\[\d+\]\s*/, '');
-      } else {
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(11);
-      }
-
-      const isBullet = /^[-•*]\s/.test(line);
-      if (isBullet) {
-        line = line.replace(/^[-•*]\s*/, '');
-      }
-
-      const wrappedLines = doc.splitTextToSize(line, maxWidth - (isBullet ? 5 : 0));
-      
-      for (let j = 0; j < wrappedLines.length; j++) {
-        if (currentY + 10 > pageHeight - margins.bottom) {
-          doc.addPage();
-          currentY = margins.top;
-        }
-
-        if (isBullet && j === 0) {
-          doc.text('•', margins.left, currentY);
-          doc.text(wrappedLines[j], margins.left + 5, currentY);
-        } else if (isBullet) {
-          doc.text(wrappedLines[j], margins.left + 5, currentY);
-        } else {
-          doc.text(wrappedLines[j], margins.left, currentY);
-        }
-        
-        currentY += isHeading ? 7 : 6;
-      }
-
-      if (isHeading) {
-        currentY += 2;
-      }
+    if (structuredDays && structuredDays.length > 0) {
+      const pdfData = renderStructuredPDF(structuredDays, title, finalNote);
+      return new Response(pdfData, {
+        status: 200,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/pdf",
+          "Content-Disposition":
+            'attachment; filename="content-plan.pdf"',
+        },
+      });
     }
 
-    const pdfData = doc.output('arraybuffer');
-
+    const pdfData = renderPlainTextPDF(content, title);
     return new Response(pdfData, {
       status: 200,
       headers: {
         ...corsHeaders,
         "Content-Type": "application/pdf",
-        "Content-Disposition": "attachment; filename=\"passion-coaching-content.pdf\"",
+        "Content-Disposition":
+          'attachment; filename="passion-coaching-content.pdf"',
       },
     });
   } catch (error) {
     console.error("Error generating PDF:", error);
-    
     return new Response(
-      JSON.stringify({ 
-        error: error instanceof Error ? error.message : "Failed to generate PDF" 
+      JSON.stringify({
+        error:
+          error instanceof Error ? error.message : "Failed to generate PDF",
       }),
       {
         status: 500,
-        headers: {
-          ...corsHeaders,
-          "Content-Type": "application/json",
-        },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
   }
 });
+
+function renderStructuredPDF(
+  days: DayEntry[],
+  title: string,
+  finalNote?: string
+): ArrayBuffer {
+  const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  const pw = doc.internal.pageSize.getWidth();
+  const ph = doc.internal.pageSize.getHeight();
+  const ml = 15;
+  const mr = 15;
+  const mt = 15;
+  const mb = 18;
+  const cw = pw - ml - mr;
+  let y = mt;
+
+  const ensureSpace = (needed: number) => {
+    if (y + needed > ph - mb) {
+      doc.addPage();
+      y = mt;
+    }
+  };
+
+  const drawText = (
+    text: string,
+    x: number,
+    yPos: number,
+    opts: {
+      maxWidth: number;
+      fontSize: number;
+      fontStyle?: string;
+      color?: { r: number; g: number; b: number };
+      lineHeight?: number;
+    }
+  ): number => {
+    doc.setFontSize(opts.fontSize);
+    doc.setFont("helvetica", opts.fontStyle || "normal");
+    const c = opts.color || { r: 30, g: 41, b: 59 };
+    doc.setTextColor(c.r, c.g, c.b);
+    const lh = opts.lineHeight || opts.fontSize * 0.45;
+    const lines = doc.splitTextToSize(text, opts.maxWidth);
+    let curY = yPos;
+    for (const line of lines) {
+      ensureSpace(lh);
+      doc.text(line, x, curY);
+      curY += lh;
+    }
+    return curY;
+  };
+
+  // Title
+  doc.setFontSize(22);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(30, 41, 59);
+  const titleLines = doc.splitTextToSize(title, cw);
+  for (const tl of titleLines) {
+    doc.text(tl, pw / 2, y, { align: "center" });
+    y += 9;
+  }
+  y += 2;
+
+  // Subtitle line
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(100, 116, 139);
+  doc.text("Generated by Big Money Content Generator", pw / 2, y, {
+    align: "center",
+  });
+  y += 8;
+
+  // Divider
+  doc.setDrawColor(203, 213, 225);
+  doc.setLineWidth(0.4);
+  doc.line(ml, y, pw - mr, y);
+  y += 8;
+
+  // Each day card
+  for (let i = 0; i < days.length; i++) {
+    const entry = days[i];
+    const dayKey = entry.day.toLowerCase().trim();
+    const bgColor = DAY_COLORS[dayKey] || { r: 248, g: 250, b: 252 };
+    const accent = DAY_ACCENT[dayKey] || { r: 30, g: 41, b: 59 };
+
+    // Estimate card height to check page break before starting
+    const captionText = (entry.caption || "").replace(/\\n/g, "\n");
+    doc.setFontSize(9);
+    const captionLineCount = doc.splitTextToSize(captionText, cw - 16).length;
+    const estHeight = 52 + captionLineCount * 4;
+    ensureSpace(Math.min(estHeight, 80));
+
+    const cardTop = y;
+
+    // Card background
+    doc.setFillColor(bgColor.r, bgColor.g, bgColor.b);
+    doc.setDrawColor(203, 213, 225);
+    doc.setLineWidth(0.3);
+
+    // We'll draw the background rect after we know the card height
+    const cardX = ml;
+    const cardW = cw;
+    const pad = 8;
+    let cy = cardTop + pad;
+
+    // Day badge + theme
+    doc.setFillColor(accent.r, accent.g, accent.b);
+    const badgeText = entry.day;
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    const badgeW = doc.getTextWidth(badgeText) + 8;
+    doc.roundedRect(cardX + pad, cy - 3.5, badgeW, 6, 1.5, 1.5, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.text(badgeText, cardX + pad + 4, cy);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(100, 116, 139);
+    if (entry.theme) {
+      doc.text(entry.theme, cardX + pad + badgeW + 4, cy);
+    }
+    cy += 8;
+
+    // Field rows
+    const fieldPairs: [string, string][] = [
+      ["Post Type", entry.postType],
+      ["Content Idea", entry.idea],
+      ["Caption", captionText],
+      ["Hashtags", entry.hashtags],
+      ["Video Hook", entry.hook],
+      ["Growth Notes", entry.notes],
+      ["Best Time", entry.time],
+    ];
+
+    for (const [label, value] of fieldPairs) {
+      if (!value || !value.trim()) continue;
+
+      ensureSpace(8);
+
+      // Label
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8.5);
+      doc.setTextColor(accent.r, accent.g, accent.b);
+      doc.text(label + ":", cardX + pad, cy);
+      cy += 4;
+
+      // Value
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(51, 65, 85);
+      const valLines = doc.splitTextToSize(value, cardW - pad * 2);
+      for (const vl of valLines) {
+        ensureSpace(4.2);
+        doc.text(vl, cardX + pad, cy);
+        cy += 4;
+      }
+      cy += 2;
+    }
+
+    cy += pad - 2;
+
+    // Now draw the card background behind everything
+    const cardH = cy - cardTop;
+    // We need to re-draw in the right order. jsPDF doesn't support z-order,
+    // so we must draw the background first. We'll use a workaround:
+    // Save current page content positions and draw background rect.
+    // Actually, jsPDF draws in order, so we need to restructure.
+    // We'll draw the card as a simple border (outline) after the content.
+    doc.setDrawColor(203, 213, 225);
+    doc.setLineWidth(0.3);
+    doc.setFillColor(bgColor.r, bgColor.g, bgColor.b);
+    // Draw just a left accent bar
+    doc.setFillColor(accent.r, accent.g, accent.b);
+    doc.rect(cardX, cardTop, 2, cardH, "F");
+    // Draw border outline
+    doc.setDrawColor(220, 225, 232);
+    doc.roundedRect(cardX, cardTop, cardW, cardH, 2, 2, "S");
+
+    y = cy + 6;
+  }
+
+  // Final note
+  if (finalNote) {
+    ensureSpace(14);
+    doc.setFillColor(241, 245, 249);
+    doc.roundedRect(ml, y, cw, 10, 2, 2, "F");
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(9);
+    doc.setTextColor(100, 116, 139);
+    doc.text(finalNote, pw / 2, y + 6.5, { align: "center" });
+    y += 16;
+  }
+
+  return doc.output("arraybuffer");
+}
+
+function renderPlainTextPDF(content: string, title: string): ArrayBuffer {
+  const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  const pw = doc.internal.pageSize.getWidth();
+  const ph = doc.internal.pageSize.getHeight();
+  const margins = { top: 20, bottom: 20, left: 20, right: 20 };
+  const maxW = pw - margins.left - margins.right;
+  let cy = margins.top;
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(18);
+  doc.text(title, margins.left, cy);
+  cy += 12;
+  doc.setLineWidth(0.5);
+  doc.line(margins.left, cy, pw - margins.right, cy);
+  cy += 8;
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(11);
+
+  const lines = content.split("\n");
+  for (const line of lines) {
+    if (line.trim() === "") {
+      cy += 4;
+      continue;
+    }
+    const isH =
+      /^#+\s/.test(line) ||
+      (line.toUpperCase() === line && line.length > 0 && line.length < 60);
+    if (isH) {
+      if (cy > margins.top + 20) cy += 5;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+    } else {
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
+    }
+    const cleaned = line.replace(/^#+\s*/, "");
+    const wrapped = doc.splitTextToSize(cleaned, maxW);
+    for (const w of wrapped) {
+      if (cy + 10 > ph - margins.bottom) {
+        doc.addPage();
+        cy = margins.top;
+      }
+      doc.text(w, margins.left, cy);
+      cy += isH ? 7 : 6;
+    }
+    if (isH) cy += 2;
+  }
+  return doc.output("arraybuffer");
+}
