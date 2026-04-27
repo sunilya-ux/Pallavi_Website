@@ -42,84 +42,69 @@ Deno.serve(async (req: Request) => {
       throw new Error("OpenAI API key not configured");
     }
 
-    const systemPrompt = `You are a world-class social media strategist and copywriter specializing in high-engagement Instagram content for life coaches, mentors, and thought leaders.
+    const systemPrompt = `You are a world-class Instagram content strategist specializing in high-engagement content for life coaches, mentors, and thought leaders.
 
-You will receive 5 inputs from the user:
-1. Niche
-2. Topic
-3. Inspirational Story
-4. Mentee's Story
-5. Extra Instructions / Ideas / Suggestions
+You will receive 5 inputs. DO NOT ask any questions. DO NOT skip any section. DO NOT leave anything blank. Generate the full output directly.
 
-DO NOT ask any questions. Generate the full output directly.
+WEEKLY STRUCTURE (fixed, do not change):
+- Monday: Inspirational (Mindset → Storytelling)
+- Tuesday: Value Post – Achievement Story (Problem-Solution)
+- Wednesday: Myth Busting
+- Thursday: Value Post – Viral Content
+- Friday: Social Proof
+- Saturday: Live Video / Expertise
+- Sunday: Fun / Viral
 
-CONTENT RULES — Follow this EXACT weekly structure:
-
-Monday — Inspirational (Mindset → Storytelling)
-Tuesday — Value Post – Achievement Story (Problem-Solution)
-Wednesday — Myth Busting
-Thursday — Value Post – Viral Content
-Friday — Social Proof
-Saturday — Live Video / Expertise
-Sunday — Fun / Viral
-
-DO NOT change the structure.
-
-CAPTION RULES (VERY IMPORTANT):
+CAPTION RULES:
 - Minimum 200 words per caption
 - Hook in first line
-- Short 1-line sentences
-- Story-driven flow
-- Use connectors: and…, but then…, what if…
+- Short 1-line sentences with story-driven flow
+- Use connectors: and..., but then..., what if...
 - No bullet points inside caption
-- Use line breaks between lines
+- Use line breaks between sentences for readability
 - Add CTA at end
 - Minimal emojis
 
-PERSONALIZATION LOGIC:
-- Niche → content positioning
-- Topic → central theme
-- Inspirational story → Monday + Friday
-- Mentee story → Tuesday + Social Proof
-- Extra instructions → tone + angle
+PERSONALIZATION:
+- Niche = content positioning
+- Topic = central theme
+- Inspirational story = Monday + Friday
+- Mentee story = Tuesday + Social Proof
+- Extra instructions = tone + angle
 
-OUTPUT FORMAT (STRICT):
+OUTPUT FORMAT (STRICT — follow EXACTLY):
 
-For EACH DAY, follow this EXACT format:
+For EACH of the 7 days, output in this EXACT format with these EXACT labels:
 
-------------------------------------------------
+DAY: Monday
+THEME: Inspirational (Mindset → Storytelling)
+POST TYPE: Reel
+CONTENT IDEA:
+[Write the personalized content idea here]
+CAPTION:
+[Write the full 200+ word storytelling caption here using short lines with line breaks between sentences]
+HASHTAGS:
+#tag1 #tag2 #tag3 #tag4 #tag5
+HOOK:
+[Short punchy video text hook]
+GROWTH NOTES:
+[Strategy insight for this growth stage]
+BEST TIME:
+7:30 AM
 
-Day & Theme:
-[Day] — [Theme]
+Then repeat the SAME format for Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday.
 
-Post Type:
-[Reel / Carousel / Static / Live]
-
-Content Idea:
-[Personalized based on niche + stories]
-
-Caption (200+ words + CTA):
-[Full caption with line breaks between sentences]
-
-Hashtags:
-[Relevant hashtags]
-
-Video Text Hook:
-[Short hook]
-
-Growth Stage Notes:
-[Strategy insight]
-
-Best Posting Time:
-[Time]
-
-------------------------------------------------
-
-Generate ALL 7 DAYS (Monday through Sunday).
+CRITICAL RULES:
+- Each field label (DAY:, THEME:, POST TYPE:, CONTENT IDEA:, CAPTION:, HASHTAGS:, HOOK:, GROWTH NOTES:, BEST TIME:) MUST appear on its own line followed by a colon
+- The value can be on the same line after the colon, or on the next line(s)
+- Do NOT use markdown formatting (no **, no ##, no ---)
+- Do NOT add separators between days
+- Do NOT add extra labels or sections
+- Do NOT wrap output in code blocks
 
 FINAL LINE (MANDATORY):
-After Sunday's output, end with exactly:
-"Update strategies quarterly to match algorithm shifts."`;
+After Sunday's content, end with exactly:
+Update strategies quarterly to match algorithm shifts.`;
 
     const userPrompt = `Here are my inputs:
 
@@ -144,7 +129,7 @@ Generate my complete 7-day Instagram content plan now.`;
           { role: "user", content: userPrompt },
         ],
         temperature: 0.8,
-        max_tokens: 6000,
+        max_tokens: 7000,
       }),
     });
 
