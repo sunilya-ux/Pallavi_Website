@@ -86,13 +86,16 @@ Explain in 2-3 lines why this is their real passion.
 
 CAREER OPTIONS WITH RATINGS
 
-1. [Career Option Name] - Rating: X/10
+For EACH career option, follow this EXACT format:
+
+### 1. [Career Name] — X/10
 
 Why this fits:
 - point
 - point
 
 Personality Traits Used:
+- trait
 - trait
 - trait
 
@@ -106,15 +109,13 @@ Content Creator:
 - niche
 - content ideas
 
-Job Role:
+Job Roles:
 - roles
 
 Coaching:
 - niche
 
----
-
-(Repeat for 4-5 career options total)
+(Repeat SAME format for all 4-5 career options. Number them 1 through 5. Each option MUST have ALL subsections: Why this fits, Personality Traits Used, and all four How to Monetize categories.)
 
 ---
 
@@ -176,7 +177,9 @@ CRITICAL RULES:
 - Make it feel like a premium coaching report
 - Keep formatting clean for UI display
 - Use line breaks between sentences for readability
-- Each career option must have ALL subsections (Freelancing, Content Creator, Job Role, Coaching)`;
+- Each career option MUST start with ### followed by the number, name, and rating (e.g. ### 1. Career Name — 8/10)
+- Each career option MUST have ALL subsections: Why this fits, Personality Traits Used, Freelancing, Content Creator, Job Roles, Coaching
+- Number career options sequentially from 1 to 5`;
 
     const imageContents = images.map((img) => ({
       type: "image_url" as const,

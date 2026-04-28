@@ -92,6 +92,72 @@ const SECTION_STYLES: Record<string, { icon: string; gradient: string; border: s
 interface ReportSection {
   title: string;
   content: string;
+  careerOptions?: CareerOption[];
+}
+
+interface CareerOption {
+  name: string;
+  rating: string;
+  whyFits: string[];
+  traits: string[];
+  freelancing: string[];
+  contentCreator: string[];
+  jobRoles: string[];
+  coaching: string[];
+}
+
+function parseCareerOptions(text: string): CareerOption[] {
+  const options: CareerOption[] = [];
+  const optionBlocks = text.split(/###\s*\d+\.\s*/);
+
+  for (const block of optionBlocks) {
+    const trimmed = block.trim();
+    if (!trimmed) continue;
+
+    const lines = trimmed.split('\n');
+    const headerLine = lines[0] || '';
+    const ratingMatch = headerLine.match(/(.+?)\s*[—\-]\s*(?:.*?)(\d+\/10)/);
+    const name = ratingMatch ? ratingMatch[1].replace(/[*#]+/g, '').trim() : headerLine.replace(/[*#—\-]+/g, '').trim();
+    const rating = ratingMatch ? ratingMatch[2] : '';
+
+    const whyFits: string[] = [];
+    const traits: string[] = [];
+    const freelancing: string[] = [];
+    const contentCreator: string[] = [];
+    const jobRoles: string[] = [];
+    const coaching: string[] = [];
+
+    let currentBucket: string[] | null = null;
+
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+
+      const lower = line.toLowerCase().replace(/[*#]+/g, '').trim();
+
+      if (lower.startsWith('why this fits')) { currentBucket = whyFits; continue; }
+      if (lower.startsWith('personality traits used')) { currentBucket = traits; continue; }
+      if (/freelanc/i.test(lower) && (lower.startsWith('freelanc') || lower.includes('freelanc'))) {
+        if (/how to monetize/i.test(lower)) { continue; }
+        currentBucket = freelancing; continue;
+      }
+      if (lower.startsWith('content creator')) { currentBucket = contentCreator; continue; }
+      if (lower.startsWith('job role')) { currentBucket = jobRoles; continue; }
+      if (lower.startsWith('coaching')) { currentBucket = coaching; continue; }
+      if (lower.startsWith('how to monetize')) { continue; }
+
+      if (currentBucket !== null) {
+        const cleaned = line.replace(/^[-•*✔➡]\s*/, '').trim();
+        if (cleaned) currentBucket.push(cleaned);
+      }
+    }
+
+    if (name) {
+      options.push({ name, rating, whyFits, traits, freelancing, contentCreator, jobRoles, coaching });
+    }
+  }
+
+  return options;
 }
 
 function parseReport(content: string): ReportSection[] {
@@ -116,7 +182,11 @@ function parseReport(content: string): ReportSection[] {
     if (currentTitle && currentTitle !== 'REPORT_TITLE') {
       const text = currentLines.join('\n').trim();
       if (text) {
-        sections.push({ title: currentTitle, content: text });
+        const section: ReportSection = { title: currentTitle, content: text };
+        if (currentTitle === 'CAREER OPTIONS WITH RATINGS') {
+          section.careerOptions = parseCareerOptions(text);
+        }
+        sections.push(section);
       }
     }
     currentLines = [];
@@ -521,6 +591,20 @@ export default function MonetizablePassionAnalysis({ clientId }: MonetizablePass
           {sections.length > 0 ? (
             sections.map((section, idx) => {
               const style = SECTION_STYLES[section.title] || SECTION_STYLES['DISCLAIMER'];
+
+              if (section.title === 'CAREER OPTIONS WITH RATINGS' && section.careerOptions && section.careerOptions.length > 0) {
+                return (
+                  <div key={idx} className="space-y-4">
+                    <div className={`bg-gradient-to-r ${style.gradient} rounded-xl px-5 py-3 shadow-sm`}>
+                      <h3 className="text-base sm:text-lg font-bold text-white">{section.title}</h3>
+                    </div>
+                    {section.careerOptions.map((career, cIdx) => (
+                      <CareerOptionCard key={cIdx} career={career} index={cIdx} />
+                    ))}
+                  </div>
+                );
+              }
+
               return (
                 <div key={idx} className={`${style.bg} border ${style.border} rounded-xl overflow-hidden shadow-sm`}>
                   <div className={`bg-gradient-to-r ${style.gradient} px-5 py-3`}>
@@ -562,6 +646,117 @@ export default function MonetizablePassionAnalysis({ clientId }: MonetizablePass
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+const CAREER_CARD_COLORS = [
+  { bg: 'bg-emerald-50', border: 'border-emerald-200', accent: 'text-emerald-700', badge: 'bg-emerald-600', label: 'bg-emerald-100 text-emerald-700' },
+  { bg: 'bg-sky-50', border: 'border-sky-200', accent: 'text-sky-700', badge: 'bg-sky-600', label: 'bg-sky-100 text-sky-700' },
+  { bg: 'bg-amber-50', border: 'border-amber-200', accent: 'text-amber-700', badge: 'bg-amber-600', label: 'bg-amber-100 text-amber-700' },
+  { bg: 'bg-rose-50', border: 'border-rose-200', accent: 'text-rose-700', badge: 'bg-rose-600', label: 'bg-rose-100 text-rose-700' },
+  { bg: 'bg-cyan-50', border: 'border-cyan-200', accent: 'text-cyan-700', badge: 'bg-cyan-600', label: 'bg-cyan-100 text-cyan-700' },
+];
+
+function CareerOptionCard({ career, index }: { career: CareerOption; index: number }) {
+  const colors = CAREER_CARD_COLORS[index % CAREER_CARD_COLORS.length];
+  const ratingNum = parseInt(career.rating) || 0;
+
+  return (
+    <div className={`${colors.bg} border ${colors.border} rounded-xl overflow-hidden shadow-sm`}>
+      {/* Card header */}
+      <div className="px-5 py-4 flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-3">
+          <span className={`${colors.badge} text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0`}>
+            {index + 1}
+          </span>
+          <h4 className="text-lg font-bold text-slate-900">{career.name}</h4>
+        </div>
+        {career.rating && (
+          <div className="flex items-center gap-1.5">
+            <div className="flex gap-0.5">
+              {Array.from({ length: 10 }).map((_, i) => (
+                <div
+                  key={i}
+                  className={`w-2.5 h-2.5 rounded-full ${i < ratingNum ? colors.badge : 'bg-slate-200'}`}
+                />
+              ))}
+            </div>
+            <span className={`text-sm font-bold ${colors.accent} ml-1`}>{career.rating}</span>
+          </div>
+        )}
+      </div>
+
+      <div className="px-5 pb-5 space-y-4">
+        {/* Why this fits */}
+        {career.whyFits.length > 0 && (
+          <div>
+            <h5 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Why This Fits</h5>
+            <ul className="space-y-1.5">
+              {career.whyFits.map((point, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm text-slate-700">
+                  <span className={`${colors.accent} mt-0.5 flex-shrink-0`}>-</span>
+                  <span>{point}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Personality Traits Used */}
+        {career.traits.length > 0 && (
+          <div>
+            <h5 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Personality Traits Used</h5>
+            <div className="flex flex-wrap gap-2">
+              {career.traits.map((trait, i) => (
+                <span key={i} className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium ${colors.label}`}>
+                  <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
+                  {trait}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* How to Monetize */}
+        {(career.freelancing.length > 0 || career.contentCreator.length > 0 || career.jobRoles.length > 0 || career.coaching.length > 0) && (
+          <div>
+            <h5 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">How to Monetize</h5>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {career.freelancing.length > 0 && (
+                <MonetizeBlock label="Freelancing" items={career.freelancing} colors={colors} />
+              )}
+              {career.contentCreator.length > 0 && (
+                <MonetizeBlock label="Content Creator" items={career.contentCreator} colors={colors} />
+              )}
+              {career.jobRoles.length > 0 && (
+                <MonetizeBlock label="Job Roles" items={career.jobRoles} colors={colors} />
+              )}
+              {career.coaching.length > 0 && (
+                <MonetizeBlock label="Coaching" items={career.coaching} colors={colors} />
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function MonetizeBlock({ label, items, colors }: { label: string; items: string[]; colors: typeof CAREER_CARD_COLORS[number] }) {
+  return (
+    <div className="bg-white/70 rounded-lg border border-slate-100 p-3">
+      <div className="flex items-center gap-1.5 mb-2">
+        <span className={`text-xs font-bold ${colors.accent}`}>{label}</span>
+      </div>
+      <ul className="space-y-1">
+        {items.map((item, i) => (
+          <li key={i} className="text-xs text-slate-600 flex items-start gap-1.5">
+            <span className="text-slate-400 mt-px flex-shrink-0">-</span>
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
