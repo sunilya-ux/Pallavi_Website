@@ -12,6 +12,7 @@ import PassionRoadmapCreator from './PassionRoadmapCreator';
 import RoadmapCreator from './RoadmapCreator';
 import BigMoneyContentGenerator from './BigMoneyContentGenerator';
 import MonetizablePassionAnalysis from './MonetizablePassionAnalysis';
+import LifePurposeGenerator from './LifePurposeGenerator';
 import { supabase } from '../lib/supabase';
 import type { ModuleWithTools } from '../types/permissions';
 
@@ -20,12 +21,17 @@ interface ModularClientDashboardProps {
   clientId: string;
 }
 
+const COURSE_NAME = '7 Figure Ensuring Morning Rituals';
+
 export default function ModularClientDashboard({ email, clientId }: ModularClientDashboardProps) {
   const [modulesWithTools, setModulesWithTools] = useState<ModuleWithTools[]>([]);
   const [activeToolRoute, setActiveToolRoute] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
+  const [expandedCourses, setExpandedCourses] = useState<Set<string>>(new Set());
   const [restrictedMessage, setRestrictedMessage] = useState<string | null>(null);
+
+  const isAdmin = localStorage.getItem('userType') === 'admin';
 
   useEffect(() => {
     loadPermissions();
@@ -44,11 +50,19 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
       const modules = permissionsData?.modules || [];
       const tools = permissionsData?.tools || [];
 
-      const accessibleModules = modules.filter((m: any) => m.has_access);
+      const visibleModules = isAdmin
+        ? modules
+        : modules.filter((m: any) => m.has_access);
 
-      const modulesWithToolsData: ModuleWithTools[] = accessibleModules.map((module: any) => ({
+      const modulesWithToolsData: ModuleWithTools[] = visibleModules.map((module: any) => ({
         ...module,
-        tools: tools.filter((t: any) => t.module_id === module.id),
+        has_access: isAdmin ? true : module.has_access,
+        tools: tools
+          .filter((t: any) => t.module_id === module.id)
+          .map((t: any) => ({
+            ...t,
+            has_access: isAdmin ? true : t.has_access,
+          })),
       }));
 
       setModulesWithTools(modulesWithToolsData);
@@ -82,8 +96,20 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
     });
   };
 
+  const toggleCourse = (courseId: string) => {
+    setExpandedCourses((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(courseId)) {
+        newSet.delete(courseId);
+      } else {
+        newSet.add(courseId);
+      }
+      return newSet;
+    });
+  };
+
   const handleToolClick = (tool: any) => {
-    if (tool.has_access) {
+    if (isAdmin || tool.has_access) {
       setActiveToolRoute(tool.route);
       setRestrictedMessage(null);
     } else {
@@ -96,6 +122,8 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
     const Icon = (Icons as any)[iconName];
     return Icon ? <Icon className="w-5 h-5" /> : null;
   };
+
+  const isCoursesModule = (module: ModuleWithTools) => module.name === 'courses';
 
   if (loading) {
     return (
@@ -146,36 +174,48 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
 
                 {expandedModules.has(module.id) && module.tools.length > 0 && (
                   <div className="ml-7 space-y-1 mt-1">
-                    {module.tools.map((tool) => {
-                      const isLocked = !tool.has_access;
-                      const isActive = activeToolRoute === tool.route;
+                    {isCoursesModule(module) ? (
+                      <CoursesFolderNav
+                        tools={module.tools}
+                        expandedCourses={expandedCourses}
+                        toggleCourse={toggleCourse}
+                        handleToolClick={handleToolClick}
+                        activeToolRoute={activeToolRoute}
+                        isAdmin={isAdmin}
+                        getIcon={getIcon}
+                      />
+                    ) : (
+                      module.tools.map((tool) => {
+                        const isLocked = !isAdmin && !tool.has_access;
+                        const isActive = activeToolRoute === tool.route;
 
-                      return (
-                        <button
-                          key={tool.id}
-                          onClick={() => handleToolClick(tool)}
-                          disabled={isLocked}
-                          className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-left relative group ${
-                            isActive
-                              ? 'bg-emerald-50 text-emerald-700 shadow-sm'
-                              : isLocked
-                              ? 'text-slate-400 opacity-50 cursor-not-allowed'
-                              : 'text-slate-700 hover:bg-slate-50 hover:text-emerald-600'
-                          }`}
-                          title={isLocked ? "Access restricted" : tool.description || ''}
-                        >
-                          <div className={isLocked ? 'text-slate-400' : ''}>
-                            {getIcon(tool.icon)}
-                          </div>
-                          <span className="font-medium text-sm flex-1">
-                            {tool.display_name}
-                          </span>
-                          {isLocked && (
-                            <Lock className="w-4 h-4 text-slate-400" />
-                          )}
-                        </button>
-                      );
-                    })}
+                        return (
+                          <button
+                            key={tool.id}
+                            onClick={() => handleToolClick(tool)}
+                            disabled={isLocked}
+                            className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-left relative group ${
+                              isActive
+                                ? 'bg-emerald-50 text-emerald-700 shadow-sm'
+                                : isLocked
+                                ? 'text-slate-400 opacity-50 cursor-not-allowed'
+                                : 'text-slate-700 hover:bg-slate-50 hover:text-emerald-600'
+                            }`}
+                            title={isLocked ? "Access restricted" : tool.description || ''}
+                          >
+                            <div className={isLocked ? 'text-slate-400' : ''}>
+                              {getIcon(tool.icon)}
+                            </div>
+                            <span className="font-medium text-sm flex-1">
+                              {tool.display_name}
+                            </span>
+                            {isLocked && (
+                              <Lock className="w-4 h-4 text-slate-400" />
+                            )}
+                          </button>
+                        );
+                      })
+                    )}
                   </div>
                 )}
               </div>
@@ -232,14 +272,14 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
                         <div
                           key={tool.id}
                           className={`flex items-center gap-2 text-sm ${
-                            tool.has_access ? 'text-slate-700' : 'text-slate-400'
+                            (isAdmin || tool.has_access) ? 'text-slate-700' : 'text-slate-400'
                           }`}
                         >
                           <div className={`w-2 h-2 rounded-full ${
-                            tool.has_access ? 'bg-emerald-500' : 'bg-slate-300'
+                            (isAdmin || tool.has_access) ? 'bg-emerald-500' : 'bg-slate-300'
                           }`} />
                           <span>{tool.display_name}</span>
-                          {!tool.has_access && <Lock className="w-3 h-3" />}
+                          {!isAdmin && !tool.has_access && <Lock className="w-3 h-3" />}
                         </div>
                       ))}
                     </div>
@@ -269,6 +309,10 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
             <BigMoneyContentGenerator clientId={clientId} />
           ) : activeToolRoute === 'monetizable-passion-analysis' ? (
             <MonetizablePassionAnalysis clientId={clientId} />
+          ) : activeToolRoute === 'life-purpose-generator' ? (
+            <LifePurposeGenerator clientId={clientId} />
+          ) : activeToolRoute?.startsWith('courses/') ? (
+            <CourseLessonPlaceholder route={activeToolRoute} tools={modulesWithTools.find(m => m.name === 'courses')?.tools || []} />
           ) : (
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
               <h2 className="text-2xl font-bold text-slate-900 mb-4">Tool Coming Soon</h2>
@@ -277,6 +321,118 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
           )}
         </div>
       </main>
+    </div>
+  );
+}
+
+function CoursesFolderNav({
+  tools,
+  expandedCourses,
+  toggleCourse,
+  handleToolClick,
+  activeToolRoute,
+  isAdmin,
+  getIcon,
+}: {
+  tools: any[];
+  expandedCourses: Set<string>;
+  toggleCourse: (id: string) => void;
+  handleToolClick: (tool: any) => void;
+  activeToolRoute: string | null;
+  isAdmin: boolean;
+  getIcon: (name: string | null) => React.ReactNode;
+}) {
+  const courseId = 'morning-rituals';
+  const FolderIcon = expandedCourses.has(courseId)
+    ? (Icons as any).FolderOpen
+    : (Icons as any).Folder;
+
+  return (
+    <div className="space-y-1">
+      <button
+        onClick={() => toggleCourse(courseId)}
+        className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-50 transition-colors text-left group"
+      >
+        <div className="flex items-center gap-2">
+          <div className="text-emerald-600">
+            {FolderIcon && <FolderIcon className="w-5 h-5" />}
+          </div>
+          <span className="font-medium text-sm text-slate-800 group-hover:text-emerald-600 transition-colors">
+            {COURSE_NAME}
+          </span>
+        </div>
+        {expandedCourses.has(courseId) ? (
+          <ChevronDown className="w-4 h-4 text-slate-400" />
+        ) : (
+          <ChevronRight className="w-4 h-4 text-slate-400" />
+        )}
+      </button>
+
+      {expandedCourses.has(courseId) && (
+        <div className="ml-6 space-y-1 mt-1">
+          {tools.map((tool) => {
+            const isLocked = !isAdmin && !tool.has_access;
+            const isActive = activeToolRoute === tool.route;
+
+            return (
+              <button
+                key={tool.id}
+                onClick={() => handleToolClick(tool)}
+                disabled={isLocked}
+                className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-left relative group ${
+                  isActive
+                    ? 'bg-emerald-50 text-emerald-700 shadow-sm'
+                    : isLocked
+                    ? 'text-slate-400 opacity-50 cursor-not-allowed'
+                    : 'text-slate-700 hover:bg-slate-50 hover:text-emerald-600'
+                }`}
+                title={isLocked ? "Access restricted" : tool.description || ''}
+              >
+                <div className={isLocked ? 'text-slate-400' : ''}>
+                  {getIcon(tool.icon)}
+                </div>
+                <span className="font-medium text-sm flex-1">
+                  {tool.display_name}
+                </span>
+                {isLocked && (
+                  <Lock className="w-4 h-4 text-slate-400" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CourseLessonPlaceholder({ route, tools }: { route: string; tools: any[] }) {
+  const GraduationCap = (Icons as any).GraduationCap;
+  const PlayCircle = (Icons as any).PlayCircle;
+
+  const tool = tools.find((t) => t.route === route);
+  const lessonName = tool?.display_name || '';
+
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-5">
+        <div className="flex items-center gap-3">
+          {GraduationCap && <GraduationCap className="w-6 h-6 text-white/80" />}
+          <div>
+            <p className="text-emerald-100 text-xs font-medium">{COURSE_NAME}</p>
+            <h2 className="text-xl font-bold text-white">{lessonName}</h2>
+          </div>
+        </div>
+      </div>
+      <div className="p-8 flex flex-col items-center justify-center min-h-[400px]">
+        <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-6">
+          {PlayCircle && <PlayCircle className="w-10 h-10 text-slate-400" />}
+        </div>
+        <h3 className="text-lg font-semibold text-slate-900 mb-2">Video will be displayed here</h3>
+        <p className="text-slate-500 text-center max-w-md">
+          Course content for this lesson is being prepared. Check back soon for the video and materials.
+        </p>
+      </div>
     </div>
   );
 }
