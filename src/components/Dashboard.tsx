@@ -20,12 +20,23 @@ interface DashboardProps {
   userEmail: string;
 }
 
+interface Course {
+  id: string;
+  module_id: string;
+  name: string;
+  display_name: string;
+  icon: string;
+  sort_order: number;
+}
+
 export default function Dashboard({ userEmail }: DashboardProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeSection, setActiveSection] = useState<'overview' | 'clients'>('overview');
   const [showPermissionsModal, setShowPermissionsModal] = useState(false);
   const [modules, setModules] = useState<ModuleWithTools[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
+  const [expandedCourses, setExpandedCourses] = useState<Set<string>>(new Set());
   const [activeToolRoute, setActiveToolRoute] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -37,13 +48,15 @@ export default function Dashboard({ userEmail }: DashboardProps) {
     try {
       setLoading(true);
 
-      const [modulesRes, toolsRes] = await Promise.all([
+      const [modulesRes, toolsRes, coursesRes] = await Promise.all([
         supabase.from('modules').select('*').eq('is_active', true).order('sort_order'),
-        supabase.from('tools').select('*').eq('is_active', true).order('sort_order')
+        supabase.from('tools').select('*').eq('is_active', true).order('sort_order'),
+        supabase.from('courses').select('*').eq('is_active', true).order('sort_order')
       ]);
 
       if (modulesRes.error) throw modulesRes.error;
       if (toolsRes.error) throw toolsRes.error;
+      if (coursesRes.error) throw coursesRes.error;
 
       const modulesWithTools: ModuleWithTools[] = (modulesRes.data || []).map(module => ({
         ...module,
@@ -51,6 +64,7 @@ export default function Dashboard({ userEmail }: DashboardProps) {
       }));
 
       setModules(modulesWithTools);
+      setCourses(coursesRes.data || []);
     } catch (error) {
       console.error('Error loading modules:', error);
     } finally {
@@ -72,6 +86,22 @@ export default function Dashboard({ userEmail }: DashboardProps) {
       newExpanded.add(moduleId);
     }
     setExpandedModules(newExpanded);
+  };
+
+  const toggleCourse = (courseId: string) => {
+    const newExpanded = new Set(expandedCourses);
+    if (newExpanded.has(courseId)) {
+      newExpanded.delete(courseId);
+    } else {
+      newExpanded.add(courseId);
+    }
+    setExpandedCourses(newExpanded);
+  };
+
+  const isCoursesModule = (module: ModuleWithTools) => module.name === 'courses';
+
+  const getLessonsForCourse = (course: Course, tools: ModuleWithTools['tools']) => {
+    return tools.filter(tool => tool.route.startsWith('courses/'));
   };
 
   const handleToolClick = (route: string) => {
@@ -251,7 +281,62 @@ export default function Dashboard({ userEmail }: DashboardProps) {
                       )}
                     </button>
 
-                    {isExpanded && module.tools.length > 0 && (
+                    {isExpanded && isCoursesModule(module) && (
+                      <div className="ml-4 mt-1 space-y-1">
+                        {courses
+                          .filter(course => course.module_id === module.id)
+                          .map(course => {
+                            const isCourseExpanded = expandedCourses.has(course.id);
+                            const CourseIconComponent = getIconComponent(course.icon);
+                            const courseLessons = getLessonsForCourse(course, module.tools);
+
+                            return (
+                              <div key={course.id}>
+                                <button
+                                  onClick={() => toggleCourse(course.id)}
+                                  className="flex items-center justify-between gap-3 px-4 py-2 rounded-lg transition-colors w-full text-left text-sm text-slate-300 hover:bg-slate-700 font-medium"
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <CourseIconComponent className="w-4 h-4" />
+                                    <span>{course.display_name}</span>
+                                  </div>
+                                  {isCourseExpanded ? (
+                                    <ChevronDown className="w-3 h-3" />
+                                  ) : (
+                                    <ChevronRight className="w-3 h-3" />
+                                  )}
+                                </button>
+
+                                {isCourseExpanded && courseLessons.length > 0 && (
+                                  <div className="ml-4 mt-1 space-y-1">
+                                    {courseLessons.map(tool => {
+                                      const ToolIconComponent = getIconComponent(tool.icon);
+                                      const isActive = activeToolRoute === tool.route;
+
+                                      return (
+                                        <button
+                                          key={tool.id}
+                                          onClick={() => handleToolClick(tool.route)}
+                                          className={`flex items-center gap-3 px-3 py-1.5 rounded-lg transition-colors w-full text-left text-xs font-medium ${
+                                            isActive
+                                              ? 'bg-emerald-600 text-white'
+                                              : 'text-slate-400 hover:bg-slate-700 hover:text-slate-200'
+                                          }`}
+                                        >
+                                          <ToolIconComponent className="w-3.5 h-3.5" />
+                                          <span>{tool.display_name}</span>
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                      </div>
+                    )}
+
+                    {isExpanded && !isCoursesModule(module) && module.tools.length > 0 && (
                       <div className="ml-4 mt-1 space-y-1">
                         {module.tools.map(tool => {
                           const ToolIconComponent = getIconComponent(tool.icon);
