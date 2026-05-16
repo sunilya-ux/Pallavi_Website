@@ -462,6 +462,9 @@ function AdminCourseLessonView({ route, modules }: { route: string; modules: Mod
               }}
             />
           </div>
+          <p className="mt-3 text-xs text-slate-400 text-center">
+            If video is not visible in preview, it will work correctly on the published/deployed site. YouTube embeds are blocked in Bolt's sandbox preview.
+          </p>
         </div>
       ) : (
         <div className="p-8 flex flex-col items-center justify-center min-h-[400px]">
