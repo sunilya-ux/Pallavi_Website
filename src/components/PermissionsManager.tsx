@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { Shield, Lock, Unlock, Save, AlertCircle, Search, ChevronLeft, ChevronRight, ArrowUpDown } from 'lucide-react';
+import { Shield, Lock, Unlock, Save, AlertCircle, Search, ChevronLeft, ChevronRight, ArrowUpDown, FolderOpen } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { Module, Tool } from '../types/permissions';
 
@@ -559,50 +559,42 @@ export default function PermissionsManager({ onClose }: PermissionsManagerProps)
                           </div>
 
                           {moduleTools.length > 0 && module.name === 'courses' && (
-                            <div className="ml-12 space-y-2">
-                              <div className="flex items-center gap-2 mt-2 mb-3 pl-1">
-                                <svg className="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                  <circle cx="12" cy="12" r="5" />
-                                  <line x1="12" y1="1" x2="12" y2="3" />
-                                  <line x1="12" y1="21" x2="12" y2="23" />
-                                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                                  <line x1="1" y1="12" x2="3" y2="12" />
-                                  <line x1="21" y1="12" x2="23" y2="12" />
-                                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-                                </svg>
-                                <span className="text-sm font-medium text-gray-500 italic">
-                                  7 Figure Ensuring Morning Rituals
-                                </span>
-                              </div>
-                              <div className="ml-4 space-y-2">
-                                {moduleTools.map((tool) => {
-                                  const hasToolAccess = permissions.tools.has(tool.id);
-                                  return (
-                                    <div
-                                      key={tool.id}
-                                      className="flex items-center justify-between bg-white p-3 rounded-lg border border-gray-200"
-                                    >
-                                      <div>
-                                        <div className="font-medium text-gray-900">
-                                          {tool.display_name}
-                                        </div>
-                                        <div className="text-sm text-gray-600">{tool.description}</div>
-                                      </div>
-                                      <button
-                                        onClick={() => toggleToolAccess(tool.id)}
-                                        className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                                          hasToolAccess
-                                            ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                                            : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                                        }`}
+                            <div className="ml-12 mt-3 space-y-3">
+                              <div className="rounded-lg border border-slate-200 bg-slate-50 border-l-4 border-l-emerald-400 overflow-hidden">
+                                <div className="flex items-center gap-3 px-4 py-3">
+                                  <FolderOpen className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                                  <span className="text-sm font-semibold text-gray-800">
+                                    7 Figure Ensuring Morning Rituals
+                                  </span>
+                                </div>
+                                <div className="ml-6 mr-3 mb-3 space-y-2">
+                                  {moduleTools.map((tool) => {
+                                    const hasToolAccess = permissions.tools.has(tool.id);
+                                    return (
+                                      <div
+                                        key={tool.id}
+                                        className="flex items-center justify-between bg-white p-3 rounded-lg border border-gray-200 border-l-2 border-l-slate-300"
                                       >
-                                        {hasToolAccess ? 'Enabled' : 'Disabled'}
-                                      </button>
-                                    </div>
-                                  );
-                                })}
+                                        <div>
+                                          <div className="font-medium text-gray-900">
+                                            {tool.display_name}
+                                          </div>
+                                          <div className="text-sm text-gray-600">{tool.description}</div>
+                                        </div>
+                                        <button
+                                          onClick={() => toggleToolAccess(tool.id)}
+                                          className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                                            hasToolAccess
+                                              ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                                              : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                                          }`}
+                                        >
+                                          {hasToolAccess ? 'Enabled' : 'Disabled'}
+                                        </button>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
                               </div>
                             </div>
                           )}
