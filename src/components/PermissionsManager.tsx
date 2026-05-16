@@ -132,12 +132,20 @@ export default function PermissionsManager({ onClose }: PermissionsManagerProps)
   const toggleModuleAccess = (moduleId: string) => {
     setPermissions((prev) => {
       const newModules = new Set(prev.modules);
-      if (newModules.has(moduleId)) {
-        newModules.delete(moduleId);
-      } else {
+      const newTools = new Set(prev.tools);
+      const enabling = !newModules.has(moduleId);
+
+      if (enabling) {
         newModules.add(moduleId);
+        const moduleTools = getToolsForModule(moduleId);
+        moduleTools.forEach((tool) => newTools.add(tool.id));
+      } else {
+        newModules.delete(moduleId);
+        const moduleTools = getToolsForModule(moduleId);
+        moduleTools.forEach((tool) => newTools.delete(tool.id));
       }
-      return { ...prev, modules: newModules };
+
+      return { modules: newModules, tools: newTools };
     });
   };
 
@@ -163,10 +171,16 @@ export default function PermissionsManager({ onClose }: PermissionsManagerProps)
       const { data: { user } } = await supabase.auth.getUser();
       const adminId = user?.id;
 
-      await Promise.all([
+      console.log('[PermissionsManager] Saving permissions for client:', selectedClient);
+      console.log('[PermissionsManager] Enabled modules:', Array.from(permissions.modules));
+      console.log('[PermissionsManager] Enabled tools:', Array.from(permissions.tools));
+
+      const deleteResults = await Promise.all([
         supabase.from('user_module_access').delete().eq('client_id', selectedClient),
         supabase.from('user_tool_access').delete().eq('client_id', selectedClient),
       ]);
+
+      console.log('[PermissionsManager] Delete results:', deleteResults.map(r => r.error));
 
       const moduleInserts = Array.from(permissions.modules).map((moduleId) => ({
         client_id: selectedClient,
@@ -182,19 +196,29 @@ export default function PermissionsManager({ onClose }: PermissionsManagerProps)
         granted_by: adminId,
       }));
 
+      console.log('[PermissionsManager] Module inserts:', moduleInserts);
+      console.log('[PermissionsManager] Tool inserts:', toolInserts);
+
       if (moduleInserts.length > 0) {
         const { error } = await supabase.from('user_module_access').insert(moduleInserts);
-        if (error) throw error;
+        if (error) {
+          console.error('[PermissionsManager] Module insert error:', error);
+          throw error;
+        }
       }
 
       if (toolInserts.length > 0) {
         const { error } = await supabase.from('user_tool_access').insert(toolInserts);
-        if (error) throw error;
+        if (error) {
+          console.error('[PermissionsManager] Tool insert error:', error);
+          throw error;
+        }
       }
 
+      console.log('[PermissionsManager] Save completed successfully');
       setMessage({ type: 'success', text: 'Permissions saved successfully' });
     } catch (error) {
-      console.error('Error saving permissions:', error);
+      console.error('[PermissionsManager] Error saving permissions:', error);
       setMessage({ type: 'error', text: 'Failed to save permissions' });
     } finally {
       setSaving(false);

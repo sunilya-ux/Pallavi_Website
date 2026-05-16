@@ -41,14 +41,25 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
     try {
       setLoading(true);
 
+      console.log('[ClientDashboard] Loading permissions for clientId:', clientId);
+      console.log('[ClientDashboard] isAdmin:', isAdmin);
+
       const { data: permissionsData, error } = await supabase.rpc('get_user_permissions', {
         user_client_id: clientId,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('[ClientDashboard] RPC error:', error);
+        throw error;
+      }
+
+      console.log('[ClientDashboard] Raw RPC response:', permissionsData);
 
       const modules = permissionsData?.modules || [];
       const tools = permissionsData?.tools || [];
+
+      console.log('[ClientDashboard] Modules from RPC:', modules.map((m: any) => ({ name: m.name, has_access: m.has_access })));
+      console.log('[ClientDashboard] Tools from RPC (courses):', tools.filter((t: any) => t.route?.startsWith('courses/')).map((t: any) => ({ name: t.name, has_access: t.has_access })));
 
       const visibleModules = isAdmin
         ? modules
@@ -65,13 +76,15 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
           })),
       }));
 
+      console.log('[ClientDashboard] Final modulesWithTools (courses):', modulesWithToolsData.find(m => m.name === 'courses')?.tools.map(t => ({ name: t.name, has_access: t.has_access })));
+
       setModulesWithTools(modulesWithToolsData);
 
       if (modulesWithToolsData.length > 0) {
         setExpandedModules(new Set([modulesWithToolsData[0].id]));
       }
     } catch (error) {
-      console.error('Error loading permissions:', error);
+      console.error('[ClientDashboard] Error loading permissions:', error);
     } finally {
       setLoading(false);
     }
