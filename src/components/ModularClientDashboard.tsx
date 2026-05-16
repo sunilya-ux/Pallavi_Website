@@ -406,12 +406,17 @@ function CoursesFolderNav({
   );
 }
 
+const LESSON_VIDEOS: Record<string, string> = {
+  'courses/morning-rituals/intention-setting': 'vPdPk6Qeuts',
+};
+
 function CourseLessonPlaceholder({ route, tools }: { route: string; tools: any[] }) {
   const GraduationCap = (Icons as any).GraduationCap;
   const PlayCircle = (Icons as any).PlayCircle;
 
   const tool = tools.find((t) => t.route === route);
   const lessonName = tool?.display_name || '';
+  const videoId = LESSON_VIDEOS[route];
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -424,15 +429,38 @@ function CourseLessonPlaceholder({ route, tools }: { route: string; tools: any[]
           </div>
         </div>
       </div>
-      <div className="p-8 flex flex-col items-center justify-center min-h-[400px]">
-        <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-6">
-          {PlayCircle && <PlayCircle className="w-10 h-10 text-slate-400" />}
+      {videoId ? (
+        <div
+          className="p-6"
+          onContextMenu={(e) => e.preventDefault()}
+        >
+          <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+            <iframe
+              className="absolute inset-0 w-full h-full rounded-lg"
+              src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&controls=1`}
+              width="100%"
+              height="100%"
+              allowFullScreen
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            />
+            <div
+              className="absolute inset-0 z-10"
+              style={{ pointerEvents: 'none' }}
+              onContextMenu={(e) => e.preventDefault()}
+            />
+          </div>
         </div>
-        <h3 className="text-lg font-semibold text-slate-900 mb-2">Video will be displayed here</h3>
-        <p className="text-slate-500 text-center max-w-md">
-          Course content for this lesson is being prepared. Check back soon for the video and materials.
-        </p>
-      </div>
+      ) : (
+        <div className="p-8 flex flex-col items-center justify-center min-h-[400px]">
+          <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-6">
+            {PlayCircle && <PlayCircle className="w-10 h-10 text-slate-400" />}
+          </div>
+          <h3 className="text-lg font-semibold text-slate-900 mb-2">Video will be displayed here</h3>
+          <p className="text-slate-500 text-center max-w-md">
+            Course content for this lesson is being prepared. Check back soon for the video and materials.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
