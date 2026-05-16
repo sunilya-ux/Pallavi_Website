@@ -175,12 +175,21 @@ export default function PermissionsManager({ onClose }: PermissionsManagerProps)
       console.log('[PermissionsManager] Enabled modules:', Array.from(permissions.modules));
       console.log('[PermissionsManager] Enabled tools:', Array.from(permissions.tools));
 
-      const deleteResults = await Promise.all([
+      const [moduleDelResult, toolDelResult] = await Promise.all([
         supabase.from('user_module_access').delete().eq('client_id', selectedClient),
         supabase.from('user_tool_access').delete().eq('client_id', selectedClient),
       ]);
 
-      console.log('[PermissionsManager] Delete results:', deleteResults.map(r => r.error));
+      if (moduleDelResult.error) {
+        console.error('[PermissionsManager] Module delete error:', moduleDelResult.error);
+        throw moduleDelResult.error;
+      }
+      if (toolDelResult.error) {
+        console.error('[PermissionsManager] Tool delete error:', toolDelResult.error);
+        throw toolDelResult.error;
+      }
+
+      console.log('[PermissionsManager] Delete completed successfully');
 
       const moduleInserts = Array.from(permissions.modules).map((moduleId) => ({
         client_id: selectedClient,
