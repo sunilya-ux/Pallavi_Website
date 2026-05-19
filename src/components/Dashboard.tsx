@@ -450,10 +450,11 @@ function AdminCourseLessonView({ route, modules }: { route: string; modules: Mod
         <div
           className="p-6"
           onContextMenu={(e) => e.preventDefault()}
+          style={{ userSelect: 'none' }}
         >
           <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden' }}>
             <iframe
-              src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&controls=1`}
+              src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&controls=1&iv_load_policy=3&disablekb=0`}
               title={lessonDisplayName}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
@@ -464,6 +465,29 @@ function AdminCourseLessonView({ route, modules }: { route: string; modules: Mod
                 width: '100%',
                 height: '100%',
                 border: 'none',
+              }}
+            />
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'transparent',
+                zIndex: 5,
+                pointerEvents: 'none',
+              }}
+            />
+            <div
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+              onContextMenu={(e) => e.preventDefault()}
+              style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                width: '120px',
+                height: '60px',
+                background: 'transparent',
+                zIndex: 10,
+                cursor: 'default',
               }}
             />
           </div>

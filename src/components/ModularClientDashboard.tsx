@@ -451,20 +451,39 @@ function CourseLessonPlaceholder({ route, tools }: { route: string; tools: any[]
         <div
           className="p-6"
           onContextMenu={(e) => e.preventDefault()}
+          style={{ userSelect: 'none' }}
         >
           <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
             <iframe
               className="absolute inset-0 w-full h-full rounded-lg"
-              src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&controls=1`}
+              src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&controls=1&iv_load_policy=3&disablekb=0`}
               width="100%"
               height="100%"
               allowFullScreen
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             />
             <div
-              className="absolute inset-0 z-10"
-              style={{ pointerEvents: 'none' }}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'transparent',
+                zIndex: 5,
+                pointerEvents: 'none',
+              }}
+            />
+            <div
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
               onContextMenu={(e) => e.preventDefault()}
+              style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                width: '120px',
+                height: '60px',
+                background: 'transparent',
+                zIndex: 10,
+                cursor: 'default',
+              }}
             />
           </div>
         </div>
