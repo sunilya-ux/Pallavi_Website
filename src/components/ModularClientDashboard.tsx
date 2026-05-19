@@ -421,6 +421,11 @@ function CoursesFolderNav({
 
 const LESSON_VIDEOS: Record<string, string> = {
   'courses/morning-rituals/intention-setting': 'vPdPk6Qeuts',
+  'courses/morning-rituals/box-breathing': 'gg5Isdp8Aic',
+  'courses/morning-rituals/affirmations': 'PJT82unfDHs',
+  'courses/morning-rituals/version-2': 'vvW7qa3aW0g',
+  'courses/morning-rituals/review-journal': 'mJMU2XjHSO4',
+  'courses/morning-rituals/goal-of-the-week': 'o7Db3zif6Eo',
 };
 
 function CourseLessonPlaceholder({ route, tools }: { route: string; tools: any[] }) {
