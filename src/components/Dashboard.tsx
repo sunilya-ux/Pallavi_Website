@@ -230,15 +230,178 @@ IN WITNESS WHEREOF Pallavi Chatterjee have duly affixed their signatures under h
 Signature of Pallavi Chatterjee`;
   };
 
+  const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
   const generateContractHTML = () => {
-    const text = buildContractText();
-    const escaped = text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/\n/g, '<br/>');
-    return `<pre style="white-space:pre-wrap;font-family:'Times New Roman',Times,serif;font-size:12pt;line-height:1.6;">${escaped}</pre>`;
+    const name = esc(contractClientName || '[CLIENT_NAME]');
+    const paymentTerms = esc(contractPaymentTerms || '[PAYMENT_TERMS]');
+
+    const sectionItems = (lines: string[]) =>
+      lines.map(l => `<p class="section-body">${esc(l)}</p>`).join('');
+
+    const guaranteeBlock = contractGuarantee
+      ? `<div class="guarantee-box">
+          <div class="guarantee-title">&#10003; Guarantee Included</div>
+          <p>Our coaching program is 6 months long, however, if you are not at your GOAL within 6 months in the program. We will help and support you UNTIL you make back the program fee paid to us.</p>
+          <p style="margin-top:8px;">You are eligible to claim any of the above guarantee if you satisfy the conditions below (according to our standards):</p>
+          <p style="margin-top:8px;"><strong>No Loss Guarantee:</strong> Work with us until you make back your investment! The guarantee applies only if you consistently complete the required work throughout the entire duration of the program.</p>
+          <p style="margin-top:8px;">We do not offer any refunds for the program under any circumstances. All payments made are non-refundable.</p>
+        </div>`
+      : `<div class="guarantee-box" style="background:#fff8f8;border-color:#c00;">
+          <div class="guarantee-title" style="color:#c00;">No Guarantee Offered</div>
+          <p>No guarantee is offered with this program. All payments made are non-refundable.</p>
+        </div>`;
+
+    return `<div class="contract-wrapper">
+  <div class="contract-header">
+    <div class="company-name">Elite Wizards Training</div>
+    <div class="contact-info">Pallavi Chatterjee &nbsp;|&nbsp; Noida, India &nbsp;|&nbsp; ++916386355905 &nbsp;|&nbsp; info@lifecoachpallavichatterjee.com</div>
+  </div>
+
+  <div class="contract-title">Elite Wizards Training Agreement</div>
+
+  <div class="contract-meta">
+    <span class="agreement-date">Agreement dated: ${esc(today)}</span>
+  </div>
+
+  <div class="parties-block">
+    <span class="party-label">Contractor:</span> Pallavi Chatterjee &amp; Elite Wizards Training, Noida India<br/>
+    <span class="party-label">Client:</span> ${name}
+  </div>
+
+  <div class="section-heading">1. Terms of Enrollment</div>
+  ${sectionItems([
+    'a. The following policy governs your participation in the Program Elite Wizards Training presented by Pallavi Chatterjee ["Contractor"]. Please read this Policy carefully. By using the Program you agree that your participation in our Program and use of Program materials is governed by the following terms and conditions.',
+    'b. We are committed to providing all participants with a positive experience. Thus, Pallavi Chatterjee may, at its sole discretion, limit, suspend, or terminate your participation in any of its programs, live, recorded, social media-based or digital without refund or forgiveness of remaining payments if:',
+    'c. You become disruptive or difficult to work with; you fail to follow the Program guidelines; or, you impair the participation of instructors or participants in the program.',
+  ])}
+
+  <div class="section-heading">2. Program Deliverables (Admissible only to the Client)</div>
+  ${sectionItems([
+    'a. Private Whatsapp Community',
+    'b. Coaching Program Content for 6 months',
+    'c. Accountability Support for 6 months',
+    'd. Support From Pallavi Chatterjee & other coaches for 6 months',
+  ])}
+
+  <div class="section-heading">3. Content</div>
+  ${sectionItems([
+    'a. Program education and information is intended for a general audience and does not purport to be, nor should it be construed as, specific advice, tailored to any individual.',
+    'b. All materials, procedures, policies, and standards, all teaching manuals, all teaching aids, all supplements and the like that have been or will be made available by Pallavi Chatterjee or its designated facilitators, or any other source, oral or written, are for personal use in or in conjunction with this training program only.',
+    'c. Program content is for personal use only, and cannot be sold, recorded, videotaped, shared, taught, given away, or otherwise divulged without the express written consent of Pallavi Chatterjee.',
+    'd. The information contained in the program material is strictly for educational purposes. Therefore, if you wish to apply ideas contained in this material, you are taking full responsibility for those actions.',
+    'e. We assume no responsibility for errors or omissions that may appear in any program materials.',
+    'f. Usernames and passwords cannot be shared with any third-parties.',
+    'g. Any violation of Pallavi Chatterjee\'s policies regarding content usage shall result in the immediate termination of your enrollment without refund.',
+  ])}
+
+  <div class="section-heading">4. Privacy and Confidentiality</div>
+  ${sectionItems([
+    'a. We respect your privacy and must insist that you respect the privacy of fellow Elite Wizards Training participants.',
+    'b. We respect your confidential and proprietary information ideas, plans and trade secrets [collectively, "Confidential Information"] and must insist that you respect the same rights of fellow Program participants and of Pallavi Chatterjee.',
+    'c. Thus, you agree:',
+  ])}
+  <ul class="bullet-list">
+    <li>Not to infringe any Program participants or Pallavi Chatterjee\'s copyright, patent, trademark, trade secret or other intellectual property rights;</li>
+    <li>Any Confidential Information shared by program participants or any representative of Pallavi Chatterjee is confidential and Proprietary, and belongs solely and exclusively to the Participant who discloses it or Pallavi Chatterjee. Such information cannot be disclosed to any other person or used in any manner other than in discussion with other Program participants during Program sessions;</li>
+    <li>All materials and information provided to you by Pallavi Chatterjee is confidential and its proprietary intellectual property belongs solely and exclusively to Pallavi Chatterjee, and can only be used by you as authorized by Pallavi Chatterjee;</li>
+    <li>The reproduction, distribution and sale of these materials by anyone but Pallavi Chatterjee is strictly prohibited;</li>
+  </ul>
+  <p class="section-body">d. While you are free to discuss your personal results from programs and training, you must keep the experiences and statements, oral or written, of all other participants in the strictest of confidence.</p>
+
+  <div class="section-heading">5. Interactive Features</div>
+  <p class="section-body">a. It is a condition of your use of the Private Student Group and participation in the Program that you do not:</p>
+  <ul class="bullet-list">
+    <li>Restrict or inhibit any other user from using and enjoying the deliverables.</li>
+    <li>Impersonate any person or entity, or falsely state or otherwise misrepresent your affiliation with a person or entity.</li>
+    <li>Instigate or encourage others to commit illegal activities or cause injury or property damage to any person.</li>
+    <li>Gain unauthorized access to the services, or any account, computer system, or network connected, by means such as hacking, password mining or other illicit means.</li>
+    <li>Post or transmit any unlawful, threatening, abusive, libelous, defamatory, obscene, vulgar, pornographic, profane or indecent information of any kind.</li>
+    <li>Post or transmit any information, software or other material that violates or infringes upon the rights of others.</li>
+    <li>Post, transmit or in any way exploit any information, software or other material for commercial purposes without our express written approval.</li>
+    <li>Gather for marketing purposes any email addresses or other personal information posted by other users.</li>
+  </ul>
+
+  <div class="section-heading">6. Limitation of Liability</div>
+  ${sectionItems([
+    'a. Any user failing to comply with the terms and conditions of this Agreement may be expelled from and refused continued access to the Program. Pallavi Chatterjee expressly disclaims all responsibility and endorsement and makes no representation as to the validity of any opinion, advice, information or statement made or displayed in these forums by third parties. Under no circumstances will we, our affiliates, suppliers or agents be liable for any loss or damage caused by your reliance on information obtained through these forums.',
+    'b. Pallavi Chatterjee has no obligation whatsoever to monitor any of the content or postings on the message boards, chat rooms or other public forums of the Program.',
+    'c. Under no circumstances shall we, our subsidiary and parent companies or affiliates be liable for any direct, indirect, incidental, special or consequential damages that result from the use of, or the inability to use, the program materials. If you are dissatisfied with the Program, your sole and exclusive remedy is to discontinue using the products, services and/or materials.',
+  ])}
+
+  <div class="section-heading">7. Guarantee Offered</div>
+  ${guaranteeBlock}
+
+  <div class="section-heading">8. Non-Disclosure and Non-Use Obligations</div>
+  ${sectionItems([
+    'a. You agree to maintain, in confidence and will not disclose, disseminate or use any Confidential Information belonging to Pallavi Chatterjee, whether or not in written form.',
+    'b. Definition of Confidentiality. As used in this Agreement, "Confidential Information" refers to the business activities, dealings or interests of Pallavi Chatterjee and/or its officers, directors, affiliates, and/or employees; any confidential information, knowledge and know-how concerning the operations, products, services, procedures, or clients of Pallavi Chatterjee.',
+  ])}
+
+  <div class="section-heading">9. Media and Marketing Release</div>
+  ${sectionItems([
+    'a. I authorize Pallavi Chatterjee and all its subsidiaries and trademark brands to use my materials for marketing purposes. These materials include but are not limited to using my name, voice, picture, video, screenshots of messages, any information obtained during live events, online training calls, without payment or any other form of compensation to me.',
+    'b. Agree that I shall not have any right of approval, claim to additional compensation or benefit, or claim arising out of the use of my name and/or photograph/video.',
+    'c. Agree that any and all materials created by Pallavi Chatterjee that incorporate my name and/or photograph/likeness shall remain the sole and exclusive property of Pallavi Chatterjee.',
+  ])}
+
+  <div class="section-heading">10. Dispute Resolution</div>
+  <p class="section-body">a. All disputes arising under or concerning this Agreement are to be submitted to Alternative Dispute Resolution Based at Noida or Delhi, India.</p>
+
+  <div class="section-heading">11. Payment Terms</div>
+  <div class="payment-box">${paymentTerms}</div>
+
+  <div class="section-heading">12. Termination by ${name}</div>
+  <p class="section-body">If ${name} terminates this agreement for any reason other than a breach of contract by Elite Wizards Training, ${name} shall be obligated to pay Elite Wizards Training the remaining balance of all fees and expenses due under this agreement as of the date of termination.</p>
+  <p class="section-body"><strong>Enforcement:</strong> In the event ${name} fails to make the required payment as stipulated in this clause, Elite Wizards Training shall be entitled to pursue all available legal remedies to enforce payment, including but not limited to, seeking damages, injunctive relief, and legal fees incurred in the collection process.</p>
+
+  <div class="section-heading">13. Severability Clause</div>
+  <p class="section-body">If any provision of this Agreement is held to be invalid, illegal, or unenforceable by a court of competent jurisdiction, the validity, legality, and enforceability of the remaining provisions shall not in any way be affected or impaired thereby.</p>
+
+  <p class="section-body" style="margin-top:20px;">IN WITNESS WHEREOF Pallavi Chatterjee have duly affixed their signatures under hand and seal on ${esc(today)}.</p>
+
+  <div class="signature-section">
+    <div class="signature-block">
+      <div class="signature-line"></div>
+      <div class="signature-label">Signature of Pallavi Chatterjee</div>
+    </div>
+    <div class="signature-block">
+      <div class="signature-line"></div>
+      <div class="signature-label">Signature of ${name} (The Client)</div>
+    </div>
+  </div>
+</div>`;
   };
+
+  const PRINT_STYLES = `
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    @page { size: A4; margin: 2cm 2.5cm; }
+    @page :first { margin-top: 2.5cm; }
+    body { font-family: 'Georgia', 'Times New Roman', serif; font-size: 11pt; line-height: 1.7; color: #1a1a1a; background: #fff; }
+    .contract-wrapper { max-width: 100%; }
+    .contract-header { border-bottom: 3px solid #1a5c3a; padding-bottom: 16px; margin-bottom: 24px; }
+    .contract-header .company-name { font-size: 18pt; font-weight: 700; color: #1a5c3a; letter-spacing: 1px; text-transform: uppercase; }
+    .contract-header .contact-info { font-size: 9pt; color: #555; margin-top: 4px; line-height: 1.5; }
+    .contract-title { text-align: center; font-size: 15pt; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #1a1a1a; margin: 24px 0 8px 0; padding: 12px 0; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; }
+    .contract-meta { margin: 20px 0; font-size: 10.5pt; color: #333; }
+    .contract-meta .agreement-date { font-weight: 600; }
+    .parties-block { background: #f7faf8; border-left: 4px solid #1a5c3a; padding: 12px 16px; margin: 16px 0 24px 0; font-size: 10.5pt; }
+    .parties-block .party-label { font-weight: 700; color: #1a5c3a; }
+    .section-heading { font-size: 11pt; font-weight: 700; text-transform: uppercase; color: #1a1a1a; margin-top: 22px; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #ddd; letter-spacing: 0.5px; }
+    .section-body { font-size: 10.5pt; color: #2a2a2a; margin-bottom: 6px; }
+    .section-body p { margin-bottom: 6px; }
+    .bullet-list { margin: 6px 0 6px 16px; }
+    .bullet-list li { margin-bottom: 4px; font-size: 10.5pt; list-style-type: disc; }
+    .guarantee-box { background: #f0faf4; border: 1px solid #1a5c3a; border-radius: 4px; padding: 12px 16px; margin-top: 8px; font-size: 10.5pt; }
+    .guarantee-box .guarantee-title { font-weight: 700; color: #1a5c3a; margin-bottom: 6px; }
+    .payment-box { background: #fafafa; border: 1px solid #ccc; border-radius: 4px; padding: 12px 16px; margin-top: 8px; font-size: 10.5pt; white-space: pre-wrap; }
+    .signature-section { margin-top: 48px; padding-top: 20px; border-top: 2px solid #1a5c3a; display: flex; justify-content: space-between; gap: 40px; }
+    .signature-block { flex: 1; }
+    .signature-line { border-bottom: 1px solid #333; height: 40px; margin-bottom: 6px; }
+    .signature-label { font-size: 9pt; color: #555; font-weight: 600; }
+    .page-break { page-break-before: always; }
+    @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } button { display: none !important; } }
+  `;
 
   const handleDownloadPDF = () => {
     const contractHTML = generateContractHTML();
@@ -251,44 +414,19 @@ Signature of Pallavi Chatterjee`;
     }
 
     printWindow.document.open();
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <title>Elite Wizards Training Agreement</title>
-          <style>
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            body {
-              font-family: 'Times New Roman', Times, serif;
-              font-size: 12pt;
-              line-height: 1.6;
-              color: #000;
-              padding: 40px;
-              max-width: 800px;
-              margin: 0 auto;
-            }
-            h1 { font-size: 16pt; text-align: center; margin-bottom: 20px; font-weight: bold; }
-            h2 { font-size: 13pt; margin-top: 20px; margin-bottom: 8px; font-weight: bold; }
-            p { margin-bottom: 8px; }
-            .header { text-align: center; margin-bottom: 30px; }
-            .signature-section { margin-top: 60px; }
-            @media print {
-              body { padding: 20px; }
-              button { display: none; }
-            }
-          </style>
-        </head>
-        <body>
-          ${contractHTML}
-          <script>
-            window.onload = function() {
-              window.print();
-            };
-          </script>
-        </body>
-      </html>
-    `);
+    printWindow.document.write(`<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Elite Wizards Training Agreement</title>
+    <style>${PRINT_STYLES}</style>
+  </head>
+  <body>
+    ${contractHTML}
+    <script>window.onload = function() { window.print(); };</script>
+  </body>
+</html>`);
     printWindow.document.close();
   };
 
