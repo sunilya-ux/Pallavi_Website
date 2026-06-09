@@ -230,50 +230,91 @@ IN WITNESS WHEREOF Pallavi Chatterjee have duly affixed their signatures under h
 Signature of Pallavi Chatterjee`;
   };
 
-  const handleDownloadPDF = () => {
-    const contractText = buildContractText();
-    const htmlContent = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <title>Elite Wizards Training Agreement</title>
-  <style>
-    @page { margin: 2cm 2.5cm; }
-    body { font-family: Georgia, serif; font-size: 12pt; line-height: 1.6; color: #000; }
-    h1 { font-size: 16pt; text-align: center; margin-bottom: 8pt; letter-spacing: 1px; }
-    pre { white-space: pre-wrap; font-family: Georgia, serif; font-size: 12pt; line-height: 1.6; }
-    @media print { body { margin: 0; } }
-  </style>
-</head>
-<body>
-  <pre>${contractText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
-  <script>window.onload = function() { window.print(); }</script>
-</body>
-</html>`;
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      printWindow.document.write(htmlContent);
-      printWindow.document.close();
-    }
-  };
-
-  const handleDownloadWord = () => {
-    const contractText = buildContractText();
-    const htmlBody = contractText
+  const generateContractHTML = () => {
+    const text = buildContractText();
+    const escaped = text
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/\n/g, '<br/>');
-    const wordHtml = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-<head><meta charset='utf-8'><title>Elite Wizards Training Agreement</title>
-<style>body{font-family:Georgia,serif;font-size:12pt;line-height:1.6;margin:2cm 2.5cm;}</style>
-</head><body>${htmlBody}</body></html>`;
-    const blob = new Blob([wordHtml], { type: 'application/msword' });
+    return `<pre style="white-space:pre-wrap;font-family:'Times New Roman',Times,serif;font-size:12pt;line-height:1.6;">${escaped}</pre>`;
+  };
+
+  const handleDownloadPDF = () => {
+    const contractHTML = generateContractHTML();
+
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+
+    if (!printWindow) {
+      alert('Please allow popups for this site to download PDF. Check your browser popup settings.');
+      return;
+    }
+
+    printWindow.document.open();
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Elite Wizards Training Agreement</title>
+          <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body {
+              font-family: 'Times New Roman', Times, serif;
+              font-size: 12pt;
+              line-height: 1.6;
+              color: #000;
+              padding: 40px;
+              max-width: 800px;
+              margin: 0 auto;
+            }
+            h1 { font-size: 16pt; text-align: center; margin-bottom: 20px; font-weight: bold; }
+            h2 { font-size: 13pt; margin-top: 20px; margin-bottom: 8px; font-weight: bold; }
+            p { margin-bottom: 8px; }
+            .header { text-align: center; margin-bottom: 30px; }
+            .signature-section { margin-top: 60px; }
+            @media print {
+              body { padding: 20px; }
+              button { display: none; }
+            }
+          </style>
+        </head>
+        <body>
+          ${contractHTML}
+          <script>
+            window.onload = function() {
+              window.print();
+            };
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
+
+  const handleDownloadWord = () => {
+    const contractHTML = generateContractHTML();
+    const wordContent = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office'
+            xmlns:w='urn:schemas-microsoft-com:office:word'
+            xmlns='http://www.w3.org/TR/REC-html40'>
+        <head>
+          <meta charset='utf-8'>
+          <title>Elite Wizards Training Agreement</title>
+        </head>
+        <body style="font-family: Times New Roman; font-size: 12pt; padding: 40px;">
+          ${contractHTML}
+        </body>
+      </html>
+    `;
+    const blob = new Blob(['\ufeff', wordContent], { type: 'application/msword' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Elite_Wizards_Agreement_${(contractClientName || 'Client').replace(/\s+/g, '_')}.doc`;
-    a.click();
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Elite_Wizards_Agreement_${(contractClientName || 'Client').replace(/\s+/g, '_')}.doc`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
     URL.revokeObjectURL(url);
   };
 
