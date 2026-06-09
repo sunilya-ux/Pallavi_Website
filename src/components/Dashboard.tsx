@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import { LogOut, Menu, X, Users, Shield, ChevronDown, ChevronRight, FileText } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -45,6 +47,7 @@ export default function Dashboard({ userEmail }: DashboardProps) {
   const [contractGuarantee, setContractGuarantee] = useState(true);
   const [contractPaymentTerms, setContractPaymentTerms] = useState('');
   const [contractGenerated, setContractGenerated] = useState(false);
+  const contractRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     loadModulesAndTools();
@@ -403,31 +406,36 @@ Signature of Pallavi Chatterjee`;
     @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } button { display: none !important; } }
   `;
 
-  const handleDownloadPDF = () => {
-    const contractHTML = generateContractHTML();
+  const handleDownloadPDF = async () => {
+    const element = contractRef.current;
+    if (!element) return;
 
-    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+    });
 
-    if (!printWindow) {
-      alert('Please allow popups for this site to download PDF. Check your browser popup settings.');
-      return;
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const imgWidth = canvas.width;
+    const imgHeight = canvas.height;
+    const ratio = pdfWidth / imgWidth;
+    const scaledHeight = imgHeight * ratio;
+
+    let position = 0;
+    let remainingHeight = scaledHeight;
+
+    while (remainingHeight > 0) {
+      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, scaledHeight);
+      remainingHeight -= pdfHeight;
+      position -= pdfHeight;
+      if (remainingHeight > 0) pdf.addPage();
     }
 
-    printWindow.document.open();
-    printWindow.document.write(`<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Elite Wizards Training Agreement</title>
-    <style>${PRINT_STYLES}</style>
-  </head>
-  <body>
-    ${contractHTML}
-    <script>window.onload = function() { window.print(); };</script>
-  </body>
-</html>`);
-    printWindow.document.close();
+    pdf.save(`Elite_Wizards_Agreement_${(contractClientName || 'Client').replace(/\s+/g, '_')}.pdf`);
   };
 
   const handleDownloadWord = () => {
@@ -457,9 +465,16 @@ Signature of Pallavi Chatterjee`;
   };
 
   const renderContractGenerator = () => {
-    const contractText = contractGenerated ? buildContractText() : '';
+    const contractHTML = contractGenerated ? generateContractHTML() : '';
     return (
       <div className="space-y-6">
+        {contractGenerated && (
+          <div
+            ref={contractRef}
+            style={{ position: 'absolute', left: '-9999px', top: 0, width: '794px', background: 'white', padding: '60px', fontFamily: 'Georgia, serif', fontSize: '11pt', lineHeight: '1.7', color: '#1a1a1a' }}
+            dangerouslySetInnerHTML={{ __html: `<style>${PRINT_STYLES}</style>${contractHTML}` }}
+          />
+        )}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center">
@@ -535,8 +550,9 @@ Signature of Pallavi Chatterjee`;
         {contractGenerated && (
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
             <h3 className="text-lg font-semibold text-slate-900 mb-4">Contract Preview</h3>
-            <div className="bg-slate-50 rounded-lg border border-slate-200 p-6 overflow-auto">
-              <pre className="whitespace-pre-wrap font-mono text-xs text-slate-800 leading-relaxed">{contractText}</pre>
+            <div className="bg-white rounded-lg border border-slate-200 p-6 overflow-auto" style={{ fontFamily: 'Georgia, serif', fontSize: '11pt', lineHeight: '1.7', color: '#1a1a1a' }}>
+              <style>{PRINT_STYLES}</style>
+              <div dangerouslySetInnerHTML={{ __html: contractHTML }} />
             </div>
 
             <div className="flex gap-3 mt-5">
