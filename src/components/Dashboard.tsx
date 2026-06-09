@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LogOut, Menu, X, Users, Shield, ChevronDown, ChevronRight } from 'lucide-react';
+import { LogOut, Menu, X, Users, Shield, ChevronDown, ChevronRight, FileText } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import ClientsManager from './ClientsManager';
@@ -31,7 +31,7 @@ interface Course {
 
 export default function Dashboard({ userEmail }: DashboardProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [activeSection, setActiveSection] = useState<'overview' | 'clients'>('overview');
+  const [activeSection, setActiveSection] = useState<'overview' | 'clients' | 'contract-generator'>('overview');
   const [showPermissionsModal, setShowPermissionsModal] = useState(false);
   const [modules, setModules] = useState<ModuleWithTools[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
@@ -39,6 +39,12 @@ export default function Dashboard({ userEmail }: DashboardProps) {
   const [expandedCourses, setExpandedCourses] = useState<Set<string>>(new Set());
   const [activeToolRoute, setActiveToolRoute] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Contract generator state
+  const [contractClientName, setContractClientName] = useState('');
+  const [contractGuarantee, setContractGuarantee] = useState(true);
+  const [contractPaymentTerms, setContractPaymentTerms] = useState('');
+  const [contractGenerated, setContractGenerated] = useState(false);
 
   useEffect(() => {
     loadModulesAndTools();
@@ -114,9 +120,275 @@ export default function Dashboard({ userEmail }: DashboardProps) {
     return IconComponent ? IconComponent : Icons.FileQuestion;
   };
 
+  const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+  const GUARANTEE_TEXT_CHECKED = `Our coaching program is 6 months long, however, if you are not at your GOAL within 6 months in the program. We will help and support you UNTIL you make back the program fee paid to us.
+
+You are eligible to claim any of the above guarantee if you satisfy the conditions below (according to our standards):
+
+No Loss Guarantee: Work with us until you make back your investment! The guarantee applies only if you consistently complete the required work throughout the entire duration of the program.
+
+We do not offer any refunds for the program under any circumstances. All payments made are non-refundable.`;
+
+  const GUARANTEE_TEXT_UNCHECKED = `No guarantee is offered with this program. All payments made are non-refundable.`;
+
+  const buildContractText = () => {
+    const guaranteeText = contractGuarantee ? GUARANTEE_TEXT_CHECKED : GUARANTEE_TEXT_UNCHECKED;
+    const name = contractClientName || '[CLIENT_NAME]';
+    return `ELITE WIZARDS TRAINING AGREEMENT
+
+Pallavi Chatterjee
+Elite Wizards Training, Noida, India
+++916386355905
+info@lifecoachpallavichatterjee.com
+
+ELITE WIZARDS TRAINING AGREEMENT [the "Agreement"] dated this ${today}.
+
+Between
+
+Pallavi Chatterjee and Elite Wizards Training, Noida India [The Contractor] &
+
+${name} ["The Client"]
+
+1. TERMS OF ENROLLMENT:
+a. The following policy governs your participation in the Program Elite Wizards Training presented by Pallavi Chatterjee ["Contractor"]. Please read this Policy carefully. By using the Program you agree that your participation in our Program and use of Program materials is governed by the following terms and conditions.
+b. We are committed to providing all participants with a positive experience. Thus, Pallavi Chatterjee may, at its sole discretion, limit, suspend, or terminate your participation in any of its programs, live, recorded, social media-based or digital without refund or forgiveness of remaining payments if:
+c. You become disruptive or difficult to work with; you fail to follow the Program guidelines; or, you impair the participation of instructors or participants in the program.
+
+2. PROGRAM DELIVERABLES (Admissible only to the Client):
+a. Private Whatsapp Community
+b. Coaching Program Content for 6 months
+c. Accountability Support for 6 months
+d. Support From Pallavi Chatterjee & other coaches for 6 months
+
+3. CONTENT
+a. Program education and information is intended for a general audience and does not purport to be, nor should it be construed as, specific advice, tailored to any individual.
+b. All materials, procedures, policies, and standards, all teaching manuals, all teaching aids, all supplements and the like that have been or will be made available by Pallavi Chatterjee or its designated facilitators, or any other source, oral or written, are for personal use in or in conjunction with this training program only.
+c. Program content is for personal use only, and cannot be sold, recorded, videotaped, shared, taught, given away, or otherwise divulged without the express written consent of Pallavi Chatterjee.
+d. The information contained in the program material is strictly for educational purposes. Therefore, if you wish to apply ideas contained in this material, you are taking full responsibility for those actions.
+e. We assume no responsibility for errors or omissions that may appear in any program materials.
+f. Usernames and passwords cannot be shared with any third-parties.
+g. Any violation of Pallavi Chatterjee's policies regarding content usage shall result in the immediate termination of your enrollment without refund.
+
+4. PRIVACY AND CONFIDENTIALITY
+a. We respect your privacy and must insist that you respect the privacy of fellow Elite Wizards Training participants.
+b. We respect your confidential and proprietary information ideas, plans and trade secrets [collectively, "Confidential Information"] and must insist that you respect the same rights of fellow Program participants and of Pallavi Chatterjee.
+c. Thus, you agree:
+- Not to infringe any Program participants or Pallavi Chatterjee's copyright, patent, trademark, trade secret or other intellectual property rights;
+- Any Confidential Information shared by program participants or any representative of Pallavi Chatterjee is confidential and Proprietary, and belongs solely and exclusively to the Participant who discloses it or Pallavi Chatterjee. Such information cannot be disclosed to any other person or used in any manner other than in discussion with other Program participants during Program sessions;
+- All materials and information provided to you by Pallavi Chatterjee is confidential and its proprietary intellectual property belongs solely and exclusively to Pallavi Chatterjee, and can only be used by you as authorized by Pallavi Chatterjee;
+- The reproduction, distribution and sale of these materials by anyone but Pallavi Chatterjee is strictly prohibited;
+d. While you are free to discuss your personal results from programs and training, you must keep the experiences and statements, oral or written, of all other participants in the strictest of confidence.
+
+5. INTERACTIVE FEATURES
+a. It is a condition of your use of the Private Student Group and participation in the Program that you do not:
+- Restrict or inhibit any other user from using and enjoying the deliverables.
+- Impersonate any person or entity, or falsely state or otherwise misrepresent your affiliation with a person or entity.
+- Instigate or encourage others to commit illegal activities or cause injury or property damage to any person.
+- Gain unauthorized access to the services, or any account, computer system, or network connected, by means such as hacking, password mining or other illicit means.
+- Post or transmit any unlawful, threatening, abusive, libelous, defamatory, obscene, vulgar, pornographic, profane or indecent information of any kind.
+- Post or transmit any information, software or other material that violates or infringes upon the rights of others.
+- Post, transmit or in any way exploit any information, software or other material for commercial purposes without our express written approval.
+- Gather for marketing purposes any email addresses or other personal information posted by other users.
+
+6. LIMITATION OF LIABILITY
+a. Any user failing to comply with the terms and conditions of this Agreement may be expelled from and refused continued access to the Program. Pallavi Chatterjee expressly disclaims all responsibility and endorsement and makes no representation as to the validity of any opinion, advice, information or statement made or displayed in these forums by third parties. Under no circumstances will we, our affiliates, suppliers or agents be liable for any loss or damage caused by your reliance on information obtained through these forums.
+b. Pallavi Chatterjee has no obligation whatsoever to monitor any of the content or postings on the message boards, chat rooms or other public forums of the Program.
+c. Under no circumstances shall we, our subsidiary and parent companies or affiliates be liable for any direct, indirect, incidental, special or consequential damages that result from the use of, or the inability to use, the program materials. If you are dissatisfied with the Program, your sole and exclusive remedy is to discontinue using the products, services and/or materials.
+
+7. GUARANTEE OFFERED
+${guaranteeText}
+
+8. NON-DISCLOSURE AND NON-USE OBLIGATIONS
+a. You agree to maintain, in confidence and will not disclose, disseminate or use any Confidential Information belonging to Pallavi Chatterjee, whether or not in written form.
+b. Definition of Confidentiality. As used in this Agreement, "Confidential Information" refers to the business activities, dealings or interests of Pallavi Chatterjee and/or its officers, directors, affiliates, and/or employees; any confidential information, knowledge and know-how concerning the operations, products, services, procedures, or clients of Pallavi Chatterjee.
+
+9. MEDIA AND MARKETING RELEASE
+a. I authorize Pallavi Chatterjee and all its subsidiaries and trademark brands to use my materials for marketing purposes. These materials include but are not limited to using my name, voice, picture, video, screenshots of messages, any information obtained during live events, online training calls, without payment or any other form of compensation to me.
+b. Agree that I shall not have any right of approval, claim to additional compensation or benefit, or claim arising out of the use of my name and/or photograph/video.
+c. Agree that any and all materials created by Pallavi Chatterjee that incorporate my name and/or photograph/likeness shall remain the sole and exclusive property of Pallavi Chatterjee.
+
+10. DISPUTE RESOLUTION
+a. All disputes arising under or concerning this Agreement are to be submitted to Alternative Dispute Resolution Based at Noida or Delhi, India.
+
+11. PAYMENT TERMS
+${contractPaymentTerms || '[PAYMENT_TERMS]'}
+
+12. TERMINATION BY ${name}:
+If ${name} terminates this agreement for any reason other than a breach of contract by Elite Wizards Training, ${name} shall be obligated to pay Elite Wizards Training the remaining balance of all fees and expenses due under this agreement as of the date of termination.
+
+Enforcement: In the event ${name} fails to make the required payment as stipulated in this clause, Elite Wizards Training shall be entitled to pursue all available legal remedies to enforce payment, including but not limited to, seeking damages, injunctive relief, and legal fees incurred in the collection process.
+
+13. SEVERABILITY CLAUSE:
+If any provision of this Agreement is held to be invalid, illegal, or unenforceable by a court of competent jurisdiction, the validity, legality, and enforceability of the remaining provisions shall not in any way be affected or impaired thereby.
+
+IN WITNESS WHEREOF Pallavi Chatterjee have duly affixed their signatures under hand and seal on ${today}.
+
+                                                    ____________________
+                                                    Signatures of the client
+
+Signature of Pallavi Chatterjee`;
+  };
+
+  const handleDownloadPDF = () => {
+    const contractText = buildContractText();
+    const htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Elite Wizards Training Agreement</title>
+  <style>
+    @page { margin: 2cm 2.5cm; }
+    body { font-family: Georgia, serif; font-size: 12pt; line-height: 1.6; color: #000; }
+    h1 { font-size: 16pt; text-align: center; margin-bottom: 8pt; letter-spacing: 1px; }
+    pre { white-space: pre-wrap; font-family: Georgia, serif; font-size: 12pt; line-height: 1.6; }
+    @media print { body { margin: 0; } }
+  </style>
+</head>
+<body>
+  <pre>${contractText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
+  <script>window.onload = function() { window.print(); }</script>
+</body>
+</html>`;
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+    }
+  };
+
+  const handleDownloadWord = () => {
+    const contractText = buildContractText();
+    const htmlBody = contractText
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\n/g, '<br/>');
+    const wordHtml = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head><meta charset='utf-8'><title>Elite Wizards Training Agreement</title>
+<style>body{font-family:Georgia,serif;font-size:12pt;line-height:1.6;margin:2cm 2.5cm;}</style>
+</head><body>${htmlBody}</body></html>`;
+    const blob = new Blob([wordHtml], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Elite_Wizards_Agreement_${(contractClientName || 'Client').replace(/\s+/g, '_')}.doc`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const renderContractGenerator = () => {
+    const contractText = contractGenerated ? buildContractText() : '';
+    return (
+      <div className="space-y-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center">
+              <FileText className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold text-slate-900">Contract Generator</h2>
+              <p className="text-sm text-slate-500">Generate an Elite Wizards Training Agreement</p>
+            </div>
+          </div>
+
+          <div className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">Agreement Date</label>
+              <input
+                type="text"
+                value={today}
+                readOnly
+                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-500 text-sm cursor-default"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">Client Name <span className="text-red-500">*</span></label>
+              <input
+                type="text"
+                value={contractClientName}
+                onChange={(e) => { setContractClientName(e.target.value); setContractGenerated(false); }}
+                placeholder="Enter full client name"
+                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 text-sm text-slate-900"
+              />
+            </div>
+
+            <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
+              <input
+                type="checkbox"
+                id="guarantee-checkbox"
+                checked={contractGuarantee}
+                onChange={(e) => { setContractGuarantee(e.target.checked); setContractGenerated(false); }}
+                className="mt-0.5 h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+              />
+              <label htmlFor="guarantee-checkbox" className="text-sm text-slate-700 cursor-pointer leading-snug">
+                <span className="font-medium">Include Guarantee Clause (Point 7):</span> Work with us until you make back your investment
+              </label>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">Payment Terms (Point 11) <span className="text-red-500">*</span></label>
+              <textarea
+                value={contractPaymentTerms}
+                onChange={(e) => { setContractPaymentTerms(e.target.value); setContractGenerated(false); }}
+                placeholder="Enter payment details, installment amounts, due dates, accepted methods, etc."
+                rows={5}
+                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 text-sm text-slate-900 resize-vertical"
+              />
+            </div>
+
+            <button
+              onClick={() => {
+                if (!contractClientName.trim()) {
+                  alert('Please enter a client name before generating the contract.');
+                  return;
+                }
+                setContractGenerated(true);
+              }}
+              className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-colors text-sm"
+            >
+              Generate Contract
+            </button>
+          </div>
+        </div>
+
+        {contractGenerated && (
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">Contract Preview</h3>
+            <div className="bg-slate-50 rounded-lg border border-slate-200 p-6 overflow-auto">
+              <pre className="whitespace-pre-wrap font-mono text-xs text-slate-800 leading-relaxed">{contractText}</pre>
+            </div>
+
+            <div className="flex gap-3 mt-5">
+              <button
+                onClick={handleDownloadPDF}
+                className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded-lg transition-colors text-sm flex items-center justify-center gap-2"
+              >
+                <FileText className="w-4 h-4" />
+                Download PDF
+              </button>
+              <button
+                onClick={handleDownloadWord}
+                className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-sm flex items-center justify-center gap-2"
+              >
+                <FileText className="w-4 h-4" />
+                Download Word Doc
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const renderToolContent = () => {
     if (activeSection === 'clients') {
       return <ClientsManager />;
+    }
+
+    if (activeSection === 'contract-generator') {
+      return renderContractGenerator();
     }
 
     if (activeToolRoute === '/passion-coaching') {
@@ -258,6 +530,18 @@ export default function Dashboard({ userEmail }: DashboardProps) {
           >
             <Shield className="w-5 h-5" />
             <span>Access Control</span>
+          </button>
+
+          <button
+            onClick={() => { setActiveSection('contract-generator'); setActiveToolRoute(null); }}
+            className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors w-full text-left text-menu ${
+              activeSection === 'contract-generator'
+                ? 'bg-emerald-600 text-white font-medium'
+                : 'text-slate-300 hover:bg-slate-700 font-medium'
+            }`}
+          >
+            <FileText className="w-5 h-5" />
+            <span>Contract Generator</span>
           </button>
 
           <div className="border-t border-slate-700 my-2 pt-2">
