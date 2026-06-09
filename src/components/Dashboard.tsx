@@ -1,6 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import { useState, useEffect } from 'react';
 import { LogOut, Menu, X, Users, Shield, ChevronDown, ChevronRight, FileText } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -47,7 +45,6 @@ export default function Dashboard({ userEmail }: DashboardProps) {
   const [contractGuarantee, setContractGuarantee] = useState(true);
   const [contractPaymentTerms, setContractPaymentTerms] = useState('');
   const [contractGenerated, setContractGenerated] = useState(false);
-  const contractRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     loadModulesAndTools();
@@ -406,36 +403,56 @@ Signature of Pallavi Chatterjee`;
     @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } button { display: none !important; } }
   `;
 
-  const handleDownloadPDF = async () => {
-    const element = contractRef.current;
-    if (!element) return;
+  const handleDownloadPDF = () => {
+    const contractHTML = generateContractHTML();
 
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: '#ffffff',
-    });
-
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
-    const imgWidth = canvas.width;
-    const imgHeight = canvas.height;
-    const ratio = pdfWidth / imgWidth;
-    const scaledHeight = imgHeight * ratio;
-
-    let position = 0;
-    let remainingHeight = scaledHeight;
-
-    while (remainingHeight > 0) {
-      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, scaledHeight);
-      remainingHeight -= pdfHeight;
-      position -= pdfHeight;
-      if (remainingHeight > 0) pdf.addPage();
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert('Please allow popups for this site in your browser settings, then try again.');
+      return;
     }
 
-    pdf.save(`Elite_Wizards_Agreement_${(contractClientName || 'Client').replace(/\s+/g, '_')}.pdf`);
+    printWindow.document.write(`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Elite_Wizards_Training_Agreement</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    @page { size: A4; margin: 2cm 2.5cm; }
+    body { font-family: Georgia, 'Times New Roman', serif; font-size: 11pt; line-height: 1.7; color: #1a1a1a; background: white; }
+    .contract-header { border-bottom: 3px solid #1a5c3a; padding-bottom: 14px; margin-bottom: 20px; }
+    .company-name { font-size: 17pt; font-weight: 700; color: #1a5c3a; text-transform: uppercase; letter-spacing: 1px; }
+    .contact-info { font-size: 9pt; color: #555; margin-top: 4px; }
+    .contract-title { text-align: center; font-size: 14pt; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; padding: 12px 0; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; margin: 20px 0; }
+    .agreement-date { font-weight: 600; margin-bottom: 12px; }
+    .parties-block { border-left: 3px solid #1a5c3a; padding: 10px 14px; margin: 14px 0 20px 0; }
+    .party-label { font-weight: 700; color: #1a5c3a; }
+    .section-heading { font-size: 11pt; font-weight: 700; text-transform: uppercase; margin-top: 20px; margin-bottom: 6px; padding-bottom: 3px; border-bottom: 1px solid #ddd; }
+    .section-body { font-size: 10.5pt; margin-bottom: 5px; }
+    .guarantee-box { border: 1px solid #1a5c3a; padding: 10px 14px; margin-top: 8px; }
+    .guarantee-title { font-weight: 700; color: #1a5c3a; margin-bottom: 5px; }
+    .payment-box { border: 1px solid #999; padding: 10px 14px; margin-top: 8px; white-space: pre-wrap; }
+    .signature-section { margin-top: 50px; padding-top: 16px; border-top: 2px solid #1a5c3a; display: flex; justify-content: space-between; gap: 40px; }
+    .signature-block { flex: 1; }
+    .signature-line { border-bottom: 1px solid #333; height: 38px; margin-bottom: 6px; }
+    .signature-label { font-size: 9pt; color: #555; font-weight: 600; }
+    @media print { button { display: none !important; } }
+  </style>
+</head>
+<body>
+  ${contractHTML}
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        window.print();
+        setTimeout(function() { window.close(); }, 1000);
+      }, 500);
+    });
+  </script>
+</body>
+</html>`);
+    printWindow.document.close();
   };
 
   const handleDownloadWord = () => {
@@ -468,13 +485,6 @@ Signature of Pallavi Chatterjee`;
     const contractHTML = contractGenerated ? generateContractHTML() : '';
     return (
       <div className="space-y-6">
-        {contractGenerated && (
-          <div
-            ref={contractRef}
-            style={{ position: 'absolute', left: '-9999px', top: 0, width: '794px', background: 'white', padding: '60px', fontFamily: 'Georgia, serif', fontSize: '11pt', lineHeight: '1.7', color: '#1a1a1a' }}
-            dangerouslySetInnerHTML={{ __html: `<style>${PRINT_STYLES}</style>${contractHTML}` }}
-          />
-        )}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center">
@@ -571,6 +581,7 @@ Signature of Pallavi Chatterjee`;
                 Download Word Doc
               </button>
             </div>
+            <p className="text-sm text-slate-400 text-center mt-2">&#x1F4C4; A print dialog will open — select 'Save as PDF' and choose your Downloads folder.</p>
           </div>
         )}
       </div>
