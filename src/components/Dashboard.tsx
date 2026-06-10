@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { LogOut, Menu, X, Users, Shield, ChevronDown, ChevronRight, FileText } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -525,6 +524,18 @@ Signature of Pallavi Chatterjee`;
   };
 
   const handleDownloadPDF = async () => {
+    if (!(window as any).PDFLib) {
+      await new Promise<void>((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js';
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error('Failed to load pdf-lib'));
+        document.head.appendChild(script);
+      });
+    }
+
+    const { PDFDocument, rgb, StandardFonts } = (window as any).PDFLib;
+
     const pdfDoc = await PDFDocument.create();
     const timesRoman = await pdfDoc.embedFont(StandardFonts.TimesRoman);
     const timesRomanBold = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
