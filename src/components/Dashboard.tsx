@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { LogOut, Menu, X, Users, Shield, ChevronDown, ChevronRight, FileText } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -403,56 +404,253 @@ Signature of Pallavi Chatterjee`;
     @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } button { display: none !important; } }
   `;
 
-  const handleDownloadPDF = () => {
-    const contractHTML = generateContractHTML();
+  const getContractSections = (name: string, date: string, paymentTerms: string, guaranteeEnabled: boolean) => {
+    const guaranteeBodyLines = guaranteeEnabled
+      ? [
+          'Our coaching program is 6 months long, however, if you are not at your GOAL within 6 months in the program. We will help and support you UNTIL you make back the program fee paid to us.',
+          'You are eligible to claim any of the above guarantee if you satisfy the conditions below (according to our standards):',
+          'No Loss Guarantee: Work with us until you make back your investment! The guarantee applies only if you consistently complete the required work throughout the entire duration of the program.',
+          'We do not offer any refunds for the program under any circumstances. All payments made are non-refundable.',
+        ]
+      : ['No guarantee is offered with this program. All payments made are non-refundable.'];
 
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-      alert('Please allow popups for this site in your browser settings, then try again.');
-      return;
+    return [
+      {
+        heading: '1. TERMS OF ENROLLMENT',
+        bodyLines: [
+          'a. The following policy governs your participation in the Program Elite Wizards Training presented by Pallavi Chatterjee ["Contractor"]. Please read this Policy carefully. By using the Program you agree that your participation in our Program and use of Program materials is governed by the following terms and conditions.',
+          'b. We are committed to providing all participants with a positive experience. Thus, Pallavi Chatterjee may, at its sole discretion, limit, suspend, or terminate your participation in any of its programs, live, recorded, social media-based or digital without refund or forgiveness of remaining payments if:',
+          'c. You become disruptive or difficult to work with; you fail to follow the Program guidelines; or, you impair the participation of instructors or participants in the program.',
+        ],
+      },
+      {
+        heading: '2. PROGRAM DELIVERABLES (Admissible only to the Client)',
+        bodyLines: [
+          'a. Private Whatsapp Community',
+          'b. Coaching Program Content for 6 months',
+          'c. Accountability Support for 6 months',
+          'd. Support From Pallavi Chatterjee & other coaches for 6 months',
+        ],
+      },
+      {
+        heading: '3. CONTENT',
+        bodyLines: [
+          'a. Program education and information is intended for a general audience and does not purport to be, nor should it be construed as, specific advice, tailored to any individual.',
+          'b. All materials, procedures, policies, and standards, all teaching manuals, all teaching aids, all supplements and the like that have been or will be made available by Pallavi Chatterjee or its designated facilitators, or any other source, oral or written, are for personal use in or in conjunction with this training program only.',
+          'c. Program content is for personal use only, and cannot be sold, recorded, videotaped, shared, taught, given away, or otherwise divulged without the express written consent of Pallavi Chatterjee.',
+          'd. The information contained in the program material is strictly for educational purposes. Therefore, if you wish to apply ideas contained in this material, you are taking full responsibility for those actions.',
+          'e. We assume no responsibility for errors or omissions that may appear in any program materials.',
+          'f. Usernames and passwords cannot be shared with any third-parties.',
+          "g. Any violation of Pallavi Chatterjee's policies regarding content usage shall result in the immediate termination of your enrollment without refund.",
+        ],
+      },
+      {
+        heading: '4. PRIVACY AND CONFIDENTIALITY',
+        bodyLines: [
+          'a. We respect your privacy and must insist that you respect the privacy of fellow Elite Wizards Training participants.',
+          'b. We respect your confidential and proprietary information ideas, plans and trade secrets [collectively, "Confidential Information"] and must insist that you respect the same rights of fellow Program participants and of Pallavi Chatterjee.',
+          'c. Thus, you agree:',
+          "- Not to infringe any Program participants or Pallavi Chatterjee's copyright, patent, trademark, trade secret or other intellectual property rights;",
+          '- Any Confidential Information shared by program participants or any representative of Pallavi Chatterjee is confidential and Proprietary, and belongs solely and exclusively to the Participant who discloses it or Pallavi Chatterjee. Such information cannot be disclosed to any other person or used in any manner other than in discussion with other Program participants during Program sessions;',
+          '- All materials and information provided to you by Pallavi Chatterjee is confidential and its proprietary intellectual property belongs solely and exclusively to Pallavi Chatterjee, and can only be used by you as authorized by Pallavi Chatterjee;',
+          '- The reproduction, distribution and sale of these materials by anyone but Pallavi Chatterjee is strictly prohibited;',
+          'd. While you are free to discuss your personal results from programs and training, you must keep the experiences and statements, oral or written, of all other participants in the strictest of confidence.',
+        ],
+      },
+      {
+        heading: '5. INTERACTIVE FEATURES',
+        bodyLines: [
+          'a. It is a condition of your use of the Private Student Group and participation in the Program that you do not:',
+          '- Restrict or inhibit any other user from using and enjoying the deliverables.',
+          '- Impersonate any person or entity, or falsely state or otherwise misrepresent your affiliation with a person or entity.',
+          '- Instigate or encourage others to commit illegal activities or cause injury or property damage to any person.',
+          '- Gain unauthorized access to the services, or any account, computer system, or network connected, by means such as hacking, password mining or other illicit means.',
+          '- Post or transmit any unlawful, threatening, abusive, libelous, defamatory, obscene, vulgar, pornographic, profane or indecent information of any kind.',
+          '- Post or transmit any information, software or other material that violates or infringes upon the rights of others.',
+          '- Post, transmit or in any way exploit any information, software or other material for commercial purposes without our express written approval.',
+          '- Gather for marketing purposes any email addresses or other personal information posted by other users.',
+        ],
+      },
+      {
+        heading: '6. LIMITATION OF LIABILITY',
+        bodyLines: [
+          'a. Any user failing to comply with the terms and conditions of this Agreement may be expelled from and refused continued access to the Program. Pallavi Chatterjee expressly disclaims all responsibility and endorsement and makes no representation as to the validity of any opinion, advice, information or statement made or displayed in these forums by third parties. Under no circumstances will we, our affiliates, suppliers or agents be liable for any loss or damage caused by your reliance on information obtained through these forums.',
+          'b. Pallavi Chatterjee has no obligation whatsoever to monitor any of the content or postings on the message boards, chat rooms or other public forums of the Program.',
+          'c. Under no circumstances shall we, our subsidiary and parent companies or affiliates be liable for any direct, indirect, incidental, special or consequential damages that result from the use of, or the inability to use, the program materials. If you are dissatisfied with the Program, your sole and exclusive remedy is to discontinue using the products, services and/or materials.',
+        ],
+      },
+      {
+        heading: guaranteeEnabled ? '7. GUARANTEE OFFERED' : '7. NO GUARANTEE OFFERED',
+        bodyLines: guaranteeBodyLines,
+      },
+      {
+        heading: '8. NON-DISCLOSURE AND NON-USE OBLIGATIONS',
+        bodyLines: [
+          'a. You agree to maintain, in confidence and will not disclose, disseminate or use any Confidential Information belonging to Pallavi Chatterjee, whether or not in written form.',
+          'b. Definition of Confidentiality. As used in this Agreement, "Confidential Information" refers to the business activities, dealings or interests of Pallavi Chatterjee and/or its officers, directors, affiliates, and/or employees; any confidential information, knowledge and know-how concerning the operations, products, services, procedures, or clients of Pallavi Chatterjee.',
+        ],
+      },
+      {
+        heading: '9. MEDIA AND MARKETING RELEASE',
+        bodyLines: [
+          'a. I authorize Pallavi Chatterjee and all its subsidiaries and trademark brands to use my materials for marketing purposes. These materials include but are not limited to using my name, voice, picture, video, screenshots of messages, any information obtained during live events, online training calls, without payment or any other form of compensation to me.',
+          'b. Agree that I shall not have any right of approval, claim to additional compensation or benefit, or claim arising out of the use of my name and/or photograph/video.',
+          'c. Agree that any and all materials created by Pallavi Chatterjee that incorporate my name and/or photograph/likeness shall remain the sole and exclusive property of Pallavi Chatterjee.',
+        ],
+      },
+      {
+        heading: '10. DISPUTE RESOLUTION',
+        bodyLines: [
+          'a. All disputes arising under or concerning this Agreement are to be submitted to Alternative Dispute Resolution Based at Noida or Delhi, India.',
+        ],
+      },
+      {
+        heading: '11. PAYMENT TERMS',
+        bodyLines: [paymentTerms],
+      },
+      {
+        heading: `12. TERMINATION BY ${name.toUpperCase()}`,
+        bodyLines: [
+          `If ${name} terminates this agreement for any reason other than a breach of contract by Elite Wizards Training, ${name} shall be obligated to pay Elite Wizards Training the remaining balance of all fees and expenses due under this agreement as of the date of termination.`,
+          `Enforcement: In the event ${name} fails to make the required payment as stipulated in this clause, Elite Wizards Training shall be entitled to pursue all available legal remedies to enforce payment, including but not limited to, seeking damages, injunctive relief, and legal fees incurred in the collection process.`,
+        ],
+      },
+      {
+        heading: '13. SEVERABILITY CLAUSE',
+        bodyLines: [
+          'If any provision of this Agreement is held to be invalid, illegal, or unenforceable by a court of competent jurisdiction, the validity, legality, and enforceability of the remaining provisions shall not in any way be affected or impaired thereby.',
+        ],
+      },
+    ];
+  };
+
+  const handleDownloadPDF = async () => {
+    const pdfDoc = await PDFDocument.create();
+    const timesRoman = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+    const timesRomanBold = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
+
+    const pageWidth = 595;
+    const pageHeight = 842;
+    const margin = 60;
+    const contentWidth = pageWidth - margin * 2;
+
+    const green = rgb(0.1, 0.36, 0.23);
+    const black = rgb(0.1, 0.1, 0.1);
+    const grey = rgb(0.4, 0.4, 0.4);
+    const lightGrey = rgb(0.85, 0.85, 0.85);
+
+    const state: { page: ReturnType<typeof pdfDoc.addPage>; y: number } = {
+      page: pdfDoc.addPage([pageWidth, pageHeight]),
+      y: pageHeight - margin,
+    };
+
+    const checkPageBreak = (needed = 30) => {
+      if (state.y < margin + needed) {
+        state.page = pdfDoc.addPage([pageWidth, pageHeight]);
+        state.y = pageHeight - margin;
+      }
+    };
+
+    const addText = (text: string, fontSize: number, font: typeof timesRoman, color: ReturnType<typeof rgb>, indent = 0, lineHeightMult = 1.5) => {
+      const maxWidth = contentWidth - indent;
+      const words = text.split(' ');
+      let line = '';
+      for (const word of words) {
+        const testLine = line ? line + ' ' + word : word;
+        if (font.widthOfTextAtSize(testLine, fontSize) > maxWidth && line) {
+          checkPageBreak(fontSize * lineHeightMult + 4);
+          state.page.drawText(line, { x: margin + indent, y: state.y, size: fontSize, font, color });
+          state.y -= fontSize * lineHeightMult;
+          line = word;
+        } else {
+          line = testLine;
+        }
+      }
+      if (line) {
+        checkPageBreak(fontSize * lineHeightMult + 4);
+        state.page.drawText(line, { x: margin + indent, y: state.y, size: fontSize, font, color });
+        state.y -= fontSize * lineHeightMult;
+      }
+    };
+
+    const addSpace = (pts: number) => { state.y -= pts; };
+
+    const addHRule = (color: ReturnType<typeof rgb> = green, thickness = 1.5) => {
+      checkPageBreak(10);
+      state.page.drawLine({ start: { x: margin, y: state.y }, end: { x: pageWidth - margin, y: state.y }, thickness, color });
+      state.y -= 8;
+    };
+
+    const name = contractClientName || '[CLIENT_NAME]';
+    const sections = getContractSections(name, today, contractPaymentTerms || '[PAYMENT_TERMS]', contractGuarantee);
+
+    // HEADER
+    addText('ELITE WIZARDS TRAINING', 16, timesRomanBold, green);
+    addSpace(3);
+    addText('Pallavi Chatterjee  |  Noida, India  |  ++916386355905  |  info@lifecoachpallavichatterjee.com', 8, timesRoman, grey);
+    addSpace(6);
+    addHRule(green, 2.5);
+    addSpace(10);
+
+    // TITLE
+    addText('ELITE WIZARDS TRAINING AGREEMENT', 13, timesRomanBold, black);
+    addSpace(4);
+    addHRule(lightGrey, 0.8);
+    addSpace(10);
+
+    // DATE
+    addText(`Agreement dated: ${today}`, 10.5, timesRomanBold, black);
+    addSpace(10);
+
+    // PARTIES BLOCK with green left bar
+    checkPageBreak(50);
+    state.page.drawLine({ start: { x: margin + 2, y: state.y + 12 }, end: { x: margin + 2, y: state.y - 30 }, thickness: 3, color: green });
+    addText('Contractor: Pallavi Chatterjee & Elite Wizards Training, Noida India', 10, timesRoman, black, 12);
+    addText(`Client: ${name}`, 10, timesRoman, black, 12);
+    addSpace(16);
+
+    // SECTIONS
+    for (const section of sections) {
+      checkPageBreak(40);
+      addText(section.heading, 10.5, timesRomanBold, black);
+      addSpace(1);
+      addHRule(lightGrey, 0.5);
+      addSpace(4);
+      for (const line of section.bodyLines) {
+        const indent = line.startsWith('-') ? 14 : 0;
+        addText(line, 9.5, timesRoman, black, indent);
+        addSpace(2);
+      }
+      addSpace(8);
     }
 
-    printWindow.document.write(`<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Elite_Wizards_Training_Agreement</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    @page { size: A4; margin: 2cm 2.5cm; }
-    body { font-family: Georgia, 'Times New Roman', serif; font-size: 11pt; line-height: 1.7; color: #1a1a1a; background: white; }
-    .contract-header { border-bottom: 3px solid #1a5c3a; padding-bottom: 14px; margin-bottom: 20px; }
-    .company-name { font-size: 17pt; font-weight: 700; color: #1a5c3a; text-transform: uppercase; letter-spacing: 1px; }
-    .contact-info { font-size: 9pt; color: #555; margin-top: 4px; }
-    .contract-title { text-align: center; font-size: 14pt; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; padding: 12px 0; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; margin: 20px 0; }
-    .agreement-date { font-weight: 600; margin-bottom: 12px; }
-    .parties-block { border-left: 3px solid #1a5c3a; padding: 10px 14px; margin: 14px 0 20px 0; }
-    .party-label { font-weight: 700; color: #1a5c3a; }
-    .section-heading { font-size: 11pt; font-weight: 700; text-transform: uppercase; margin-top: 20px; margin-bottom: 6px; padding-bottom: 3px; border-bottom: 1px solid #ddd; }
-    .section-body { font-size: 10.5pt; margin-bottom: 5px; }
-    .guarantee-box { border: 1px solid #1a5c3a; padding: 10px 14px; margin-top: 8px; }
-    .guarantee-title { font-weight: 700; color: #1a5c3a; margin-bottom: 5px; }
-    .payment-box { border: 1px solid #999; padding: 10px 14px; margin-top: 8px; white-space: pre-wrap; }
-    .signature-section { margin-top: 50px; padding-top: 16px; border-top: 2px solid #1a5c3a; display: flex; justify-content: space-between; gap: 40px; }
-    .signature-block { flex: 1; }
-    .signature-line { border-bottom: 1px solid #333; height: 38px; margin-bottom: 6px; }
-    .signature-label { font-size: 9pt; color: #555; font-weight: 600; }
-    @media print { button { display: none !important; } }
-  </style>
-</head>
-<body>
-  ${contractHTML}
-  <script>
-    window.addEventListener('load', function() {
-      setTimeout(function() {
-        window.print();
-        setTimeout(function() { window.close(); }, 1000);
-      }, 500);
-    });
-  </script>
-</body>
-</html>`);
-    printWindow.document.close();
+    // SIGNATURE
+    checkPageBreak(100);
+    addSpace(16);
+    addHRule(green, 2);
+    addSpace(36);
+
+    const sigY = state.y;
+    state.page.drawLine({ start: { x: margin, y: sigY }, end: { x: margin + 185, y: sigY }, thickness: 1, color: black });
+    state.page.drawLine({ start: { x: pageWidth - margin - 185, y: sigY }, end: { x: pageWidth - margin, y: sigY }, thickness: 1, color: black });
+    state.y -= 14;
+
+    state.page.drawText('Signature of Pallavi Chatterjee', { x: margin, y: state.y, size: 8, font: timesRoman, color: grey });
+    const clientLabel = `Signature of ${name} (The Client)`;
+    const clientLabelWidth = timesRoman.widthOfTextAtSize(clientLabel, 8);
+    state.page.drawText(clientLabel, { x: pageWidth - margin - Math.min(clientLabelWidth, 185), y: state.y, size: 8, font: timesRoman, color: grey });
+
+    // SAVE & DOWNLOAD
+    const pdfBytes = await pdfDoc.save();
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'Elite_Wizards_Training_Agreement.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const handleDownloadWord = () => {
@@ -581,7 +779,6 @@ Signature of Pallavi Chatterjee`;
                 Download Word Doc
               </button>
             </div>
-            <p className="text-sm text-slate-400 text-center mt-2">&#x1F4C4; A print dialog will open — select 'Save as PDF' and choose your Downloads folder.</p>
           </div>
         )}
       </div>
