@@ -14,6 +14,7 @@ import GoalCreator from './GoalCreator';
 import PassionRoadmapCreator from './PassionRoadmapCreator';
 import RoadmapCreator from './RoadmapCreator';
 import BigMoneyContentGenerator from './BigMoneyContentGenerator';
+import WebinarBuilder from './WebinarBuilder';
 import type { ModuleWithTools } from '../types/permissions';
 
 interface DashboardProps {
@@ -843,6 +844,10 @@ Signature of Pallavi Chatterjee`;
 
     if (activeToolRoute === 'big-money-content-generator') {
       return <BigMoneyContentGenerator clientId="admin" />;
+    }
+
+    if (activeToolRoute === '/tools/webinar-builder') {
+      return <WebinarBuilder />;
     }
 
     if (activeToolRoute?.startsWith('courses/')) {

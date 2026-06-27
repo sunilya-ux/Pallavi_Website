@@ -11,6 +11,7 @@ import GoalCreator from './GoalCreator';
 import PassionRoadmapCreator from './PassionRoadmapCreator';
 import RoadmapCreator from './RoadmapCreator';
 import BigMoneyContentGenerator from './BigMoneyContentGenerator';
+import WebinarBuilder from './WebinarBuilder';
 import MonetizablePassionAnalysis from './MonetizablePassionAnalysis';
 import LifePurposeGenerator from './LifePurposeGenerator';
 import { supabase } from '../lib/supabase';
@@ -320,6 +321,8 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
             <RoadmapCreator clientId={clientId} />
           ) : activeToolRoute === 'big-money-content-generator' ? (
             <BigMoneyContentGenerator clientId={clientId} />
+          ) : activeToolRoute === '/tools/webinar-builder' ? (
+            <WebinarBuilder />
           ) : activeToolRoute === 'monetizable-passion-analysis' ? (
             <MonetizablePassionAnalysis clientId={clientId} />
           ) : activeToolRoute === 'life-purpose-generator' ? (
