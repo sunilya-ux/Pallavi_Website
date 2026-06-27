@@ -422,6 +422,3 @@ export default function WebinarBuilder() {
     </div>
   );
 }
-
-
-export default WebinarBuilder
