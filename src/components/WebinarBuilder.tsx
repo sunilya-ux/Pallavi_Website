@@ -158,8 +158,8 @@ export default function WebinarBuilder() {
   };
 
   const handleGenerate = async () => {
-    if (images.length < 10) {
-      setError('Please upload at least 10 screenshots for best results.');
+    if (images.length === 0) {
+      setError('Please upload at least one screenshot to continue.');
       return;
     }
 
@@ -313,7 +313,7 @@ export default function WebinarBuilder() {
                 />
                 <UploadCloud className="w-10 h-10 text-emerald-500 mx-auto mb-3" />
                 <p className="text-slate-700 font-medium">Drop your screenshots here or click to browse</p>
-                <p className="text-sm text-slate-500 mt-1">Upload 10–20 screenshots &bull; JPG, PNG accepted &bull; Max 5MB each</p>
+                <p className="text-sm text-slate-500 mt-1">Upload your screenshots &bull; JPG, PNG accepted &bull; Max 20 files</p>
               </div>
 
               {/* Thumbnails */}
@@ -323,11 +323,6 @@ export default function WebinarBuilder() {
                     <span className="inline-flex items-center px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-semibold">
                       {images.length} screenshot{images.length !== 1 ? 's' : ''} selected
                     </span>
-                    {images.length < 10 && (
-                      <span className="text-xs text-amber-600 font-medium">
-                        Please upload at least 10 screenshots for best results
-                      </span>
-                    )}
                   </div>
                   <div className="grid grid-cols-5 sm:grid-cols-8 gap-3">
                     {images.map((img, idx) => (
@@ -356,7 +351,7 @@ export default function WebinarBuilder() {
               <div className="space-y-2">
                 <button
                   onClick={handleGenerate}
-                  disabled={generating || images.length < 10}
+                  disabled={generating || images.length === 0}
                   className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-4 rounded-lg font-semibold hover:shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {generating ? (
@@ -427,3 +422,6 @@ export default function WebinarBuilder() {
     </div>
   );
 }
+
+
+export default WebinarBuilder
