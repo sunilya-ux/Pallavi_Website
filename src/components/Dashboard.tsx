@@ -15,6 +15,7 @@ import PassionRoadmapCreator from './PassionRoadmapCreator';
 import RoadmapCreator from './RoadmapCreator';
 import BigMoneyContentGenerator from './BigMoneyContentGenerator';
 import WebinarBuilder from './WebinarBuilder';
+import HookBuilder from './HookBuilder';
 import type { ModuleWithTools } from '../types/permissions';
 
 interface DashboardProps {
@@ -848,6 +849,10 @@ Signature of Pallavi Chatterjee`;
 
     if (activeToolRoute === '/tools/webinar-builder') {
       return <WebinarBuilder />;
+    }
+
+    if (activeToolRoute === '/tools/hook-builder') {
+      return <HookBuilder />;
     }
 
     if (activeToolRoute?.startsWith('courses/')) {
