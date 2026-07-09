@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LogOut, Menu, X, Users, Shield, ChevronDown, ChevronRight, FileText } from 'lucide-react';
+import { LogOut, Menu, X, Users, Shield, ChevronDown, ChevronRight, FileText, Target } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import ClientsManager from './ClientsManager';
@@ -16,6 +16,7 @@ import RoadmapCreator from './RoadmapCreator';
 import BigMoneyContentGenerator from './BigMoneyContentGenerator';
 import WebinarBuilder from './WebinarBuilder';
 import HookBuilder from './HookBuilder';
+import NicheFinder from './NicheFinder';
 import type { ModuleWithTools } from '../types/permissions';
 
 interface DashboardProps {
@@ -33,7 +34,7 @@ interface Course {
 
 export default function Dashboard({ userEmail }: DashboardProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [activeSection, setActiveSection] = useState<'overview' | 'clients' | 'contract-generator'>('overview');
+  const [activeSection, setActiveSection] = useState<'overview' | 'clients' | 'contract-generator' | 'niche-finder'>('overview');
   const [showPermissionsModal, setShowPermissionsModal] = useState(false);
   const [modules, setModules] = useState<ModuleWithTools[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
@@ -807,6 +808,10 @@ Signature of Pallavi Chatterjee`;
       return renderContractGenerator();
     }
 
+    if (activeSection === 'niche-finder') {
+      return <NicheFinder />;
+    }
+
     if (activeToolRoute === '/passion-coaching') {
       return <PassionCoachingForm clientId="admin" />;
     }
@@ -966,6 +971,18 @@ Signature of Pallavi Chatterjee`;
           >
             <FileText className="w-5 h-5" />
             <span>Contract Generator</span>
+          </button>
+
+          <button
+            onClick={() => { setActiveSection('niche-finder'); setActiveToolRoute(null); }}
+            className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors w-full text-left text-menu ${
+              activeSection === 'niche-finder'
+                ? 'bg-emerald-600 text-white font-medium'
+                : 'text-slate-300 hover:bg-slate-700 font-medium'
+            }`}
+          >
+            <Target className="w-5 h-5" />
+            <span>Niche Finder</span>
           </button>
 
           <div className="border-t border-slate-700 my-2 pt-2">
