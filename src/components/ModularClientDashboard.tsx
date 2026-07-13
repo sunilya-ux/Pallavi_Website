@@ -33,8 +33,6 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
   const [expandedCourses, setExpandedCourses] = useState<Set<string>>(new Set());
   const [restrictedMessage, setRestrictedMessage] = useState<string | null>(null);
-  // Map of tool_id -> { assignment_id, status }
-  const [assignmentStatuses, setAssignmentStatuses] = useState<Map<string, { assignment_id: string; status: string | null }>>(new Map());
 
   const isAdmin = localStorage.getItem('userType') === 'admin';
 
@@ -87,22 +85,6 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
 
       if (modulesWithToolsData.length > 0) {
         setExpandedModules(new Set([modulesWithToolsData[0].id]));
-      }
-
-      // Load assignment statuses for sidebar badges (single RPC call)
-      try {
-        const { data: statusData } = await supabase.rpc('get_assignment_status_for_client', {
-          user_client_id: clientId,
-        });
-        if (Array.isArray(statusData)) {
-          const map = new Map<string, { assignment_id: string; status: string | null }>();
-          for (const row of statusData) {
-            map.set(row.tool_id, { assignment_id: row.assignment_id, status: row.status ?? null });
-          }
-          setAssignmentStatuses(map);
-        }
-      } catch {
-        // Non-fatal — badges just won't show if this fails
       }
     } catch (error) {
       console.error('[ClientDashboard] Error loading permissions:', error);
@@ -231,7 +213,6 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
                       module.tools.map((tool) => {
                         const isLocked = !isAdmin && !tool.has_access;
                         const isActive = activeToolRoute === tool.route;
-                        const assignmentInfo = assignmentStatuses.get(tool.id);
 
                         return (
                           <button
@@ -253,16 +234,6 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
                             <span className="font-medium text-sm flex-1">
                               {tool.display_name}
                             </span>
-                            {assignmentInfo && assignmentInfo.status === 'reviewed' && (
-                              <span className="text-xs font-medium bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 flex-shrink-0">
-                                Reviewed
-                              </span>
-                            )}
-                            {assignmentInfo && assignmentInfo.status === 'completed' && (
-                              <span className="text-xs font-medium bg-emerald-100 text-emerald-700 rounded-full px-2 py-0.5 flex-shrink-0">
-                                Submitted
-                              </span>
-                            )}
                             {isLocked && (
                               <Lock className="w-4 h-4 text-slate-400" />
                             )}
@@ -378,8 +349,8 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
             </div>
           )}
 
-          {showAssignmentPanel && activeTool && (
-            <AssignmentPanel toolId={activeTool.id} clientId={clientId} />
+          {showAssignmentPanel && (
+            <AssignmentPanel clientId={clientId} />
           )}
         </div>
       </main>
