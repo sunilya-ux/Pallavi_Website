@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { LogOut, Lock, ChevronDown, ChevronRight } from 'lucide-react';
+import { LogOut, Lock, ChevronDown, ChevronRight, ClipboardList } from 'lucide-react';
 import * as Icons from 'lucide-react';
+import AssignmentGroupsHub from './AssignmentGroupsHub';
+import AssignmentSubList from './AssignmentSubList';
 import AssignmentPanel from './AssignmentPanel';
 import PassionCoachingForm from './PassionCoachingForm';
 import ChannelTrailerScriptGenerator from './ChannelTrailerScriptGenerator';
@@ -24,6 +26,11 @@ interface ModularClientDashboardProps {
   clientId: string;
 }
 
+type AssignmentNav =
+  | { view: 'hub'; moduleId: string; moduleName: string }
+  | { view: 'sublist'; moduleId: string; moduleName: string; group: { id: string; title: string } }
+  | { view: 'panel'; moduleId: string; moduleName: string; group: { id: string; title: string }; assignment: { id: string; title: string; instructions: string | null } };
+
 const COURSE_NAME = '7 Figure Ensuring Morning Rituals';
 
 export default function ModularClientDashboard({ email, clientId }: ModularClientDashboardProps) {
@@ -33,6 +40,7 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
   const [expandedCourses, setExpandedCourses] = useState<Set<string>>(new Set());
   const [restrictedMessage, setRestrictedMessage] = useState<string | null>(null);
+  const [assignmentNav, setAssignmentNav] = useState<AssignmentNav | null>(null);
 
   const isAdmin = localStorage.getItem('userType') === 'admin';
 
@@ -128,9 +136,16 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
     if (isAdmin || tool.has_access) {
       setActiveToolRoute(tool.route);
       setRestrictedMessage(null);
+      setAssignmentNav(null);
     } else {
       setRestrictedMessage(`You don't have access to ${tool.display_name}. Please contact your admin.`);
     }
+  };
+
+  const handleAssignmentsClick = (module: ModuleWithTools) => {
+    setActiveToolRoute(null);
+    setRestrictedMessage(null);
+    setAssignmentNav({ view: 'hub', moduleId: module.id, moduleName: module.display_name });
   };
 
   const getIcon = (iconName: string | null) => {
@@ -148,15 +163,6 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
       </div>
     );
   }
-
-  // Derive active tool for AssignmentPanel (excludes courses)
-  const activeTool = activeToolRoute
-    ? modulesWithTools.flatMap(m => m.tools).find(t => t.route === activeToolRoute)
-    : null;
-  const showAssignmentPanel =
-    !!activeToolRoute &&
-    !activeToolRoute.startsWith('courses/') &&
-    !!activeTool?.id;
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
@@ -197,7 +203,7 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
                   )}
                 </button>
 
-                {expandedModules.has(module.id) && module.tools.length > 0 && (
+                {expandedModules.has(module.id) && (module.tools.length > 0 || !isCoursesModule(module)) && (
                   <div className="ml-7 space-y-1 mt-1">
                     {isCoursesModule(module) ? (
                       <CoursesFolderNav
@@ -210,36 +216,50 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
                         getIcon={getIcon}
                       />
                     ) : (
-                      module.tools.map((tool) => {
-                        const isLocked = !isAdmin && !tool.has_access;
-                        const isActive = activeToolRoute === tool.route;
+                      <>
+                        {module.tools.map((tool) => {
+                          const isLocked = !isAdmin && !tool.has_access;
+                          const isActive = activeToolRoute === tool.route;
 
-                        return (
-                          <button
-                            key={tool.id}
-                            onClick={() => handleToolClick(tool)}
-                            disabled={isLocked}
-                            className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-left relative group ${
-                              isActive
-                                ? 'bg-emerald-50 text-emerald-700 shadow-sm'
-                                : isLocked
-                                ? 'text-slate-400 opacity-50 cursor-not-allowed'
-                                : 'text-slate-700 hover:bg-slate-50 hover:text-emerald-600'
-                            }`}
-                            title={isLocked ? "Access restricted" : tool.description || ''}
-                          >
-                            <div className={isLocked ? 'text-slate-400' : ''}>
-                              {getIcon(tool.icon)}
-                            </div>
-                            <span className="font-medium text-sm flex-1">
-                              {tool.display_name}
-                            </span>
-                            {isLocked && (
-                              <Lock className="w-4 h-4 text-slate-400" />
-                            )}
-                          </button>
-                        );
-                      })
+                          return (
+                            <button
+                              key={tool.id}
+                              onClick={() => handleToolClick(tool)}
+                              disabled={isLocked}
+                              className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-left relative group ${
+                                isActive
+                                  ? 'bg-emerald-50 text-emerald-700 shadow-sm'
+                                  : isLocked
+                                  ? 'text-slate-400 opacity-50 cursor-not-allowed'
+                                  : 'text-slate-700 hover:bg-slate-50 hover:text-emerald-600'
+                              }`}
+                              title={isLocked ? "Access restricted" : tool.description || ''}
+                            >
+                              <div className={isLocked ? 'text-slate-400' : ''}>
+                                {getIcon(tool.icon)}
+                              </div>
+                              <span className="font-medium text-sm flex-1">
+                                {tool.display_name}
+                              </span>
+                              {isLocked && (
+                                <Lock className="w-4 h-4 text-slate-400" />
+                              )}
+                            </button>
+                          );
+                        })}
+                        {/* Assignments entry — always shown for non-courses modules */}
+                        <button
+                          onClick={() => handleAssignmentsClick(module)}
+                          className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-left ${
+                            assignmentNav?.moduleId === module.id
+                              ? 'bg-emerald-50 text-emerald-700 shadow-sm'
+                              : 'text-slate-700 hover:bg-slate-50 hover:text-emerald-600'
+                          }`}
+                        >
+                          <ClipboardList className="w-5 h-5 flex-shrink-0" />
+                          <span className="font-medium text-sm flex-1">Assignments</span>
+                        </button>
+                      </>
                     )}
                   </div>
                 )}
@@ -271,7 +291,59 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
             </div>
           )}
 
-          {!activeToolRoute ? (
+          {assignmentNav !== null ? (
+            assignmentNav.view === 'hub' ? (
+              <AssignmentGroupsHub
+                moduleId={assignmentNav.moduleId}
+                moduleName={assignmentNav.moduleName}
+                clientId={clientId}
+                onSelectGroup={group =>
+                  setAssignmentNav({
+                    view: 'sublist',
+                    moduleId: assignmentNav.moduleId,
+                    moduleName: assignmentNav.moduleName,
+                    group,
+                  })
+                }
+              />
+            ) : assignmentNav.view === 'sublist' ? (
+              <AssignmentSubList
+                group={assignmentNav.group}
+                moduleName={assignmentNav.moduleName}
+                clientId={clientId}
+                onSelectAssignment={assignment =>
+                  setAssignmentNav({
+                    view: 'panel',
+                    moduleId: assignmentNav.moduleId,
+                    moduleName: assignmentNav.moduleName,
+                    group: assignmentNav.group,
+                    assignment,
+                  })
+                }
+                onBack={() =>
+                  setAssignmentNav({
+                    view: 'hub',
+                    moduleId: assignmentNav.moduleId,
+                    moduleName: assignmentNav.moduleName,
+                  })
+                }
+              />
+            ) : (
+              <AssignmentPanel
+                assignment={assignmentNav.assignment}
+                groupTitle={assignmentNav.group.title}
+                clientId={clientId}
+                onBack={() =>
+                  setAssignmentNav({
+                    view: 'sublist',
+                    moduleId: assignmentNav.moduleId,
+                    moduleName: assignmentNav.moduleName,
+                    group: assignmentNav.group,
+                  })
+                }
+              />
+            )
+          ) : !activeToolRoute ? (
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
               <h2 className="text-3xl font-bold text-slate-900 mb-2">
                 Welcome, {email}!
@@ -347,10 +419,6 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
               <h2 className="text-2xl font-bold text-slate-900 mb-4">Tool Coming Soon</h2>
               <p className="text-slate-600">This tool is being developed and will be available soon.</p>
             </div>
-          )}
-
-          {showAssignmentPanel && (
-            <AssignmentPanel clientId={clientId} />
           )}
         </div>
       </main>
