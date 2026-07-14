@@ -126,7 +126,7 @@ export default function AssignmentSubList({
                   )}
                   {status === 'completed' && (
                     <span className="text-xs font-medium bg-emerald-100 text-emerald-700 rounded-full px-2.5 py-1">
-                      Submitted
+                      Completed
                     </span>
                   )}
                   <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 transition-colors" />
