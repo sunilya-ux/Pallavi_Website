@@ -77,7 +77,7 @@ function toast(set: (msg: string) => void, msg: string) {
   setTimeout(() => set(''), 4000);
 }
 
-export default function AssignmentCreator() {
+function AssignmentCreator() {
   const [view, setView] = useState<View>('groups');
 
   // modules
@@ -1234,5 +1234,7 @@ export default function AssignmentCreator() {
   return null;
 }
 
+
+export default AssignmentCreator
 
 export default AssignmentCreator
