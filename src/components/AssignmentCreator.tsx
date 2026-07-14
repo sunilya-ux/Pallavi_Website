@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { ClipboardList, ChevronLeft, Plus, CreditCard as Edit2, FileText, CheckCircle, Loader, AlertCircle, UploadCloud, X, Trash2, FolderOpen, EyeOff } from 'lucide-react';
+import { ClipboardList, ChevronLeft, Plus, CreditCard as Edit2, FileText, CheckCircle, Loader, AlertCircle, UploadCloud, X, Trash2, FolderOpen, EyeOff, Inbox, Download } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
-type View = 'groups' | 'assignments' | 'form';
+type View = 'groups' | 'assignments' | 'form' | 'submissions' | 'review';
 
 interface Module {
   id: string;
@@ -33,6 +33,24 @@ interface RefFile {
   id: string;
   file_name: string;
   file_path: string;
+}
+
+interface SubmissionRow {
+  id: string;
+  assignment_id: string;
+  client_id: string;
+  client_email: string;
+  status: string;
+  submitted_at: string;
+  feedback: string | null;
+  reviewed_at: string | null;
+}
+
+interface SubFile {
+  id: string;
+  file_name: string;
+  file_path: string;
+  uploaded_at: string;
 }
 
 const ALLOWED_MIME_TYPES = new Set([
@@ -90,6 +108,19 @@ export default function AssignmentCreator() {
   const [dragging, setDragging] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deactivating, setDeactivating] = useState(false);
+
+  // submissions view
+  const [activeAssignment, setActiveAssignment] = useState<Assignment | null>(null);
+  const [submissions, setSubmissions] = useState<SubmissionRow[]>([]);
+  const [loadingSubmissions, setLoadingSubmissions] = useState(false);
+  const [ungradedCounts, setUngradedCounts] = useState<Record<string, number>>({});
+
+  // review view
+  const [activeSubmission, setActiveSubmission] = useState<SubmissionRow | null>(null);
+  const [submissionFiles, setSubmissionFiles] = useState<SubFile[]>([]);
+  const [reviewFeedback, setReviewFeedback] = useState('');
+  const [savingReview, setSavingReview] = useState(false);
+  const [loadingReview, setLoadingReview] = useState(false);
 
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
@@ -170,6 +201,23 @@ export default function AssignmentCreator() {
         ref_file_count: (a.assignment_reference_files as any)?.[0]?.count ?? 0,
       }));
       setAssignments(mapped);
+
+      // Fetch ungraded submission counts for badge display
+      const assignmentIds = mapped.map(a => a.id);
+      if (assignmentIds.length > 0) {
+        const { data: subData } = await supabase
+          .from('assignment_submissions')
+          .select('assignment_id')
+          .in('assignment_id', assignmentIds)
+          .eq('status', 'completed');
+        const counts: Record<string, number> = {};
+        (subData || []).forEach((s: any) => {
+          counts[s.assignment_id] = (counts[s.assignment_id] || 0) + 1;
+        });
+        setUngradedCounts(counts);
+      } else {
+        setUngradedCounts({});
+      }
     } catch (err) {
       console.error('Error loading assignments:', err);
     } finally {
@@ -371,6 +419,124 @@ export default function AssignmentCreator() {
     e.preventDefault();
     setDragging(false);
     if (e.dataTransfer.files) processFiles(Array.from(e.dataTransfer.files));
+  };
+
+  const openSubmissions = async (assignment: Assignment) => {
+    setActiveAssignment(assignment);
+    setView('submissions');
+    setLoadingSubmissions(true);
+    try {
+      const { data, error } = await supabase
+        .from('assignment_submissions')
+        .select('id, assignment_id, client_id, status, submitted_at, feedback, reviewed_at, clients(email)')
+        .eq('assignment_id', assignment.id)
+        .order('submitted_at', { ascending: false });
+      if (error) throw error;
+      const mapped: SubmissionRow[] = (data || []).map((s: any) => ({
+        id: s.id,
+        assignment_id: s.assignment_id,
+        client_id: s.client_id,
+        client_email: s.clients?.email ?? 'Unknown',
+        status: s.status,
+        submitted_at: s.submitted_at,
+        feedback: s.feedback,
+        reviewed_at: s.reviewed_at,
+      }));
+      setSubmissions(mapped);
+    } catch (err) {
+      console.error('Error loading submissions:', err);
+    } finally {
+      setLoadingSubmissions(false);
+    }
+  };
+
+  const openReview = async (submission: SubmissionRow) => {
+    setActiveSubmission(submission);
+    setReviewFeedback(submission.feedback ?? '');
+    setView('review');
+    setLoadingReview(true);
+    try {
+      const { data, error } = await supabase
+        .from('assignment_submission_files')
+        .select('id, file_name, file_path, uploaded_at')
+        .eq('submission_id', submission.id)
+        .order('uploaded_at');
+      if (error) throw error;
+      setSubmissionFiles(data || []);
+    } catch (err) {
+      console.error('Error loading submission files:', err);
+    } finally {
+      setLoadingReview(false);
+    }
+  };
+
+  const downloadFile = async (filePath: string) => {
+    try {
+      const { data, error } = await supabase.storage
+        .from('assignments')
+        .createSignedUrl(filePath, 60);
+      if (error) throw error;
+      if (data?.signedUrl) window.open(data.signedUrl, '_blank');
+    } catch (err) {
+      console.error('Error downloading file:', err);
+      toast(setErrorMsg, 'Could not download file.');
+    }
+  };
+
+  const handleMarkReviewed = async () => {
+    if (!activeSubmission || !activeAssignment) return;
+    setSavingReview(true);
+    setErrorMsg('');
+    try {
+      const nowIso = new Date().toISOString();
+      const { error } = await supabase
+        .from('assignment_submissions')
+        .update({
+          status: 'reviewed',
+          reviewed_at: nowIso,
+          feedback: reviewFeedback.trim() || null,
+        })
+        .eq('id', activeSubmission.id);
+      if (error) throw error;
+      toast(setSuccessMsg, 'Marked as reviewed.');
+      const updated: SubmissionRow = {
+        ...activeSubmission,
+        status: 'reviewed',
+        reviewed_at: nowIso,
+        feedback: reviewFeedback.trim() || null,
+      };
+      setActiveSubmission(updated);
+      setSubmissions(prev => prev.map(s => s.id === updated.id ? updated : s));
+      setUngradedCounts(prev => ({
+        ...prev,
+        [activeAssignment.id]: Math.max(0, (prev[activeAssignment.id] ?? 0) - 1),
+      }));
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Could not update submission.');
+    } finally {
+      setSavingReview(false);
+    }
+  };
+
+  const handleSaveFeedback = async () => {
+    if (!activeSubmission) return;
+    setSavingReview(true);
+    setErrorMsg('');
+    try {
+      const { error } = await supabase
+        .from('assignment_submissions')
+        .update({ feedback: reviewFeedback.trim() || null })
+        .eq('id', activeSubmission.id);
+      if (error) throw error;
+      toast(setSuccessMsg, 'Feedback saved.');
+      const updated: SubmissionRow = { ...activeSubmission, feedback: reviewFeedback.trim() || null };
+      setActiveSubmission(updated);
+      setSubmissions(prev => prev.map(s => s.id === updated.id ? updated : s));
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Could not save feedback.');
+    } finally {
+      setSavingReview(false);
+    }
   };
 
   // ── GROUPS VIEW ──────────────────────────────────────────────
@@ -639,6 +805,18 @@ export default function AssignmentCreator() {
                       </button>
                     )}
                     <button
+                      onClick={() => openSubmissions(a)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-emerald-700 border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors"
+                    >
+                      <Inbox className="w-3.5 h-3.5" />
+                      View Submissions
+                      {(ungradedCounts[a.id] ?? 0) > 0 && (
+                        <span className="ml-0.5 inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 text-xs font-bold text-white bg-red-500 rounded-full">
+                          {ungradedCounts[a.id]}
+                        </span>
+                      )}
+                    </button>
+                    <button
                       onClick={() => openEditAssignmentForm(a)}
                       className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors"
                     >
@@ -848,6 +1026,213 @@ export default function AssignmentCreator() {
     );
   }
 
+  // ── SUBMISSIONS VIEW ──────────────────────────────────────────
+  if (view === 'submissions' && activeAssignment && activeGroup) {
+    return (
+      <div className="max-w-3xl mx-auto space-y-5">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-7">
+          <button
+            onClick={() => { setView('assignments'); setActiveAssignment(null); }}
+            className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-emerald-700 transition-colors mb-4"
+          >
+            <ChevronLeft className="w-4 h-4" /> Back to {activeGroup.title}
+          </button>
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+              <Inbox className="w-5 h-5 text-emerald-600" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-slate-900">Submissions</h2>
+              <p className="text-sm text-slate-500 mt-0.5">{activeAssignment.title}</p>
+            </div>
+          </div>
+        </div>
+
+        {successMsg && (
+          <div className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-xl px-5 py-3.5">
+            <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+            <p className="text-sm font-medium text-green-800">{successMsg}</p>
+          </div>
+        )}
+        {errorMsg && (
+          <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl px-5 py-3.5">
+            <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
+            <p className="text-sm font-medium text-red-800">{errorMsg}</p>
+          </div>
+        )}
+
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+          {loadingSubmissions ? (
+            <div className="flex items-center gap-2 text-slate-500 text-sm p-6">
+              <Loader className="w-4 h-4 animate-spin" /> Loading submissions...
+            </div>
+          ) : submissions.length === 0 ? (
+            <div className="p-10 text-center">
+              <Inbox className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+              <p className="text-slate-500 text-sm">No submissions yet for this assignment.</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-slate-100">
+              {submissions.map(s => (
+                <div key={s.id} className="flex items-center gap-4 px-6 py-4 hover:bg-slate-50 transition-colors">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm text-slate-900">{s.client_email}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Submitted {new Date(s.submitted_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    {s.status === 'completed' && (
+                      <span className="text-xs font-medium bg-emerald-100 text-emerald-700 rounded-full px-2.5 py-1">
+                        Completed
+                      </span>
+                    )}
+                    {s.status === 'reviewed' && (
+                      <span className="text-xs font-medium bg-amber-100 text-amber-700 rounded-full px-2.5 py-1">
+                        Reviewed
+                      </span>
+                    )}
+                    <button
+                      onClick={() => openReview(s)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-emerald-700 border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors"
+                    >
+                      Review
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ── REVIEW VIEW ───────────────────────────────────────────────
+  if (view === 'review' && activeSubmission && activeAssignment) {
+    const isReviewed = activeSubmission.status === 'reviewed';
+    return (
+      <div className="max-w-3xl mx-auto space-y-5">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-7">
+          <button
+            onClick={() => { setView('submissions'); setActiveSubmission(null); }}
+            className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-emerald-700 transition-colors mb-4"
+          >
+            <ChevronLeft className="w-4 h-4" /> Back to submissions
+          </button>
+          <h2 className="text-xl font-bold text-slate-900">Review Submission</h2>
+          <p className="text-sm text-slate-500 mt-0.5">
+            {activeSubmission.client_email} — {activeAssignment.title}
+          </p>
+          {isReviewed && activeSubmission.reviewed_at && (
+            <div className="mt-3 flex items-center gap-2 text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+              <CheckCircle className="w-3.5 h-3.5" />
+              Reviewed on {new Date(activeSubmission.reviewed_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+            </div>
+          )}
+        </div>
+
+        {successMsg && (
+          <div className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-xl px-5 py-3.5">
+            <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+            <p className="text-sm font-medium text-green-800">{successMsg}</p>
+          </div>
+        )}
+        {errorMsg && (
+          <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl px-5 py-3.5">
+            <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
+            <p className="text-sm font-medium text-red-800">{errorMsg}</p>
+          </div>
+        )}
+
+        {activeAssignment.instructions && (
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h3 className="text-sm font-semibold text-slate-700 mb-2">Assignment Instructions</h3>
+            <p className="text-sm text-slate-600 whitespace-pre-wrap leading-relaxed">{activeAssignment.instructions}</p>
+          </div>
+        )}
+
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+          <h3 className="text-sm font-semibold text-slate-700 mb-3">Submitted Files</h3>
+          {loadingReview ? (
+            <div className="flex items-center gap-2 text-slate-500 text-sm">
+              <Loader className="w-4 h-4 animate-spin" /> Loading files...
+            </div>
+          ) : submissionFiles.length === 0 ? (
+            <p className="text-sm text-slate-500">No files uploaded with this submission.</p>
+          ) : (
+            <div className="space-y-2">
+              {submissionFiles.map(f => (
+                <button
+                  key={f.id}
+                  onClick={() => downloadFile(f.file_path)}
+                  className="w-full flex items-center gap-3 px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg hover:bg-emerald-50 hover:border-emerald-200 transition-colors text-left"
+                >
+                  <FileText className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                  <span className="text-sm text-slate-700 truncate flex-1">{f.file_name}</span>
+                  <Download className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+              Feedback <span className="font-normal text-slate-500">(optional)</span>
+            </label>
+            <textarea
+              value={reviewFeedback}
+              onChange={e => setReviewFeedback(e.target.value)}
+              placeholder="Write feedback for your mentee..."
+              rows={5}
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-400 resize-vertical leading-relaxed"
+            />
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3">
+            {!isReviewed ? (
+              <button
+                onClick={handleMarkReviewed}
+                disabled={savingReview}
+                className="flex-1 sm:flex-none px-8 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 text-sm"
+              >
+                {savingReview ? (
+                  <><Loader className="w-4 h-4 animate-spin" /> Saving...</>
+                ) : (
+                  <><CheckCircle className="w-4 h-4" /> Mark as Reviewed</>
+                )}
+              </button>
+            ) : (
+              <button
+                onClick={handleSaveFeedback}
+                disabled={savingReview}
+                className="flex-1 sm:flex-none px-8 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 text-sm"
+              >
+                {savingReview ? (
+                  <><Loader className="w-4 h-4 animate-spin" /> Saving...</>
+                ) : (
+                  <><CheckCircle className="w-4 h-4" /> Save Feedback</>
+                )}
+              </button>
+            )}
+            <button
+              onClick={() => { setView('submissions'); setActiveSubmission(null); }}
+              disabled={savingReview}
+              className="px-6 py-3 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl transition-colors text-sm font-medium"
+            >
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Fallback (shouldn't happen)
   return null;
 }
+
+
+export default AssignmentCreator

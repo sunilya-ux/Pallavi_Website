@@ -120,7 +120,7 @@ export default function AssignmentSubList({
                 {/* Status badge */}
                 <div className="flex-shrink-0 flex items-center gap-2">
                   {status === 'reviewed' && (
-                    <span className="text-xs font-medium bg-blue-100 text-blue-700 rounded-full px-2.5 py-1">
+                    <span className="text-xs font-medium bg-amber-100 text-amber-700 rounded-full px-2.5 py-1">
                       Reviewed
                     </span>
                   )}
