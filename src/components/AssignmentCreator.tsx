@@ -1234,7 +1234,4 @@ function AssignmentCreator() {
   return null;
 }
 
-
-export default AssignmentCreator
-
-export default AssignmentCreator
+export default AssignmentCreator;
