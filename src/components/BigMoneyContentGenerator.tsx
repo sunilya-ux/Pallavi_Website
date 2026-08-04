@@ -109,7 +109,7 @@ function parseSections(content: string): { entries: DayEntry[]; footer: string }
     }
 
     let matched = false;
-    const lower = trimmed.toLowerCase().replace(/^\*+|\*+$/g, '');
+    const lower = trimmed.toLowerCase().replace(/[*_#]/g, '').trim();
 
     for (const [label, key] of Object.entries(LABEL_MAP)) {
       const regex = new RegExp('^' + label.replace(/\s+/g, '\\s+') + '\\s*:', 'i');
