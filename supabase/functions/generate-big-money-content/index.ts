@@ -129,7 +129,7 @@ Generate my complete 7-day Instagram content plan now.`;
           { role: "user", content: userPrompt },
         ],
         temperature: 0.8,
-        max_tokens: 7000,
+        max_tokens: 12000,
       }),
     });
 
@@ -140,7 +140,21 @@ Generate my complete 7-day Instagram content plan now.`;
     }
 
     const data = await response.json();
+    const finishReason = data.choices[0].finish_reason;
     const content = data.choices[0].message.content;
+
+    if (finishReason === "length") {
+      console.error("OpenAI response was truncated (hit max_tokens). Content plan incomplete.");
+      return new Response(
+        JSON.stringify({
+          error: "The content plan got cut off before finishing all 7 days. Please try again — this usually resolves on retry.",
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
 
     return new Response(JSON.stringify({ content }), {
       status: 200,
