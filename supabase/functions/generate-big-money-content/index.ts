@@ -116,38 +116,80 @@ Update strategies quarterly to match algorithm shifts.`;
 
 Generate my complete 7-day Instagram content plan now.`;
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${openaiApiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
-        ],
-        temperature: 0.8,
-        max_tokens: 12000,
-      }),
-    });
+    const isContentComplete = (content: string): boolean => {
+      const requiredFields = [
+        "THEME:",
+        "POST TYPE:",
+        "CONTENT IDEA:",
+        "CAPTION:",
+        "HASHTAGS:",
+        "HOOK:",
+        "GROWTH NOTES:",
+        "BEST TIME:",
+      ];
 
-    if (!response.ok) {
-      const error = await response.text();
-      console.error("OpenAI API error:", error);
-      throw new Error("Failed to generate content plan");
+      const dayBlocks = content.split(/DAY:/).slice(1);
+
+      if (dayBlocks.length !== 7) {
+        console.warn(`isContentComplete: expected 7 day blocks, found ${dayBlocks.length}`);
+        return false;
+      }
+
+      for (let i = 0; i < dayBlocks.length; i++) {
+        for (const field of requiredFields) {
+          if (!dayBlocks[i].includes(field)) {
+            console.warn(`isContentComplete: day block ${i + 1} missing field "${field}"`);
+            return false;
+          }
+        }
+      }
+
+      return true;
+    };
+
+    const callOpenAI = async (): Promise<{ content: string; finishReason: string }> => {
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${openaiApiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userPrompt },
+          ],
+          temperature: 0.8,
+          max_tokens: 12000,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        console.error("OpenAI API error:", error);
+        throw new Error("Failed to generate content plan");
+      }
+
+      const data = await response.json();
+      return {
+        content: data.choices[0].message.content,
+        finishReason: data.choices[0].finish_reason,
+      };
+    };
+
+    let { content, finishReason } = await callOpenAI();
+
+    if (finishReason === "length" || !isContentComplete(content)) {
+      console.warn("First OpenAI attempt incomplete (finish_reason:", finishReason, "). Retrying once...");
+      ({ content, finishReason } = await callOpenAI());
     }
 
-    const data = await response.json();
-    const finishReason = data.choices[0].finish_reason;
-    const content = data.choices[0].message.content;
-
-    if (finishReason === "length") {
-      console.error("OpenAI response was truncated (hit max_tokens). Content plan incomplete.");
+    if (!isContentComplete(content)) {
+      console.error("Content plan still incomplete after retry.");
       return new Response(
         JSON.stringify({
-          error: "The content plan got cut off before finishing all 7 days. Please try again — this usually resolves on retry.",
+          error: "The content plan came back incomplete after two attempts. Please try regenerating.",
         }),
         {
           status: 500,
