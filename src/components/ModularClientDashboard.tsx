@@ -18,6 +18,7 @@ import WebinarBuilder from './WebinarBuilder';
 import HookBuilder from './HookBuilder';
 import MonetizablePassionAnalysis from './MonetizablePassionAnalysis';
 import LifePurposeGenerator from './LifePurposeGenerator';
+import FAQChatWidget from './FAQChatWidget';
 import { supabase } from '../lib/supabase';
 import type { ModuleWithTools } from '../types/permissions';
 
@@ -422,6 +423,7 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
           )}
         </div>
       </main>
+      <FAQChatWidget />
     </div>
   );
 }
