@@ -9,35 +9,124 @@ interface FAQItem {
 
 const FAQ_ITEMS: FAQItem[] = [
   {
-    question: 'How do I submit an assignment?',
-    answer: 'Go to the Certification section in the sidebar and click Assignments. Select the assignment, upload your file, and click Submit. Once submitted, you cannot edit it, so please double-check before submitting.',
+    question: 'Where can I check the portal link?',
+    answer: 'Your portal link is https://mufzfumvtfcyymgqecph.app.clientclub.net/. Log in using the email and password you were given.',
   },
   {
-    question: 'Where do I find my certification tools?',
-    answer: 'Click Certification in the left sidebar to see tools like the Passion Roadmap Creator, Vision Board Generator, SMART Goal Generator, and more.',
+    question: 'How can I access the portal or log in?',
+    answer: 'Click this link: https://mufzfumvtfcyymgqecph.app.clientclub.net/. Enter your login details and you will see the courses you are enrolled in.',
   },
   {
-    question: 'What is in the Monetization section?',
-    answer: 'Monetization includes tools to help you turn your coaching practice into income, like the Big Money Content Generator and Monetizable Passion Analysis.',
+    question: 'How can I access the portal easily every time?',
+    answer: 'Once you log in successfully, save or bookmark the link in your browser so you can open it anytime without searching for it again.',
   },
   {
-    question: 'What is Beyond Coaching?',
-    answer: 'Beyond Coaching has advanced tools like the YouTube Video Script Generator, Webinar Builder, and Hook Builder to help grow your content and audience.',
+    question: 'How do I submit answers for assignments?',
+    answer: 'If it is a simple answer (like Done / Not Done), just reply in the comments. If it needs more detail or a process, upload a document instead — you can type it in a Google Doc, or even write it by hand in a notebook and upload a photo.',
   },
   {
-    question: 'I am stuck or something is not working. What do I do?',
-    answer: 'Please reach out to Pallavi directly with a description of what you were trying to do and what happened. She will be happy to help.',
+    question: 'How can I upload documents in the classroom?',
+    answer: 'Open the assignment, click the Upload / Attach file option, then select your document and submit.',
+  },
+  {
+    question: 'Should I write in comments or upload a document?',
+    answer: 'For short answers, use the comment section. For detailed answers or exercises, upload a document.',
+  },
+  {
+    question: 'How do I do journaling?',
+    answer: 'You can journal in your personal notebook, or type it in a document and upload it if required for submission. Each assignment includes a prompt to guide what to focus on, usually your thoughts, learnings, and reflections.',
+  },
+  {
+    question: 'Where can I check my assignments?',
+    answer: 'All your assignments are available inside the Assignments section of the student portal.',
+  },
+  {
+    question: 'I am using an iPad and cannot open my assignments. What do I do?',
+    answer: 'Try opening it from a laptop instead. You can also use the class code — just make sure you are logged in with the same email that was shared with the team.',
+  },
+  {
+    question: 'Why does the morning ritual video take longer than 5 to 10 minutes?',
+    answer: 'It is normal for it to take a bit longer the first few times. From the next day onward, it usually takes hardly 10 minutes. If you still have questions, you can get clarity from Pallavi in the weekly sessions.',
+  },
+  {
+    question: 'What are the steps of the morning ritual?',
+    answer: '1) Set your intention for the day. 2) Do box breathing for 1 minute (3 cycles). 3) Set one weekly goal (personal, professional, financial, or health). 4) Write 3 tasks for today that move you toward that goal. 5) Write 3 affirmations and read each one 5 to 7 times out loud. 6) Read your "Version 2" — your future self 3 months from now, written in present tense.',
+  },
+  {
+    question: 'Which days is the team off and when should I not expect a response?',
+    answer: 'We are off on Sundays and Mondays, so please expect no response or delays on these days.',
+  },
+  {
+    question: 'How do I get urgent help with a client acquisition query?',
+    answer: 'Label your message "Urgent Client" in your batch WhatsApp group to get the fastest response.',
+  },
+  {
+    question: 'Is there phone or individual WhatsApp support?',
+    answer: 'We do not offer phone calls or individual WhatsApp support. Please send any query in your batch WhatsApp group.',
+  },
+  {
+    question: 'When are the weekly calls and how do I join?',
+    answer: 'Weekly calls are every Wednesday and Saturday at 6:30 PM for doubts, feedback, and progress checks. The Zoom link is in your WhatsApp group description section.',
+  },
+  {
+    question: 'Are there monthly bootcamps?',
+    answer: 'Yes! Bootcamps are held every 4th Saturday and Sunday of the month for certification and monetization batches, to implement the program tools live. On bootcamp weekends, the regular Saturday evening call is not conducted.',
+  },
+  {
+    question: 'Where can I find the session recordings?',
+    answer: 'The recordings link is in your WhatsApp group description section. Weekly session recordings are usually uploaded within 24 to 48 hours on working days, excluding weekly off days.',
+  },
+  {
+    question: 'What are your working hours?',
+    answer: 'We are operational from 11 AM to 6 PM.',
+  },
+  {
+    question: 'When is EMI due and what happens if I am late?',
+    answer: 'EMI is due by the 5th of every month. After that, a penalty of 500 rupees per day applies.',
   },
 ];
 
-const STOP_WORDS = new Set(['the', 'a', 'an', 'is', 'are', 'do', 'does', 'i', 'my', 'to', 'in', 'of', 'for', 'and', 'how', 'what', 'where', 'can', 'you', 'me', 'it', 'this', 'that']);
+const STOP_WORDS = new Set(['the', 'a', 'an', 'is', 'are', 'do', 'does', 'i', 'my', 'to', 'in', 'of', 'for', 'and', 'how', 'what', 'where', 'when', 'why', 'can', 'you', 'me', 'it', 'this', 'that', 'am', 'if', 'be']);
+
+const SYNONYM_GROUPS: string[][] = [
+  ['login', 'log', 'signin', 'sign'],
+  ['upload', 'attach', 'submit', 'submitting'],
+  ['assignment', 'assignments', 'homework', 'task', 'tasks'],
+  ['portal', 'site', 'website', 'link'],
+  ['classroom', 'class'],
+  ['whatsapp', 'whats', 'app'],
+  ['recording', 'recordings', 'record'],
+  ['ipad', 'tablet'],
+  ['document', 'documents', 'doc', 'docs'],
+  ['journal', 'journaling', 'journals'],
+  ['call', 'calls', 'session', 'sessions', 'zoom', 'meeting'],
+  ['bootcamp', 'bootcamps'],
+  ['emi', 'payment', 'fee', 'fees'],
+  ['comment', 'comments'],
+  ['ritual', 'rituals', 'routine'],
+];
+
+const SYNONYM_MAP: Record<string, string> = {};
+for (const group of SYNONYM_GROUPS) {
+  for (const word of group) {
+    SYNONYM_MAP[word] = group[0];
+  }
+}
+
+function stem(word: string): string {
+  if (word.length > 4 && word.endsWith('ies')) return word.slice(0, -3) + 'y';
+  if (word.length > 4 && word.endsWith('es')) return word.slice(0, -2);
+  if (word.length > 4 && word.endsWith('s') && !word.endsWith('ss')) return word.slice(0, -1);
+  return word;
+}
 
 function normalizeToWords(text: string): string[] {
   return text
     .toLowerCase()
     .replace(/[^a-z0-9\s]/g, ' ')
     .split(/\s+/)
-    .filter((w) => w.length > 2 && !STOP_WORDS.has(w));
+    .filter((w) => w.length > 2 && !STOP_WORDS.has(w))
+    .map((w) => SYNONYM_MAP[w] || SYNONYM_MAP[stem(w)] || stem(w));
 }
 
 function findBestMatch(input: string): FAQItem | null {
