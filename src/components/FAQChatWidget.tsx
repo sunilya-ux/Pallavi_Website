@@ -145,7 +145,9 @@ function findBestMatch(input: string): FAQItem | null {
     }
   }
 
-  return bestScore >= 2 ? bestItem : null;
+  const matchRatio = bestScore / inputWords.length;
+  const isMatch = bestScore >= 2 || (bestScore >= 1 && matchRatio >= 0.5);
+  return isMatch ? bestItem : null;
 }
 
 export default function FAQChatWidget() {
