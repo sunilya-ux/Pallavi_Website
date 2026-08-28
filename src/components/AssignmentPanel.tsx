@@ -23,6 +23,7 @@ interface Submission {
   id: string;
   status: 'completed' | 'reviewed';
   feedback: string | null;
+  response_text: string | null;
 }
 
 interface SubmissionFile {
@@ -72,6 +73,7 @@ export default function AssignmentPanel({
   const [dragging, setDragging] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [responseText, setResponseText] = useState('');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -92,7 +94,7 @@ export default function AssignmentPanel({
           .order('uploaded_at'),
         supabase
           .from('assignment_submissions')
-          .select('id, status, feedback')
+          .select('id, status, feedback, response_text')
           .eq('assignment_id', assignment.id)
           .eq('client_id', clientId)
           .maybeSingle(),
@@ -162,26 +164,34 @@ export default function AssignmentPanel({
   };
 
   const handleSubmit = async () => {
+    if (!responseText.trim()) return;
     setSubmitting(true);
     setSubmitError('');
     try {
       const { data: sub, error: subErr } = await supabase
         .from('assignment_submissions')
-        .insert({ assignment_id: assignment.id, client_id: clientId, status: 'completed' })
+        .insert({
+          assignment_id: assignment.id,
+          client_id: clientId,
+          status: 'completed',
+          response_text: responseText.trim(),
+        })
         .select('id')
         .single();
       if (subErr) throw subErr;
 
-      for (const file of pendingFiles) {
-        const path = `submissions/${sub.id}/${sanitize(file.name)}`;
-        const { error: uploadErr } = await supabase.storage
-          .from('assignments')
-          .upload(path, file, { upsert: true });
-        if (uploadErr) throw uploadErr;
-        const { error: fileRowErr } = await supabase
-          .from('assignment_submission_files')
-          .insert({ submission_id: sub.id, file_path: path, file_name: file.name });
-        if (fileRowErr) throw fileRowErr;
+      if (pendingFiles.length > 0) {
+        for (const file of pendingFiles) {
+          const path = `submissions/${sub.id}/${sanitize(file.name)}`;
+          const { error: uploadErr } = await supabase.storage
+            .from('assignments')
+            .upload(path, file, { upsert: true });
+          if (uploadErr) throw uploadErr;
+          const { error: fileRowErr } = await supabase
+            .from('assignment_submission_files')
+            .insert({ submission_id: sub.id, file_path: path, file_name: file.name });
+          if (fileRowErr) throw fileRowErr;
+        }
       }
 
       await loadData();
@@ -223,6 +233,9 @@ export default function AssignmentPanel({
           {submission?.status === 'reviewed' && (
             <>
               <StatusBanner type="reviewed" />
+              {submission.response_text && (
+                <ResponseBlock text={submission.response_text} />
+              )}
               {submissionFiles.length > 0 && (
                 <FileList label="Your submitted files" files={submissionFiles} />
               )}
@@ -246,6 +259,9 @@ export default function AssignmentPanel({
               {assignment.instructions && (
                 <Instructions text={assignment.instructions} />
               )}
+              {submission.response_text && (
+                <ResponseBlock text={submission.response_text} />
+              )}
               {submissionFiles.length > 0 && (
                 <FileList label="Your submitted files" files={submissionFiles} />
               )}
@@ -264,10 +280,24 @@ export default function AssignmentPanel({
                 <FileList label="Files from your coach" files={refFiles} />
               )}
 
+              {/* Written response */}
+              <div>
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+                  Your Response <span className="text-red-500 normal-case">*</span>
+                </p>
+                <textarea
+                  value={responseText}
+                  onChange={e => setResponseText(e.target.value)}
+                  placeholder="Write what you did, what you learned, or your answer here..."
+                  rows={5}
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm text-slate-800 leading-relaxed outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-colors resize-y"
+                />
+              </div>
+
               {/* Upload zone */}
               <div>
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
-                  Upload your work
+                  Attach files (optional)
                 </p>
 
                 <div
@@ -293,7 +323,7 @@ export default function AssignmentPanel({
                   <p className="text-sm font-medium text-slate-700">
                     Drop your files here or click to browse
                   </p>
-                  <p className="text-xs text-slate-500 mt-1">.doc, .docx, .jpg, .jpeg, .png only</p>
+                  <p className="text-xs text-slate-500 mt-1">.doc, .docx, .jpg, .jpeg, .png only (optional)</p>
                 </div>
 
                 {rejectedNames.length > 0 && (
@@ -344,7 +374,7 @@ export default function AssignmentPanel({
 
               <button
                 onClick={handleSubmit}
-                disabled={submitting || pendingFiles.length === 0}
+                disabled={submitting || !responseText.trim()}
                 className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 text-sm"
               >
                 {submitting ? (
@@ -359,15 +389,28 @@ export default function AssignmentPanel({
                   </>
                 )}
               </button>
-              {pendingFiles.length === 0 && !submitting && (
+              {!responseText.trim() && !submitting && (
                 <p className="text-xs text-slate-400 text-center -mt-2">
-                  Upload at least one file to submit.
+                  Write your response above to submit.
                 </p>
               )}
             </>
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+function ResponseBlock({ text }: { text: string }) {
+  return (
+    <div>
+      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+        Your Response
+      </p>
+      <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+        <p className="text-sm text-slate-800 leading-relaxed whitespace-pre-wrap">{text}</p>
+      </div>
     </div>
   );
 }

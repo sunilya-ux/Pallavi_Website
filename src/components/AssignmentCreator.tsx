@@ -44,6 +44,7 @@ interface SubmissionRow {
   submitted_at: string;
   feedback: string | null;
   reviewed_at: string | null;
+  response_text: string | null;
 }
 
 interface SubFile {
@@ -428,7 +429,7 @@ function AssignmentCreator() {
     try {
       const { data, error } = await supabase
         .from('assignment_submissions')
-        .select('id, assignment_id, client_id, status, submitted_at, feedback, reviewed_at, clients(email)')
+        .select('id, assignment_id, client_id, status, submitted_at, feedback, reviewed_at, response_text, clients(email)')
         .eq('assignment_id', assignment.id)
         .order('submitted_at', { ascending: false });
       if (error) throw error;
@@ -441,6 +442,7 @@ function AssignmentCreator() {
         submitted_at: s.submitted_at,
         feedback: s.feedback,
         reviewed_at: s.reviewed_at,
+        response_text: s.response_text,
       }));
       setSubmissions(mapped);
     } catch (err) {
@@ -1153,29 +1155,40 @@ function AssignmentCreator() {
         )}
 
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-          <h3 className="text-sm font-semibold text-slate-700 mb-3">Submitted Files</h3>
-          {loadingReview ? (
-            <div className="flex items-center gap-2 text-slate-500 text-sm">
-              <Loader className="w-4 h-4 animate-spin" /> Loading files...
-            </div>
-          ) : submissionFiles.length === 0 ? (
-            <p className="text-sm text-slate-500">No files uploaded with this submission.</p>
+          <h3 className="text-sm font-semibold text-slate-700 mb-3">Mentee's Response</h3>
+          {activeSubmission.response_text ? (
+            <p className="text-sm text-slate-800 whitespace-pre-wrap leading-relaxed bg-slate-50 border border-slate-200 rounded-xl p-4">
+              {activeSubmission.response_text}
+            </p>
           ) : (
-            <div className="space-y-2">
-              {submissionFiles.map(f => (
-                <button
-                  key={f.id}
-                  onClick={() => downloadFile(f.file_path)}
-                  className="w-full flex items-center gap-3 px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg hover:bg-emerald-50 hover:border-emerald-200 transition-colors text-left"
-                >
-                  <FileText className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                  <span className="text-sm text-slate-700 truncate flex-1">{f.file_name}</span>
-                  <Download className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                </button>
-              ))}
-            </div>
+            <p className="text-sm text-slate-400 italic">No written response</p>
           )}
         </div>
+
+        {submissionFiles.length > 0 && (
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h3 className="text-sm font-semibold text-slate-700 mb-3">Submitted Files</h3>
+            {loadingReview ? (
+              <div className="flex items-center gap-2 text-slate-500 text-sm">
+                <Loader className="w-4 h-4 animate-spin" /> Loading files...
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {submissionFiles.map(f => (
+                  <button
+                    key={f.id}
+                    onClick={() => downloadFile(f.file_path)}
+                    className="w-full flex items-center gap-3 px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg hover:bg-emerald-50 hover:border-emerald-200 transition-colors text-left"
+                  >
+                    <FileText className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                    <span className="text-sm text-slate-700 truncate flex-1">{f.file_name}</span>
+                    <Download className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
           <div>
