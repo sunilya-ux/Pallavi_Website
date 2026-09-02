@@ -168,6 +168,21 @@ export default function AssignmentPanel({
     setSubmitting(true);
     setSubmitError('');
     try {
+      // Guard against duplicate submission — re-check before inserting
+      const { data: existing } = await supabase
+        .from('assignment_submissions')
+        .select('id, status, feedback, response_text')
+        .eq('assignment_id', assignment.id)
+        .eq('client_id', clientId)
+        .maybeSingle();
+      if (existing) {
+        setSubmission(existing as Submission);
+        setResponseText('');
+        setPendingFiles([]);
+        await loadData();
+        return;
+      }
+
       const { data: sub, error: subErr } = await supabase
         .from('assignment_submissions')
         .insert({
@@ -194,9 +209,12 @@ export default function AssignmentPanel({
         }
       }
 
+      setResponseText('');
+      setPendingFiles([]);
       await loadData();
-    } catch (err: any) {
-      setSubmitError(err.message || 'Something went wrong. Please try again.');
+    } catch (err) {
+      console.error('[AssignmentPanel] submit error:', err);
+      setSubmitError('Something went wrong submitting your work — please try again.');
     } finally {
       setSubmitting(false);
     }
