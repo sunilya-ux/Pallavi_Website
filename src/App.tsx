@@ -13,6 +13,8 @@ import FinalCTA from './components/FinalCTA';
 import Footer from './components/Footer';
 import Dashboard from './components/Dashboard';
 import ModularClientDashboard from './components/ModularClientDashboard';
+import EventPage from './components/EventPage';
+import { isEventActive, bannerText } from './config/eventConfig';
 
 function App() {
   const [user, setUser] = useState<any>(null);
@@ -79,10 +81,34 @@ function App() {
     return <ModularClientDashboard email={clientUser} clientId={clientId} />;
   }
 
+  if (window.location.pathname === '/event') {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <div className="pt-20">
+          <EventPage />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white">
       <Header />
       <div className="pt-20">
+        {isEventActive() && (
+          <div className="bg-gradient-to-r from-emerald-600 to-teal-600">
+            <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-3 flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
+              <p className="text-sm font-medium text-white">{bannerText}</p>
+              <a
+                href="/event"
+                className="text-sm font-semibold text-white underline underline-offset-2 hover:text-emerald-100 transition-colors whitespace-nowrap"
+              >
+                Book Tickets →
+              </a>
+            </div>
+          </div>
+        )}
         <Hero />
         <VideoSection />
         <SocialProof />

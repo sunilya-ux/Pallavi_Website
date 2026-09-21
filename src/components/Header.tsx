@@ -2,6 +2,7 @@ import { LogIn, LogOut, User } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import LoginModal from './LoginModal';
+import { isEventActive } from '../config/eventConfig';
 
 export default function Header() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -64,13 +65,23 @@ export default function Header() {
                 </button>
               </div>
             ) : (
-              <button
-                onClick={() => setIsLoginOpen(true)}
-                className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 hover:scale-105"
-              >
-                <LogIn className="w-4 h-4" />
-                Login
-              </button>
+              <div className="flex items-center gap-4 sm:gap-6">
+                {isEventActive() && (
+                  <a
+                    href="/event"
+                    className="text-sm font-semibold text-slate-700 hover:text-emerald-700 transition-colors hidden sm:inline"
+                  >
+                    Event
+                  </a>
+                )}
+                <button
+                  onClick={() => setIsLoginOpen(true)}
+                  className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 hover:scale-105"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Login
+                </button>
+              </div>
             )}
           </div>
         </div>
