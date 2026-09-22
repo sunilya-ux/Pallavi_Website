@@ -25,3 +25,10 @@ function getIndiaToday(): string {
 export function isEventActive(): boolean {
   return getIndiaToday() <= eventDate;
 }
+
+export function getDaysUntilEvent(): number {
+  const today = getIndiaToday();
+  const target = eventDate;
+  const diffMs = new Date(target).getTime() - new Date(today).getTime();
+  return Math.round(diffMs / (1000 * 60 * 60 * 24));
+}
