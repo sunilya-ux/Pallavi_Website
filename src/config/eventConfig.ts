@@ -75,6 +75,11 @@ export const faqs: FAQ[] = [
   { question: 'If I have questions, how can I contact you?', answer: 'WhatsApp us at 6386355905 or email info@lifecoachpallavichatterjee.com and we\'ll get back to you.' },
 ];
 
+export const closingHeading = "It's Not Your Skills Holding You Back";
+export const closingSubheading = "It's The System You're Missing";
+export const closingTagline = "Learn It. Install It. Scale With It.";
+export const closingImage = '';
+
 export const hostName = 'Pallavi Chatterjee';
 export const hostTitle = 'Award-Winning Life & Business Coach';
 export const hostBio = 'With 18 years of experience, Pallavi has helped hundreds of professionals turn their passion into a thriving coaching business.';

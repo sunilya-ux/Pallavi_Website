@@ -30,6 +30,10 @@ import {
   afterItems,
   faqHeading,
   faqs,
+  closingHeading,
+  closingSubheading,
+  closingTagline,
+  closingImage,
 } from '../config/eventConfig';
 
 export default function EventPage() {
@@ -477,6 +481,37 @@ export default function EventPage() {
                     </div>
                   );
                 })}
+              </div>
+            </div>
+
+            {/* Closing section */}
+            <div className="mt-16 sm:mt-20">
+              <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border border-emerald-100 shadow-sm px-6 sm:px-10 py-12 sm:py-16 text-center">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-3">
+                  {closingHeading}
+                </h2>
+                <p className="text-lg sm:text-xl italic text-emerald-700 mb-8">
+                  {closingSubheading}
+                </p>
+                <div className="max-w-sm mx-auto rounded-2xl overflow-hidden bg-gradient-to-br from-emerald-100 to-teal-100 border border-emerald-200 aspect-[4/3] flex items-center justify-center mb-8">
+                  {closingImage ? (
+                    <img src={closingImage} alt={closingHeading} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="flex flex-col items-center gap-3 text-emerald-600 py-16">
+                      <ImageIcon className="w-10 h-10" />
+                      <span className="text-sm font-medium">Photo coming soon</span>
+                    </div>
+                  )}
+                </div>
+                <p className="text-base sm:text-lg font-bold text-slate-800 mb-8">
+                  {closingTagline}
+                </p>
+                <a
+                  href="#tickets"
+                  className="inline-block bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold px-10 py-4 rounded-lg shadow-lg shadow-emerald-200 hover:scale-105 hover:shadow-xl transition-all duration-200"
+                >
+                  Reserve Your Seat →
+                </a>
               </div>
             </div>
           </>
