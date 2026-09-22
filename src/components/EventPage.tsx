@@ -344,6 +344,16 @@ export default function EventPage() {
                 ))}
               </div>
             </div>
+
+            {/* CTA block */}
+            <div className="mt-16 sm:mt-20 mb-8 text-center">
+              <a
+                href="#tickets"
+                className="inline-block bg-white text-emerald-700 font-semibold px-6 py-3 rounded-lg hover:bg-emerald-50 transition-colors border border-emerald-200"
+              >
+                Reserve Your Seat →
+              </a>
+            </div>
           </>
         ) : (
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 px-8 py-12 text-center">
