@@ -34,6 +34,13 @@ export const schedule: ScheduleItem[] = [
   { time: '5:30 PM', title: 'Q&A & Closing', description: '' },
 ];
 
+export const hostName = 'Pallavi Chatterjee';
+export const hostTitle = 'Award-Winning Life & Business Coach';
+export const hostBio = 'With 18 years of experience, Pallavi has helped hundreds of professionals turn their passion into a thriving coaching business.';
+export const hostImage = '';
+export const galleryImages: string[] = [];
+export const videoLinks: string[] = [];
+
 function getIndiaToday(): string {
   const params = new URLSearchParams(window.location.search);
   const preview = params.get('previewDate');

@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarDays, MapPin, Clock, Users, Sparkles, CheckCircle } from 'lucide-react';
+import { ArrowLeft, CalendarDays, MapPin, Clock, Users, Sparkles, CheckCircle, UserCircle, ImageIcon, PlayCircle } from 'lucide-react';
 import {
   isEventActive,
   eventDateLabel,
@@ -11,6 +11,12 @@ import {
   aboutHeading,
   aboutPoints,
   schedule,
+  hostName,
+  hostTitle,
+  hostBio,
+  hostImage,
+  galleryImages,
+  videoLinks,
 } from '../config/eventConfig';
 
 export default function EventPage() {
@@ -158,6 +164,100 @@ export default function EventPage() {
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* Host section */}
+            <div className="mt-16 sm:mt-20">
+              <div className="text-center mb-10">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+                  Meet Your Host
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center max-w-4xl mx-auto">
+                <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-emerald-100 to-teal-100 border border-emerald-200 min-h-[280px] flex items-center justify-center">
+                  {hostImage ? (
+                    <img src={hostImage} alt={hostName} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="flex flex-col items-center gap-3 text-emerald-600 py-16">
+                      <UserCircle className="w-12 h-12" />
+                      <span className="text-sm font-medium">Photo coming soon</span>
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2">
+                    {hostName}
+                  </h3>
+                  <p className="text-emerald-600 font-medium text-sm sm:text-base mb-4">
+                    {hostTitle}
+                  </p>
+                  <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+                    {hostBio}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Gallery section */}
+            <div className="mt-16 sm:mt-20">
+              <div className="text-center mb-10">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+                  Moments From Our Events
+                </h2>
+                <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto">
+                  More photos coming soon
+                </p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto">
+                {(galleryImages.length > 0 ? galleryImages : Array.from({ length: 6 })).map((item, i) => (
+                  <div
+                    key={i}
+                    className="rounded-xl overflow-hidden bg-gradient-to-br from-emerald-100 to-teal-100 border border-emerald-200 aspect-[4/3] flex items-center justify-center"
+                  >
+                    {typeof item === 'string' ? (
+                      <img src={item} alt={`Gallery ${i + 1}`} className="w-full h-full object-cover" />
+                    ) : (
+                      <ImageIcon className="w-8 h-8 text-emerald-400" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Video section */}
+            <div className="mt-16 sm:mt-20">
+              <div className="text-center mb-10">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+                  Watch & Get Inspired
+                </h2>
+              </div>
+              {videoLinks.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                  {videoLinks.map((url, i) => {
+                    const videoId = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/))([\w-]{11})/)?.[1] || '';
+                    return (
+                      <div key={i} className="rounded-xl overflow-hidden bg-white border border-slate-200 shadow-sm aspect-video">
+                        {videoId && (
+                          <iframe
+                            src={`https://www.youtube.com/embed/${videoId}`}
+                            title={`Video ${i + 1}`}
+                            className="w-full h-full"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="max-w-md mx-auto">
+                  <div className="rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-100 border border-emerald-200 min-h-[200px] flex flex-col items-center justify-center gap-3 text-emerald-600 py-12">
+                    <PlayCircle className="w-12 h-12" />
+                    <span className="text-sm font-medium">Videos coming soon</span>
+                  </div>
+                </div>
+              )}
             </div>
           </>
         ) : (
