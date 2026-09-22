@@ -1,4 +1,5 @@
-import { ArrowLeft, CalendarDays, MapPin, Clock, Users, Sparkles, CheckCircle, UserCircle, ImageIcon, PlayCircle, ExternalLink, MinusCircle, XCircle } from 'lucide-react';
+import { ArrowLeft, CalendarDays, MapPin, Clock, Users, Sparkles, CheckCircle, UserCircle, ImageIcon, PlayCircle, ExternalLink, MinusCircle, XCircle, Plus } from 'lucide-react';
+import { useState } from 'react';
 import {
   isEventActive,
   eventDateLabel,
@@ -27,10 +28,13 @@ import {
   beforeAfterHeading,
   beforeItems,
   afterItems,
+  faqHeading,
+  faqs,
 } from '../config/eventConfig';
 
 export default function EventPage() {
   const active = isEventActive();
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50">
@@ -435,6 +439,45 @@ export default function EventPage() {
               >
                 Reserve Your Seat →
               </a>
+            </div>
+
+            {/* FAQ section */}
+            <div className="mt-16 sm:mt-20">
+              <div className="text-center mb-10">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+                  {faqHeading}
+                </h2>
+              </div>
+              <div className="max-w-3xl mx-auto flex flex-col gap-4">
+                {faqs.map((faq, i) => {
+                  const isOpen = openFaq === i;
+                  return (
+                    <div
+                      key={i}
+                      className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
+                    >
+                      <button
+                        onClick={() => setOpenFaq(isOpen ? null : i)}
+                        className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left"
+                      >
+                        <span className="text-sm sm:text-base font-semibold text-slate-800">{faq.question}</span>
+                        <Plus
+                          className={`w-5 h-5 text-emerald-600 flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}
+                        />
+                      </button>
+                      <div
+                        className={`grid transition-all duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
+                      >
+                        <div className="overflow-hidden">
+                          <p className="px-6 pb-5 text-sm sm:text-base text-slate-600 leading-relaxed">
+                            {faq.answer}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </>
         ) : (

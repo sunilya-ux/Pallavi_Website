@@ -64,6 +64,17 @@ export const afterItems = [
   "A complete system connecting content, ads, and sales",
 ];
 
+export type FAQ = { question: string; answer: string };
+export const faqHeading = 'Frequently Asked Questions';
+export const faqs: FAQ[] = [
+  { question: 'Do I need to bring anything?', answer: "Just your laptop and a notebook if you'd like to take notes. Everything else is provided." },
+  { question: "What's the difference between General and VIP?", answer: 'VIP includes front-row seating, a personal business audit, additional WhatsApp support, complete event recordings, and lifetime access to a bonus course. General gives you full access to the entire day.' },
+  { question: 'Is the ticket refundable?', answer: 'Tickets are non-refundable due to limited seating. You may transfer your seat to someone else up to 48 hours before the event by contacting us on WhatsApp.' },
+  { question: 'Is the event online or in-person?', answer: 'This is a full-day, in-person event at Park Inn by Radisson, New Delhi IP Extension.' },
+  { question: 'Can I bring a team member?', answer: "Each ticket covers one seat. If you'd like to bring a colleague, please book a separate ticket for them." },
+  { question: 'If I have questions, how can I contact you?', answer: 'WhatsApp us at 6386355905 or email info@lifecoachpallavichatterjee.com and we\'ll get back to you.' },
+];
+
 export const hostName = 'Pallavi Chatterjee';
 export const hostTitle = 'Award-Winning Life & Business Coach';
 export const hostBio = 'With 18 years of experience, Pallavi has helped hundreds of professionals turn their passion into a thriving coaching business.';
