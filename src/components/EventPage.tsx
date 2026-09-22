@@ -21,6 +21,9 @@ import {
   venueDescription,
   venueImages,
   venueMapUrl,
+  takeawaysHeading,
+  takeawaysSubheading,
+  takeaways,
 } from '../config/eventConfig';
 
 export default function EventPage() {
@@ -167,6 +170,46 @@ export default function EventPage() {
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* Takeaways section */}
+            <div className="mt-16 sm:mt-20">
+              <div className="bg-slate-900 rounded-2xl px-6 sm:px-10 py-12 sm:py-16">
+                <div className="text-center mb-10">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
+                    {takeawaysHeading}
+                  </h2>
+                  <p className="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto">
+                    {takeawaysSubheading}
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 max-w-5xl mx-auto">
+                  {takeaways.map((item, i) => (
+                    <div
+                      key={i}
+                      className="bg-slate-800 rounded-xl px-6 py-6 flex flex-col gap-3"
+                    >
+                      <CheckCircle className="w-6 h-6 text-emerald-500 flex-shrink-0" />
+                      <div>
+                        <h3 className="text-base sm:text-lg font-bold text-white mb-1">
+                          {item.title}
+                        </h3>
+                        <p className="text-sm text-slate-400 leading-relaxed">
+                          {item.description}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-10 text-center">
+                  <a
+                    href="#tickets"
+                    className="inline-block bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold px-10 py-4 rounded-lg shadow-lg shadow-emerald-900/50 hover:scale-105 hover:shadow-xl transition-all duration-200"
+                  >
+                    Reserve Your Seat →
+                  </a>
+                </div>
               </div>
             </div>
 

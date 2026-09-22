@@ -34,6 +34,18 @@ export const schedule: ScheduleItem[] = [
   { time: '5:30 PM', title: 'Q&A & Closing', description: '' },
 ];
 
+export type Takeaway = { title: string; description: string };
+export const takeawaysHeading = "Everything You'll Walk Away With";
+export const takeawaysSubheading = "Here's what you'll actually have by the end of the day";
+export const takeaways: Takeaway[] = [
+  { title: 'Clarity On Your Niche', description: "Know exactly who you serve and why they'll choose you" },
+  { title: 'A Signature Offer', description: 'A coaching package people are excited to say yes to' },
+  { title: 'Confidence To Price Right', description: 'Set your rates without hesitation or discounting' },
+  { title: 'A Content & Visibility Plan', description: 'Know exactly what to post and where to show up' },
+  { title: 'A Client Enrolment System', description: 'A repeatable way to turn conversations into clients' },
+  { title: 'Your 90-Day Launch Plan', description: 'A clear roadmap for the three months right after this day' },
+];
+
 export const hostName = 'Pallavi Chatterjee';
 export const hostTitle = 'Award-Winning Life & Business Coach';
 export const hostBio = 'With 18 years of experience, Pallavi has helped hundreds of professionals turn their passion into a thriving coaching business.';
