@@ -332,21 +332,10 @@ export default function EventPage() {
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-5xl mx-auto mt-8">
-                {venueImages.slice(1).map((image, index) => (
-                  <div key={image} className="rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm aspect-[4/3]">
-                    <img
-                      src={image}
-                      alt={`${venueName} view ${index + 2}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
             </div>
 
             {/* CTA block */}
-            <div className="mt-16 sm:mt-20 mb-8 text-center">
+            <div className="mt-12 sm:mt-16 mb-8 text-center">
               <a
                 href="#tickets"
                 className="inline-block bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold px-10 py-4 rounded-lg shadow-lg shadow-emerald-200 hover:scale-105 hover:shadow-xl transition-all duration-200"
