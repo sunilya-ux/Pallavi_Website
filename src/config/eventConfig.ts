@@ -41,6 +41,18 @@ export const hostImage = '';
 export const galleryImages: string[] = [];
 export const videoLinks: string[] = [];
 
+export const venueAddress = 'Park Inn by Radisson, New Delhi IP Extension';
+export const venueDescription = "Experience the event at one of Delhi's premium business hotels, offering a comfortable, professional environment with modern conference facilities and warm hospitality.";
+export const venueImages = [
+  '/images/venue/venue-1-building.jpg',
+  '/images/venue/venue-2-banquet.jpg',
+  '/images/venue/venue-3-lobby.jpg',
+  '/images/venue/venue-4-pool.jpg',
+  '/images/venue/venue-5-restaurant.jpg',
+  '/images/venue/venue-6-lounge.jpg',
+];
+export const venueMapUrl = '';
+
 function getIndiaToday(): string {
   const params = new URLSearchParams(window.location.search);
   const preview = params.get('previewDate');

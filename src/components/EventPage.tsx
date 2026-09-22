@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarDays, MapPin, Clock, Users, Sparkles, CheckCircle, UserCircle, ImageIcon, PlayCircle } from 'lucide-react';
+import { ArrowLeft, CalendarDays, MapPin, Clock, Users, Sparkles, CheckCircle, UserCircle, ImageIcon, PlayCircle, ExternalLink } from 'lucide-react';
 import {
   isEventActive,
   eventDateLabel,
@@ -17,6 +17,10 @@ import {
   hostImage,
   galleryImages,
   videoLinks,
+  venueAddress,
+  venueDescription,
+  venueImages,
+  venueMapUrl,
 } from '../config/eventConfig';
 
 export default function EventPage() {
@@ -258,6 +262,87 @@ export default function EventPage() {
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* Venue section */}
+            <div id="venue" className="mt-16 sm:mt-20 scroll-mt-24">
+              <div className="text-center mb-10">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900">
+                  Venue of the Event
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
+                <div className="rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm aspect-[4/3]">
+                  <img
+                    src={venueImages[0]}
+                    alt={`${venueName} building`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div>
+                  <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2">
+                    {venueName}
+                  </h3>
+                  <p className="text-sm sm:text-base font-medium text-emerald-700 mb-4">
+                    {venueAddress}
+                  </p>
+                  <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-6">
+                    {venueDescription}
+                  </p>
+                  {venueMapUrl && (
+                    <a
+                      href={venueMapUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 hover:text-emerald-800 transition-colors mb-6"
+                    >
+                      View on Google Maps
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  )}
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-5 border-t border-slate-200 pt-6">
+                    <div className="flex items-center gap-3">
+                      <CalendarDays className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                      <div>
+                        <div className="text-xs text-slate-500">Date</div>
+                        <div className="text-sm font-semibold text-slate-800">{eventDateLabel}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Clock className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                      <div>
+                        <div className="text-xs text-slate-500">Time</div>
+                        <div className="text-sm font-semibold text-slate-800">{timeLabel}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <MapPin className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                      <div>
+                        <div className="text-xs text-slate-500">Venue</div>
+                        <div className="text-sm font-semibold text-slate-800">{venueName}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Users className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                      <div>
+                        <div className="text-xs text-slate-500">Seats</div>
+                        <div className="text-sm font-semibold text-slate-800">{seatsLabel}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-5xl mx-auto mt-8">
+                {venueImages.slice(1).map((image, index) => (
+                  <div key={image} className="rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm aspect-[4/3]">
+                    <img
+                      src={image}
+                      alt={`${venueName} view ${index + 2}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </>
         ) : (
