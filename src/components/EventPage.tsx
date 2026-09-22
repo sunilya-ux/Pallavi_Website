@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarDays, MapPin, Clock, Users, Sparkles, CheckCircle, UserCircle, ImageIcon, PlayCircle, ExternalLink } from 'lucide-react';
+import { ArrowLeft, CalendarDays, MapPin, Clock, Users, Sparkles, CheckCircle, UserCircle, ImageIcon, PlayCircle, ExternalLink, MinusCircle, XCircle } from 'lucide-react';
 import {
   isEventActive,
   eventDateLabel,
@@ -24,6 +24,9 @@ import {
   takeawaysHeading,
   takeawaysSubheading,
   takeaways,
+  beforeAfterHeading,
+  beforeItems,
+  afterItems,
 } from '../config/eventConfig';
 
 export default function EventPage() {
@@ -210,6 +213,53 @@ export default function EventPage() {
                     Reserve Your Seat →
                   </a>
                 </div>
+              </div>
+            </div>
+
+            {/* Before / After section */}
+            <div className="mt-16 sm:mt-20">
+              <div className="text-center mb-10">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+                  {beforeAfterHeading}
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+                {/* BEFORE card */}
+                <div className="bg-white rounded-2xl border border-slate-200 shadow-md px-6 sm:px-8 py-8 flex flex-col">
+                  <div className="text-sm font-bold tracking-wide text-slate-400 mb-6">BEFORE</div>
+                  <div className="flex flex-col gap-0">
+                    {beforeItems.map((item, i) => (
+                      <div key={i} className={i > 0 ? 'border-t border-slate-100 py-4' : 'py-4'}>
+                        <div className="flex items-start gap-3">
+                          <XCircle className="w-5 h-5 text-slate-300 flex-shrink-0 mt-0.5" />
+                          <p className="text-sm sm:text-base text-slate-500 leading-relaxed">{item}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {/* AFTER card */}
+                <div className="bg-slate-900 rounded-2xl shadow-md px-6 sm:px-8 py-8 flex flex-col">
+                  <div className="text-sm font-bold tracking-wide text-emerald-400 mb-6">AFTER A FULL DAY WITH US</div>
+                  <div className="flex flex-col gap-0">
+                    {afterItems.map((item, i) => (
+                      <div key={i} className={i > 0 ? 'border-t border-slate-700/60 py-4' : 'py-4'}>
+                        <div className="flex items-start gap-3">
+                          <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                          <p className="text-sm sm:text-base text-white leading-relaxed">{item}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="mt-10 text-center">
+                <a
+                  href="#tickets"
+                  className="inline-block bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold px-10 py-4 rounded-lg shadow-lg shadow-emerald-200 hover:scale-105 hover:shadow-xl transition-all duration-200"
+                >
+                  Reserve Your Seat →
+                </a>
               </div>
             </div>
 

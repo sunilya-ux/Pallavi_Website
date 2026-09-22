@@ -46,6 +46,24 @@ export const takeaways: Takeaway[] = [
   { title: 'Your 90-Day Launch Plan', description: 'A clear roadmap for the three months right after this day' },
 ];
 
+export const beforeAfterHeading = "Here's What Changes After This One Day";
+export const beforeItems = [
+  "Stuck thinking ₹5-10L/month is your ceiling",
+  "Copying other coaches because your brand doesn't stand out",
+  "Your offer isn't strong enough to stop people negotiating",
+  "Burned out chasing every new marketing hack",
+  "Your content or ads bring in low-quality leads",
+  "No single system connecting your marketing to sales",
+];
+export const afterItems = [
+  "A clear mindset to build far beyond your current ceiling",
+  "A positioning strategy that makes you memorable in your niche",
+  "An offer people are ready to pay for without hesitation",
+  "One proven growth system instead of scattered tactics",
+  "A strategy that attracts higher-quality, ready-to-buy leads",
+  "A complete system connecting content, ads, and sales",
+];
+
 export const hostName = 'Pallavi Chatterjee';
 export const hostTitle = 'Award-Winning Life & Business Coach';
 export const hostBio = 'With 18 years of experience, Pallavi has helped hundreds of professionals turn their passion into a thriving coaching business.';
