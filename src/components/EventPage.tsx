@@ -349,7 +349,7 @@ export default function EventPage() {
             <div className="mt-16 sm:mt-20 mb-8 text-center">
               <a
                 href="#tickets"
-                className="inline-block bg-white text-emerald-700 font-semibold px-6 py-3 rounded-lg hover:bg-emerald-50 transition-colors border border-emerald-200"
+                className="inline-block bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold px-10 py-4 rounded-lg shadow-lg shadow-emerald-200 hover:scale-105 hover:shadow-xl transition-all duration-200"
               >
                 Reserve Your Seat →
               </a>
