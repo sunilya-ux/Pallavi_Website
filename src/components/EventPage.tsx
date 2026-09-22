@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarDays, MapPin, Clock, Users, Sparkles } from 'lucide-react';
+import { ArrowLeft, CalendarDays, MapPin, Clock, Users, Sparkles, CheckCircle } from 'lucide-react';
 import {
   isEventActive,
   eventDateLabel,
@@ -8,6 +8,9 @@ import {
   venueName,
   seatsLabel,
   heroImage,
+  aboutHeading,
+  aboutPoints,
+  schedule,
 } from '../config/eventConfig';
 
 export default function EventPage() {
@@ -97,6 +100,63 @@ export default function EventPage() {
                     <div className="text-sm font-semibold text-slate-800">{seatsLabel}</div>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* About section */}
+            <div className="mt-16 sm:mt-20">
+              <div className="text-center mb-10">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+                  {aboutHeading}
+                </h2>
+                <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto">
+                  Sound familiar? You are not alone — this day is designed to fix every one of these.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 max-w-4xl mx-auto">
+                {aboutPoints.map((point, i) => (
+                  <div
+                    key={i}
+                    className="bg-white rounded-xl border border-slate-200 shadow-sm px-6 py-5 flex items-start gap-4"
+                  >
+                    <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm sm:text-base text-slate-700 leading-relaxed">{point}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Schedule section */}
+            <div id="schedule" className="mt-16 sm:mt-20 scroll-mt-24">
+              <div className="text-center mb-10">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+                  1 Full Day, Fully Planned
+                </h2>
+                <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto">
+                  Every hour is mapped out so you leave with a business, not just notes.
+                </p>
+              </div>
+              <div className="bg-white rounded-2xl shadow-md border border-slate-200 max-w-3xl mx-auto px-6 sm:px-8 py-6 sm:py-8">
+                {schedule.map((item, i) => (
+                  <div key={i}>
+                    {i > 0 && <div className="border-t border-slate-100 my-4 sm:my-5" />}
+                    <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-6">
+                      <div className="text-sm font-bold text-emerald-600 sm:w-32 flex-shrink-0">
+                        {item.time}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm sm:text-base font-semibold text-slate-800">
+                          {item.title}
+                        </div>
+                        {item.description && (
+                          <div className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                            {item.description}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </>
