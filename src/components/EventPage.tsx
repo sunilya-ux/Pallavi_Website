@@ -353,11 +353,8 @@ export default function EventPage() {
                   <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2">
                     {hostName}
                   </h3>
-                  <p className="text-[#9C6B12] font-semibold text-sm sm:text-base mb-4">
+                  <p className="text-[#9C6B12] font-semibold text-sm sm:text-base">
                     {hostTitle}
-                  </p>
-                  <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-                    {hostBio}
                   </p>
                 </div>
               </div>
