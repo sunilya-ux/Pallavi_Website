@@ -114,9 +114,9 @@ export default function EventPage() {
                     </a>
                   </div>
                 </div>
-                <div className="rounded-2xl overflow-hidden bg-white/10 border border-white/20 min-h-[240px] flex items-center justify-center">
+                <div className="rounded-2xl overflow-hidden bg-white/10 border border-white/20 min-h-[420px] flex items-center justify-center">
                   {heroImage ? (
-                    <img src={heroImage} alt="Event" className="w-full h-full object-cover" />
+                    <img src={heroImage} alt="Event" className="w-full h-full object-cover object-top" />
                   ) : (
                     <div className="flex flex-col items-center gap-3 text-white/80 py-16">
                       <CalendarDays className="w-10 h-10" />
