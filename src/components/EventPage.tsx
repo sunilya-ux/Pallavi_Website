@@ -1,7 +1,8 @@
 import { CalendarDays, MapPin, Clock, Users, Sparkles, CheckCircle, UserCircle, ImageIcon, PlayCircle, ExternalLink, MinusCircle, XCircle, Plus, Ticket } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   isEventActive,
+  eventDate,
   eventDateLabel,
   tagline,
   description,
@@ -47,6 +48,28 @@ export default function EventPage() {
   const active = isEventActive();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [playingVideo, setPlayingVideo] = useState<number | null>(null);
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+  useEffect(() => {
+    const target = new Date(eventDate + 'T09:00:00+05:30').getTime();
+    const tick = () => {
+      const now = Date.now();
+      const diff = target - now;
+      if (diff <= 0) {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
+      setTimeLeft({
+        days: Math.floor(diff / 86400000),
+        hours: Math.floor((diff % 86400000) / 3600000),
+        minutes: Math.floor((diff % 3600000) / 60000),
+        seconds: Math.floor((diff % 60000) / 1000),
+      });
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F5F0E6] via-[#FAF6EE] to-[#F5F0E6] scroll-smooth">
@@ -509,6 +532,35 @@ export default function EventPage() {
                 </div>
               </div>
             </div>
+
+            {/* Countdown section */}
+            {timeLeft.days + timeLeft.hours + timeLeft.minutes + timeLeft.seconds > 0 && (
+              <div className="mt-16 sm:mt-20">
+                <h3 className="text-center text-lg sm:text-xl font-bold text-slate-800 mb-6">
+                  Seats Are Filling Fast — Event Starts In:
+                </h3>
+                <div className="flex justify-center gap-3 sm:gap-4 max-w-2xl mx-auto">
+                  {[
+                    { label: 'Days', value: timeLeft.days },
+                    { label: 'Hours', value: timeLeft.hours },
+                    { label: 'Minutes', value: timeLeft.minutes },
+                    { label: 'Seconds', value: timeLeft.seconds },
+                  ].map((unit) => (
+                    <div
+                      key={unit.label}
+                      className="flex-1 bg-slate-900 rounded-xl border border-slate-700/50 px-2 py-4 sm:px-4 sm:py-5 text-center"
+                    >
+                      <div className="text-2xl sm:text-4xl font-bold text-[#D4AF37] tabular-nums leading-none">
+                        {String(unit.value).padStart(2, '0')}
+                      </div>
+                      <div className="text-[10px] sm:text-xs text-slate-400 mt-2 uppercase tracking-wide">
+                        {unit.label}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Tickets section */}
             <div id="tickets" className="mt-16 sm:mt-20 scroll-mt-24">
