@@ -404,15 +404,15 @@ export default function EventPage() {
                   Venue of the Event
                 </h2>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
-                <div className="rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm aspect-[4/3]">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-8 items-center max-w-5xl mx-auto">
+                <div className="md:col-span-2 rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm aspect-[3/4]">
                   <img
                     src={venueImages[0]}
                     alt={`${venueName} building`}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-center"
                   />
                 </div>
-                <div>
+                <div className="md:col-span-3">
                   <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2">
                     {venueName}
                   </h3>
