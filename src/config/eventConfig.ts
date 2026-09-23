@@ -82,10 +82,10 @@ export const faqs: FAQ[] = [
   { question: 'How can I contact you if I have a question?', answer: 'If you have any questions before the event, feel free to reach out to us at info@lifecoachpallavichatterjee.com. Our team will be happy to help and make sure you\'re fully prepared for the event.' },
 ];
 
-export const closingHeading = "It's Not Your Skills Holding You Back";
-export const closingSubheading = "It's The System You're Missing";
-export const closingTagline = "Learn It. Install It. Scale With It.";
-export const closingImage = '';
+export const closingHeading = "Enter with Confusion,";
+export const closingSubheading = "Leave with a Client-Acquisition-Ready Coaching Business";
+export const closingTagline = "This One Day Will Flip Your Coaching Reality";
+export const closingImage = '/images/closing/closing-pallavi.jpg';
 
 export const hostName = 'Pallavi Chatterjee';
 export const hostTitle = 'Award-Winning Life & Business Coach';
