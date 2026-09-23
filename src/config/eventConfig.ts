@@ -19,19 +19,17 @@ export const aboutPoints = [
 
 export type ScheduleItem = { time: string; title: string; description: string };
 export const schedule: ScheduleItem[] = [
-  { time: '9:00 AM', title: 'Registration & Welcome', description: 'Get settled and meet the room' },
-  { time: '9:30 AM', title: 'From Passion to Profession', description: 'Find your why and your niche' },
-  { time: '10:15 AM', title: 'Know Your Ideal Client', description: 'Identify exactly who you serve' },
-  { time: '11:00 AM', title: 'Tea Break & Networking', description: '' },
-  { time: '11:15 AM', title: 'Shape Your Signature Offer', description: 'Build a coaching package people want' },
-  { time: '12:15 PM', title: 'Price With Confidence', description: 'Set prices without hesitation' },
-  { time: '1:00 PM', title: 'Lunch', description: '' },
-  { time: '2:00 PM', title: 'Attract Clients', description: 'Content & visibility basics' },
-  { time: '3:00 PM', title: 'Discovery Calls', description: 'How to enrol clients' },
-  { time: '3:45 PM', title: 'Tea Break', description: '' },
-  { time: '4:00 PM', title: 'Set Up Your Systems', description: 'Booking, payments, follow-up' },
-  { time: '4:45 PM', title: 'Your 90-Day Launch Plan', description: 'Work session' },
-  { time: '5:30 PM', title: 'Q&A & Closing', description: '' },
+  { time: '9:00 – 9:30 AM', title: 'Welcome + Coach Brand Experience', description: 'Registration, networking, event kit and your professional HD brand photoshoot as you step into your coach identity.' },
+  { time: '9:30 – 10:30 AM', title: 'Life Coaching Foundations', description: 'Understand what Life Coaching really is, its scope, how it differs from therapy/counselling, and whether coaching is the right career path for you.' },
+  { time: '10:30 – 11:15 AM', title: 'LIVE Coaching Experience', description: 'Watch and experience real coaching through live demonstrations — see how powerful coaching conversations create clarity, shifts and action.' },
+  { time: '11:15 AM – 12:00 PM', title: 'Break Your Stagnation / Fear to Start Your Business', description: 'Work through the mindset, identity, money and visibility blocks that keep aspiring and existing coaches from moving forward.' },
+  { time: '12:00 – 1:00 PM', title: 'Vision → 10X Growth → Activation', description: 'Build your AI-powered Life & Business Vision; existing coaches also identify their biggest growth gaps and next 10X opportunities.' },
+  { time: '1:00 – 2:00 PM', title: 'Premium Lunch + Networking', description: 'Enjoy an elaborate lunch in a premium hotel setting while connecting, exchanging ideas and building your coach circle.' },
+  { time: '2:00 – 3:00 PM', title: 'AI Life Coach Business Upgrade', description: 'Use AI to work through your niche, positioning, coaching strategy, marketing and business direction — turning expertise into a clear business foundation.' },
+  { time: '3:00 – 3:45 PM', title: 'AI Branding + Visibility Experience', description: 'Create your personal brand assets with AI and learn how to show up professionally and confidently as a Life Coach.' },
+  { time: '3:45 – 4:45 PM', title: 'Content Creation Challenge', description: 'Create your own content LIVE at the venue, use our viral hooks and ideas, and start building your 30-day content bank — with content posted from the event itself.' },
+  { time: '4:45 – 5:30 PM', title: 'The Coach Success Room', description: 'Hear directly from our successful coach mentees as they share their real journeys, monetisation strategies and what helped them create significant coaching income.' },
+  { time: '5:30 – 6:00 PM', title: 'Celebrate • Connect • Next Level', description: 'Celebrations, Q&A, networking and your Coach Accelerator Goodie Bag — packed with resources to help you show up and grow like a businesswoman.' },
 ];
 
 export type Takeaway = { title: string; description: string };
