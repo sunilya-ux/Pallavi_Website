@@ -74,7 +74,9 @@ export default function EventPage() {
                 <a href="#venue" className="hidden sm:block text-slate-300 hover:text-white text-sm font-medium transition-colors">Venue</a>
                 <a href="#faq" className="hidden sm:block text-slate-300 hover:text-white text-sm font-medium transition-colors">FAQ</a>
                 <a
-                  href="#tickets"
+                  href={ticketBookingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="bg-gradient-to-r from-[#D4AF37] to-[#C9A052] text-black font-semibold text-sm px-5 py-2 rounded-lg hover:scale-105 transition-transform whitespace-nowrap"
                 >
                   Reserve Your Seat →
@@ -101,7 +103,9 @@ export default function EventPage() {
                   </p>
                   <div className="flex flex-wrap gap-4">
                     <a
-                      href="#tickets"
+                      href={ticketBookingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="bg-[#D4AF37] text-black font-semibold px-6 py-3 rounded-lg hover:bg-[#C9A052] transition-colors"
                     >
                       Book Tickets →
@@ -265,7 +269,9 @@ export default function EventPage() {
                 </div>
                 <div className="mt-10 text-center">
                   <a
-                    href="#tickets"
+                    href={ticketBookingUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-block bg-gradient-to-r from-[#D4AF37] to-[#C9A052] text-black font-bold px-10 py-4 rounded-lg shadow-lg shadow-black/50 hover:scale-105 hover:shadow-xl transition-all duration-200"
                   >
                     Reserve Your Seat →
@@ -313,7 +319,9 @@ export default function EventPage() {
               </div>
               <div className="mt-10 text-center">
                 <a
-                  href="#tickets"
+                  href={ticketBookingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-block bg-gradient-to-r from-[#D4AF37] to-[#C9A052] text-black font-bold px-10 py-4 rounded-lg shadow-lg shadow-[#D4AF37]/30 hover:scale-105 hover:shadow-xl transition-all duration-200"
                 >
                   Reserve Your Seat →
@@ -517,7 +525,7 @@ export default function EventPage() {
                       <a
                         href={ticketBookingUrl}
                         target="_blank"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
                         className="inline-block bg-gradient-to-r from-[#D4AF37] to-[#C9A052] text-black font-bold px-10 py-4 rounded-lg shadow-lg shadow-[#D4AF37]/30 hover:scale-105 hover:shadow-xl transition-all duration-200"
                       >
                         Reserve Your Seat →
@@ -598,7 +606,9 @@ export default function EventPage() {
                   {closingTagline}
                 </p>
                 <a
-                  href="#tickets"
+                  href={ticketBookingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-block bg-gradient-to-r from-[#D4AF37] to-[#C9A052] text-black font-bold px-10 py-4 rounded-lg shadow-lg shadow-[#D4AF37]/30 hover:scale-105 hover:shadow-xl transition-all duration-200"
                 >
                   Reserve Your Seat →

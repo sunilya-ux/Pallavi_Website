@@ -117,7 +117,7 @@ export const ticketInclusions: string[] = [
   'Network with a room full of ambitious coaches',
   'Only 20 seats available',
 ];
-export const ticketBookingUrl = '';
+export const ticketBookingUrl = 'https://lifecoach-pallavi.mojo.page/ai-empowered-life-coach-live-implement';
 
 function getIndiaToday(): string {
   const params = new URLSearchParams(window.location.search);

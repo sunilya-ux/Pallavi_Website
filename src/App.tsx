@@ -14,7 +14,7 @@ import Footer from './components/Footer';
 import Dashboard from './components/Dashboard';
 import ModularClientDashboard from './components/ModularClientDashboard';
 import EventPage from './components/EventPage';
-import { isEventActive, getDaysUntilEvent, seatsLabel } from './config/eventConfig';
+import { isEventActive, getDaysUntilEvent, seatsLabel, ticketBookingUrl } from './config/eventConfig';
 
 function App() {
   const [user, setUser] = useState<any>(null);
@@ -144,7 +144,9 @@ function EventBanner() {
           </span>
         </div>
         <a
-          href="/event"
+          href={ticketBookingUrl}
+          target="_blank"
+          rel="noopener noreferrer"
           className="inline-flex items-center gap-1 bg-[#D4AF37] text-black text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-[#C9A052] transition-colors whitespace-nowrap shadow-sm"
         >
           Book Tickets →
