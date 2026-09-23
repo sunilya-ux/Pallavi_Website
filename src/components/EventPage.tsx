@@ -27,6 +27,7 @@ import {
   takeawaysHeading,
   takeawaysSubheading,
   takeaways,
+  takeawaysClosingLine,
   beforeAfterHeading,
   beforeItems,
   afterItems,
@@ -261,6 +262,12 @@ export default function EventPage() {
                   ))}
                 </div>
                 <div className="mt-10 text-center">
+                  <p className="text-sm sm:text-base text-slate-400 mb-3">
+                    You don't leave with more information.
+                  </p>
+                  <p className="text-base sm:text-lg font-bold text-white mb-6">
+                    You leave with <span className="text-[#D4AF37]">BUSINESS ASSETS, STRATEGY & ACTION READY TO EXECUTE.</span>
+                  </p>
                   <a
                     href={ticketBookingUrl}
                     target="_blank"

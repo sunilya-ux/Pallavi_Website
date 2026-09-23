@@ -43,16 +43,17 @@ export const schedule: ScheduleItem[] = [
 ];
 
 export type Takeaway = { title: string; description: string };
-export const takeawaysHeading = "Everything You'll Walk Away With";
+export const takeawaysHeading = "By the End of the Day, You'll Have:";
 export const takeawaysSubheading = "Here's what you'll actually have by the end of the day";
 export const takeaways: Takeaway[] = [
-  { title: 'Clarity On Your Niche', description: "Know exactly who you serve and why they'll choose you" },
-  { title: 'A Signature Offer', description: 'A coaching package people are excited to say yes to' },
-  { title: 'Confidence To Price Right', description: 'Set your rates without hesitation or discounting' },
-  { title: 'A Content & Visibility Plan', description: 'Know exactly what to post and where to show up' },
-  { title: 'A Client Enrolment System', description: 'A repeatable way to turn conversations into clients' },
-  { title: 'Your 90-Day Launch Plan', description: 'A clear roadmap for the three months right after this day' },
+  { title: 'A Coaching Business Blueprint', description: 'Niche + Ideal Client + Positioning + Offer Direction' },
+  { title: 'An AI-Powered Business System', description: 'AI tools to accelerate your branding, marketing & business execution' },
+  { title: 'A Client Acquisition Roadmap', description: 'A practical system to move from visibility to conversations to clients' },
+  { title: '30 Days of Content Ready to Go', description: 'Hooks + ideas + AI-assisted content — created and started LIVE' },
+  { title: 'A Professional Coach Brand', description: 'HD brand photos + personal branding assets to show up professionally' },
+  { title: 'Your Next-Level Growth Roadmap', description: "Your next moves mapped out — whether you're starting, restarting or ready to scale" },
 ];
+export const takeawaysClosingLine = "You don't leave with more information. You leave with BUSINESS ASSETS, STRATEGY & ACTION READY TO EXECUTE.";
 
 export const beforeAfterHeading = "Here's What Changes After This One Day";
 export const beforeItems = [
