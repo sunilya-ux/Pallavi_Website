@@ -83,7 +83,7 @@ export const faqs: FAQ[] = [
 ];
 
 export const closingHeading = "Enter with Confusion,";
-export const closingSubheading = "Leave with a Client-Acquisition-Ready Coaching Business";
+export const closingSubheading = "Walk In With Confusion. Walk Out With a Business.";
 export const closingTagline = "This One Day Will Flip Your Coaching Reality";
 export const closingImage = '/images/closing/closing-pallavi.jpg';
 

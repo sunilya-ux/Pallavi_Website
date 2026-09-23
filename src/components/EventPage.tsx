@@ -658,7 +658,7 @@ export default function EventPage() {
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-3">
                   {closingHeading}
                 </h2>
-                <p className="text-lg sm:text-xl italic text-[#C9A052] mb-8">
+                <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-8">
                   {closingSubheading}
                 </p>
                 <div className="max-w-sm mx-auto rounded-2xl overflow-hidden bg-gradient-to-br from-[#F5F0E6] to-[#EBE2CC] border border-[#D4AF37]/30 aspect-[4/3] flex items-center justify-center mb-8">
