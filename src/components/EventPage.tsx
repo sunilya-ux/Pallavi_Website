@@ -54,7 +54,7 @@ export default function EventPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50 scroll-smooth">
+    <div className="min-h-screen bg-gradient-to-br from-[#F5F0E6] via-[#FAF6EE] to-[#F5F0E6] scroll-smooth">
       <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-10">
         <button
           onClick={() => { window.location.href = '/'; }}
@@ -85,29 +85,29 @@ export default function EventPage() {
 
         {active ? (
           <>
-            <div className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl overflow-hidden shadow-sm">
+            <div className="bg-gradient-to-br from-[#0a0a0a] via-[#141414] to-[#1a1a1a] rounded-2xl overflow-hidden shadow-sm">
               <div className="grid md:grid-cols-2 gap-8 items-center px-8 py-12 md:py-16">
                 <div>
-                  <div className="inline-flex items-center gap-2 bg-white/15 text-white text-sm font-medium px-3 py-1 rounded-full mb-5">
+                  <div className="inline-flex items-center gap-2 bg-[#D4AF37]/15 border border-[#D4AF37]/40 text-[#D4AF37] text-sm font-medium px-3 py-1 rounded-full mb-5">
                     <Sparkles className="w-4 h-4" />
                     Live Event · Delhi
                   </div>
                   <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight mb-5">
                     {tagline}
                   </h1>
-                  <p className="text-emerald-50 text-base sm:text-lg leading-relaxed mb-8">
+                  <p className="text-[#F5F0E6] text-base sm:text-lg leading-relaxed mb-8">
                     {description}
                   </p>
                   <div className="flex flex-wrap gap-4">
                     <a
                       href="#tickets"
-                      className="bg-white text-emerald-700 font-semibold px-6 py-3 rounded-lg hover:bg-emerald-50 transition-colors"
+                      className="bg-[#D4AF37] text-black font-semibold px-6 py-3 rounded-lg hover:bg-[#C9A052] transition-colors"
                     >
                       Book Tickets →
                     </a>
                     <a
                       href="#schedule"
-                      className="border border-white/60 text-white font-semibold px-6 py-3 rounded-lg hover:bg-white/10 transition-colors"
+                      className="border border-[#D4AF37]/60 text-[#D4AF37] font-semibold px-6 py-3 rounded-lg hover:bg-[#D4AF37]/10 transition-colors"
                     >
                       See Schedule
                     </a>
@@ -126,31 +126,31 @@ export default function EventPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-md border border-slate-200 -mt-8 mx-4 sm:mx-8 relative z-10 px-6 py-6 sm:py-8">
+            <div className="bg-[#F5F0E6] rounded-2xl shadow-md border border-[#D4AF37]/20 -mt-8 mx-4 sm:mx-8 relative z-10 px-6 py-6 sm:py-8">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
                 <div className="flex items-center gap-3">
-                  <CalendarDays className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                  <CalendarDays className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
                   <div>
                     <div className="text-xs text-slate-500">Date</div>
                     <div className="text-sm font-semibold text-slate-800">{eventDateLabel}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Clock className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                  <Clock className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
                   <div>
                     <div className="text-xs text-slate-500">Time</div>
                     <div className="text-sm font-semibold text-slate-800">{timeLabel}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <MapPin className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                  <MapPin className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
                   <div>
                     <div className="text-xs text-slate-500">Venue</div>
                     <div className="text-sm font-semibold text-slate-800">{venueName}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Users className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                  <Users className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
                   <div>
                     <div className="text-xs text-slate-500">Seats</div>
                     <div className="text-sm font-semibold text-slate-800">{seatsLabel}</div>
@@ -248,7 +248,7 @@ export default function EventPage() {
                 <div className="mt-10 text-center">
                   <a
                     href="#tickets"
-                    className="inline-block bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold px-10 py-4 rounded-lg shadow-lg shadow-emerald-900/50 hover:scale-105 hover:shadow-xl transition-all duration-200"
+                    className="inline-block bg-gradient-to-r from-[#D4AF37] to-[#C9A052] text-black font-bold px-10 py-4 rounded-lg shadow-lg shadow-black/50 hover:scale-105 hover:shadow-xl transition-all duration-200"
                   >
                     Reserve Your Seat →
                   </a>
@@ -296,7 +296,7 @@ export default function EventPage() {
               <div className="mt-10 text-center">
                 <a
                   href="#tickets"
-                  className="inline-block bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold px-10 py-4 rounded-lg shadow-lg shadow-emerald-200 hover:scale-105 hover:shadow-xl transition-all duration-200"
+                  className="inline-block bg-gradient-to-r from-[#D4AF37] to-[#C9A052] text-black font-bold px-10 py-4 rounded-lg shadow-lg shadow-[#D4AF37]/30 hover:scale-105 hover:shadow-xl transition-all duration-200"
                 >
                   Reserve Your Seat →
                 </a>
@@ -580,7 +580,7 @@ export default function EventPage() {
                 </p>
                 <a
                   href="#tickets"
-                  className="inline-block bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold px-10 py-4 rounded-lg shadow-lg shadow-emerald-200 hover:scale-105 hover:shadow-xl transition-all duration-200"
+                  className="inline-block bg-gradient-to-r from-[#D4AF37] to-[#C9A052] text-black font-bold px-10 py-4 rounded-lg shadow-lg shadow-[#D4AF37]/30 hover:scale-105 hover:shadow-xl transition-all duration-200"
                 >
                   Reserve Your Seat →
                 </a>

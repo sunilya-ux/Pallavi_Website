@@ -132,12 +132,12 @@ function EventBanner() {
       : `${daysLeft} day${daysLeft === 1 ? '' : 's'} left`;
 
   return (
-    <div className="bg-gradient-to-br from-emerald-700 via-emerald-600 to-teal-500">
+    <div className="bg-gradient-to-br from-[#0a0a0a] via-[#141414] to-[#1a1a1a]">
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-2.5 flex flex-col sm:flex-row items-center justify-between gap-1.5 sm:gap-2 text-center sm:text-left">
-        <div className="flex items-center gap-2 text-sm font-medium text-white">
+        <div className="flex items-center gap-2 text-sm font-medium text-[#F5F0E6]">
           <span className="relative flex h-2 w-2 flex-shrink-0">
-            <span className="absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75 animate-ping"></span>
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-400"></span>
+            <span className="absolute inline-flex h-full w-full rounded-full bg-[#D4AF37] opacity-75 animate-ping"></span>
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#D4AF37]"></span>
           </span>
           <span>
             Live Event · Delhi · {countdownLabel} · {seatsLabel}
@@ -145,7 +145,7 @@ function EventBanner() {
         </div>
         <a
           href="/event"
-          className="inline-flex items-center gap-1 bg-white text-amber-600 text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-amber-50 transition-colors whitespace-nowrap shadow-sm"
+          className="inline-flex items-center gap-1 bg-[#D4AF37] text-black text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-[#C9A052] transition-colors whitespace-nowrap shadow-sm"
         >
           Book Tickets →
         </a>
