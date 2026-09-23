@@ -46,6 +46,7 @@ import {
 export default function EventPage() {
   const active = isEventActive();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [playingVideo, setPlayingVideo] = useState<number | null>(null);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F5F0E6] via-[#FAF6EE] to-[#F5F0E6] scroll-smooth">
@@ -402,33 +403,43 @@ export default function EventPage() {
                   Watch & Get Inspired
                 </h2>
               </div>
-              {videoLinks.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                  {videoLinks.map((url, i) => {
-                    const videoId = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/))([\w-]{11})/)?.[1] || '';
-                    return (
-                      <div key={i} className="rounded-xl overflow-hidden bg-white border border-slate-200 shadow-sm aspect-video">
-                        {videoId && (
-                          <iframe
-                            src={`https://www.youtube.com/embed/${videoId}`}
-                            title={`Video ${i + 1}`}
-                            className="w-full h-full"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto">
+                {videoLinks.map((video, i) => (
+                  <div key={i} className="flex flex-col gap-3">
+                    <div className="rounded-xl overflow-hidden bg-white border border-slate-200 shadow-sm aspect-video relative">
+                      {playingVideo === i ? (
+                        <iframe
+                          src={`https://www.youtube.com/embed/${video.videoId}?autoplay=1`}
+                          title={`Video ${i + 1}`}
+                          className="w-full h-full"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
+                      ) : (
+                        <button
+                          onClick={() => setPlayingVideo(i)}
+                          className="w-full h-full relative group cursor-pointer"
+                          aria-label={`Play video: ${video.caption}`}
+                        >
+                          <img
+                            src={`https://img.youtube.com/vi/${video.videoId}/hqdefault.jpg`}
+                            alt={`Video ${i + 1} thumbnail`}
+                            className="w-full h-full object-cover"
                           />
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="max-w-md mx-auto">
-                  <div className="rounded-2xl bg-gradient-to-br from-[#F5F0E6] to-[#EBE2CC] border border-[#D4AF37]/30 min-h-[200px] flex flex-col items-center justify-center gap-3 text-[#C9A052] py-12">
-                    <PlayCircle className="w-12 h-12" />
-                    <span className="text-sm font-medium">Videos coming soon</span>
+                          <span className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/20 transition-colors">
+                            <span className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-black/60 group-hover:bg-black/70 flex items-center justify-center transition-colors">
+                              <PlayCircle className="w-8 h-8 sm:w-9 sm:h-9 text-white" fill="white" stroke="#9C6B12" />
+                            </span>
+                          </span>
+                        </button>
+                      )}
+                    </div>
+                    <div className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-center shadow-sm">
+                      <p className="text-sm sm:text-base font-bold text-slate-800 leading-snug">{video.caption}</p>
+                    </div>
                   </div>
-                </div>
-              )}
+                ))}
+              </div>
             </div>
 
             {/* Venue section */}

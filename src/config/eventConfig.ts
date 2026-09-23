@@ -110,7 +110,12 @@ export const galleryImages: string[] = [
   '/images/testimonials/testimonial-8.jpg',
   '/images/testimonials/testimonial-9.jpg',
 ];
-export const videoLinks: string[] = [];
+export const videoLinks: { videoId: string; caption: string }[] = [
+  { videoId: 'e-LbG8qcpSc', caption: 'Ex-corporate Woman Restarted Career From Home After 8 Years & Earned 4L as a Life Coach' },
+  { videoId: 'NkrBqxaUEPo', caption: '5L in 8 Months Starting From Scratch in Life Coaching' },
+  { videoId: 'tBnSeoYFOdk', caption: 'Sr. Director in a Big Firm, Doctorate Degree Holder — So Why Coaching?' },
+  { videoId: 'yPR9wvHHe2M', caption: 'From Homemaker to Fulltime Job + Life Coach Earning 2L at the Age of 50' },
+];
 
 export const venueAddress = 'Park Inn by Radisson, New Delhi IP Extension';
 export const venueDescription = "Experience the event at one of Delhi's premium business hotels, offering a comfortable, professional environment with modern conference facilities and warm hospitality.";
