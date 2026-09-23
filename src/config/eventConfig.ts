@@ -56,20 +56,20 @@ export const takeawaysClosingLine = "You don't leave with more information. You 
 
 export const beforeAfterHeading = "Here's What Changes After This One Day";
 export const beforeItems = [
-  "Stuck thinking ₹5-10L/month is your ceiling",
-  "Copying other coaches because your brand doesn't stand out",
-  "Your offer isn't strong enough to stop people negotiating",
-  "Burned out chasing every new marketing hack",
-  "Your content or ads bring in low-quality leads",
-  "No single system connecting your marketing to sales",
+  "\"I want to become a coach... but where do I even start?\"",
+  "Certified... but still not getting consistent clients.",
+  "No clear niche, positioning or personal brand.",
+  "Overthinking AI instead of actually using it.",
+  "Posting randomly with no client acquisition plan.",
+  "Earning ₹50K–₹1L and wondering how to reach the next level."
 ];
 export const afterItems = [
-  "A clear mindset to build far beyond your current ceiling",
-  "A positioning strategy that makes you memorable in your niche",
-  "An offer people are ready to pay for without hesitation",
-  "One proven growth system instead of scattered tactics",
-  "A strategy that attracts higher-quality, ready-to-buy leads",
-  "A complete system connecting content, ads, and sales",
+  "A coaching business blueprint ready to execute.",
+  "A client acquisition strategy you can start using immediately.",
+  "Your niche, positioning and AI-powered brand created.",
+  "30 days of content + AI tools to use.",
+  "Professional brand photos and assets to show up confidently.",
+  "A clear roadmap for your next stage — from first client to scaling to crores."
 ];
 
 export type FAQ = { question: string; answer: string };
