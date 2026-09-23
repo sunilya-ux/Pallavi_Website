@@ -7,7 +7,7 @@ export const description = 'A full day with Pallavi Chatterjee, an award-winning
 export const timeLabel = '9:00 AM – 6:00 PM';
 export const venueName = 'Park Inn by Radisson, New Delhi IP Extension';
 export const seatsLabel = 'Only 20 seats';
-export const heroImage = '';
+export const heroImage = '/images/host/host-pallavi.jpg';
 
 export const aboutHeading = 'Your Coaching Business Needs This Whole Day';
 export const aboutPoints = [
@@ -83,7 +83,7 @@ export const closingImage = '';
 export const hostName = 'Pallavi Chatterjee';
 export const hostTitle = 'Award-Winning Life & Business Coach';
 export const hostBio = 'With 18 years of experience, Pallavi has helped hundreds of professionals turn their passion into a thriving coaching business.';
-export const hostImage = '/images/host/host-pallavi.jpg';
+export const hostImage = '';
 export const galleryImages: string[] = [];
 export const videoLinks: string[] = [];
 
