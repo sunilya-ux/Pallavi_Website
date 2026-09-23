@@ -129,28 +129,28 @@ export default function EventPage() {
             <div className="bg-[#F5F0E6] rounded-2xl shadow-md border border-[#D4AF37]/20 -mt-8 mx-4 sm:mx-8 relative z-10 px-6 py-6 sm:py-8">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
                 <div className="flex items-center gap-3">
-                  <CalendarDays className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
+                  <CalendarDays className="w-5 h-5 text-[#9C6B12] flex-shrink-0" strokeWidth={2.25} />
                   <div>
                     <div className="text-xs text-slate-500">Date</div>
                     <div className="text-sm font-semibold text-slate-800">{eventDateLabel}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Clock className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
+                  <Clock className="w-5 h-5 text-[#9C6B12] flex-shrink-0" strokeWidth={2.25} />
                   <div>
                     <div className="text-xs text-slate-500">Time</div>
                     <div className="text-sm font-semibold text-slate-800">{timeLabel}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <MapPin className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
+                  <MapPin className="w-5 h-5 text-[#9C6B12] flex-shrink-0" strokeWidth={2.25} />
                   <div>
                     <div className="text-xs text-slate-500">Venue</div>
                     <div className="text-sm font-semibold text-slate-800">{venueName}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Users className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
+                  <Users className="w-5 h-5 text-[#9C6B12] flex-shrink-0" strokeWidth={2.25} />
                   <div>
                     <div className="text-xs text-slate-500">Seats</div>
                     <div className="text-sm font-semibold text-slate-800">{seatsLabel}</div>
@@ -197,7 +197,7 @@ export default function EventPage() {
                   <div key={i}>
                     {i > 0 && <div className="border-t border-slate-100 my-4 sm:my-5" />}
                     <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-6">
-                      <div className="text-sm font-bold text-[#C9A052] sm:w-32 flex-shrink-0">
+                      <div className="text-sm font-bold text-[#9C6B12] sm:w-32 flex-shrink-0">
                         {item.time}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -325,7 +325,7 @@ export default function EventPage() {
                   <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2">
                     {hostName}
                   </h3>
-                  <p className="text-[#C9A052] font-medium text-sm sm:text-base mb-4">
+                  <p className="text-[#9C6B12] font-semibold text-sm sm:text-base mb-4">
                     {hostTitle}
                   </p>
                   <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
@@ -416,7 +416,7 @@ export default function EventPage() {
                   <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2">
                     {venueName}
                   </h3>
-                  <p className="text-sm sm:text-base font-medium text-[#C9A052] mb-4">
+                  <p className="text-sm sm:text-base font-medium text-[#9C6B12] mb-4">
                     {venueAddress}
                   </p>
                   <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-6">
@@ -427,36 +427,36 @@ export default function EventPage() {
                       href={venueMapUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-2 text-sm font-semibold text-[#C9A052] hover:text-[#D4AF37] transition-colors mb-6"
+                      className="inline-flex items-center gap-2 text-sm font-semibold text-[#9C6B12] hover:text-[#7a520e] hover:underline transition-colors mb-6"
                     >
                       View on Google Maps
-                      <ExternalLink className="w-4 h-4" />
+                      <ExternalLink className="w-4 h-4" strokeWidth={2.25} />
                     </a>
                   )}
                   <div className="grid grid-cols-2 gap-x-4 gap-y-5 border-t border-slate-200 pt-6">
                     <div className="flex items-center gap-3">
-                      <CalendarDays className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
+                      <CalendarDays className="w-5 h-5 text-[#9C6B12] flex-shrink-0" strokeWidth={2.25} />
                       <div>
                         <div className="text-xs text-slate-500">Date</div>
                         <div className="text-sm font-semibold text-slate-800">{eventDateLabel}</div>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <Clock className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
+                      <Clock className="w-5 h-5 text-[#9C6B12] flex-shrink-0" strokeWidth={2.25} />
                       <div>
                         <div className="text-xs text-slate-500">Time</div>
                         <div className="text-sm font-semibold text-slate-800">{timeLabel}</div>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <MapPin className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
+                      <MapPin className="w-5 h-5 text-[#9C6B12] flex-shrink-0" strokeWidth={2.25} />
                       <div>
                         <div className="text-xs text-slate-500">Venue</div>
                         <div className="text-sm font-semibold text-slate-800">{venueName}</div>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <Users className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
+                      <Users className="w-5 h-5 text-[#9C6B12] flex-shrink-0" strokeWidth={2.25} />
                       <div>
                         <div className="text-xs text-slate-500">Seats</div>
                         <div className="text-sm font-semibold text-slate-800">{seatsLabel}</div>
@@ -479,9 +479,9 @@ export default function EventPage() {
               </div>
               <div className="max-w-2xl mx-auto">
                 <div className="bg-[#F5F0E6] rounded-2xl shadow-lg border border-[#D4AF37]/20 px-6 sm:px-10 py-8 sm:py-10">
-                  <div className="flex items-center justify-center gap-2 mb-3">
-                    <Ticket className="w-4 h-4 text-[#C9A052]" />
-                    <span className="text-sm font-semibold tracking-wide text-[#C9A052] uppercase">{ticketLabel}</span>
+                  <div className="flex items-center justify-center gap-2 mb-3 bg-[#9C6B12]/8 rounded-full px-4 py-1.5">
+                    <Ticket className="w-4 h-4 text-[#9C6B12]" strokeWidth={2.25} />
+                    <span className="text-sm font-semibold tracking-wide text-[#9C6B12] uppercase">{ticketLabel}</span>
                   </div>
                   <div className="text-center mb-8">
                     <span className="text-4xl sm:text-5xl font-bold text-[#1a1a1a]">{ticketPrice}</span>
@@ -538,7 +538,8 @@ export default function EventPage() {
                       >
                         <span className="text-sm sm:text-base font-semibold text-slate-800">{faq.question}</span>
                         <Plus
-                          className={`w-5 h-5 text-[#C9A052] flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}
+                          className={`w-5 h-5 text-[#9C6B12] flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}
+                          strokeWidth={2.25}
                         />
                       </button>
                       <div
