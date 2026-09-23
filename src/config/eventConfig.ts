@@ -97,7 +97,7 @@ export const venueImages = [
   '/images/venue/venue-5-restaurant.jpg',
   '/images/venue/venue-6-lounge.jpg',
 ];
-export const venueMapUrl = '';
+export const venueMapUrl = 'https://maps.app.goo.gl/L5xn57qg6oxbDLVAA';
 
 export const ticketPrice = '₹5,500';
 export const ticketLabel = 'Full Day Access';
