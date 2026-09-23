@@ -549,7 +549,7 @@ export default function EventPage() {
                     )}
                   </div>
                   <p className="text-center text-xs text-slate-400 mt-5">
-                    Non-refundable. Transferable up to 48 hours before the event.
+                    Non-refundable.
                   </p>
                 </div>
               </div>
