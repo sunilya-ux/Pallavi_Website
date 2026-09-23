@@ -16,6 +16,8 @@ import {
   hostTitle,
   hostBio,
   hostImage,
+  hostStoryHeading,
+  hostStory,
   galleryImages,
   videoLinks,
   venueAddress,
@@ -357,6 +359,28 @@ export default function EventPage() {
                   <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
                     {hostBio}
                   </p>
+                </div>
+              </div>
+              <div className="mt-10 max-w-2xl mx-auto">
+                <h3 className="text-lg sm:text-xl font-bold text-[#9C6B12] mb-5 text-center">
+                  {hostStoryHeading}
+                </h3>
+                <div className="flex flex-col gap-4">
+                  {hostStory.map((para, i) => {
+                    const isLast = i === hostStory.length - 1;
+                    return isLast ? (
+                      <p
+                        key={i}
+                        className="italic text-slate-700 leading-relaxed border-l-3 border-[#D4AF37] pl-5 text-base sm:text-lg"
+                      >
+                        {para}
+                      </p>
+                    ) : (
+                      <p key={i} className="text-slate-600 leading-relaxed text-base sm:text-lg">
+                        {para}
+                      </p>
+                    );
+                  })}
                 </div>
               </div>
             </div>

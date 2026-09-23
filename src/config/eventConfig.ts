@@ -92,6 +92,14 @@ export const hostName = 'Pallavi Chatterjee';
 export const hostTitle = 'Award-Winning Life & Business Coach';
 export const hostBio = 'With 18 years of experience, Pallavi has helped hundreds of professionals turn their passion into a thriving coaching business.';
 export const hostImage = '/images/host/host-pallavi-award.jpg';
+export const hostStoryHeading = "Hi, I'm Pallavi — India's First AI Empowered Life Coach";
+export const hostStory = [
+  "Five years ago, I was that sleep-deprived IT professional working till 3 AM, publicly humiliated by my manager, crying in the office washroom… trapped because I was the sole breadwinner for my family.",
+  "I became a robot, going to work and coming back, until I discovered life coaching as a side hustle.",
+  "Within months, I replaced my high IT salary with 3X coaching revenue, without quitting my job first.",
+  "Today, I've empowered 5000+ working professionals and aspiring coaches to do the same using my AI Empowered Life Coach Blueprint.",
+  "My mission is simple: help ambitious women build financial independence through life coaching, so they never have to choose between their dignity and their livelihood.",
+];
 export const galleryImages: string[] = [];
 export const videoLinks: string[] = [];
 
