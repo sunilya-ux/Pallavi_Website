@@ -33,7 +33,6 @@ import {
   afterItems,
   faqHeading,
   faqs,
-  closingHeading,
   closingSubheading,
   closingTagline,
   closingImage,
@@ -655,15 +654,12 @@ export default function EventPage() {
             {/* Closing section */}
             <div className="mt-16 sm:mt-20">
               <div className="bg-gradient-to-br from-[#F5F0E6] to-[#EBE2CC] rounded-2xl border border-[#D4AF37]/20 shadow-sm px-6 sm:px-10 py-12 sm:py-16 text-center">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-3">
-                  {closingHeading}
-                </h2>
-                <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-8">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-8">
                   {closingSubheading}
-                </p>
+                </h2>
                 <div className="max-w-sm mx-auto rounded-2xl overflow-hidden bg-gradient-to-br from-[#F5F0E6] to-[#EBE2CC] border border-[#D4AF37]/30 aspect-[4/3] flex items-center justify-center mb-8">
                   {closingImage ? (
-                    <img src={closingImage} alt={closingHeading} className="w-full h-full object-cover" />
+                    <img src={closingImage} alt={closingSubheading} className="w-full h-full object-cover" />
                   ) : (
                     <div className="flex flex-col items-center gap-3 text-[#C9A052] py-16">
                       <ImageIcon className="w-10 h-10" />

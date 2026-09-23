@@ -82,7 +82,7 @@ export const faqs: FAQ[] = [
   { question: 'How can I contact you if I have a question?', answer: 'If you have any questions before the event, feel free to reach out to us at info@lifecoachpallavichatterjee.com. Our team will be happy to help and make sure you\'re fully prepared for the event.' },
 ];
 
-export const closingHeading = "Enter with Confusion,";
+export const closingHeading = "";
 export const closingSubheading = "Walk In With Confusion. Walk Out With a Business.";
 export const closingTagline = "This One Day Will Flip Your Coaching Reality";
 export const closingImage = '/images/closing/closing-pallavi.jpg';
