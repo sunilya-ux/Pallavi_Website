@@ -19,12 +19,12 @@ export const stats: Stat[] = [
 
 export const aboutHeading = 'You Are Just One Event Away From Being A Successful Life Coach';
 export const aboutPoints = [
-  "You have decided to become a life coach, but you keep enrolling in masterclasses, courses and certifications—yet you still haven't actually started your coaching business.",
-  "You are already certified, but you're struggling to get consistent paying clients and keep wondering, \"If I'm certified, why am I still not earning?\"",
-  "You're earning around ₹50,000–₹1 lakh, but the income isn't translating into real profits—and the constant content, calls, follow-ups and marketing are exhausting you.",
-  "You're posting content, networking or even running ads, but you don't have one predictable client-acquisition system that consistently brings you qualified coaching clients.",
-  "You find yourself copying what other successful coaches are doing or your mentor's strategy or course because you haven't yet figured out your unique niche, positioning and personal brand that makes your audience choose YOU.",
-  "You know you're capable of building a much bigger coaching business, but you don't yet have the strategy, systems and AI-powered execution to move from inconsistent income to ₹5–10 lakh+ months and eventually scale towards ₹1 Crore.",
+  "\"I'm certified… so why am I still not getting clients?\"",
+  "Still learning—but not actually starting your coaching business?",
+  "Making ₹50K–₹1L, but feeling drained with little profit?",
+  "Creating content or running ads, but clients still aren't coming?",
+  "Tired of copying others because your own brand isn't clear?",
+  "Ready to go from scattered income to a ₹1 Crore coaching business?",
 ];
 
 export type ScheduleItem = { time: string; title: string; description: string };
