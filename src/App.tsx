@@ -84,10 +84,7 @@ function App() {
   if (window.location.pathname === '/event') {
     return (
       <div className="min-h-screen bg-white">
-        <Header />
-        <div className="pt-20">
-          <EventPage />
-        </div>
+        <EventPage />
       </div>
     );
   }

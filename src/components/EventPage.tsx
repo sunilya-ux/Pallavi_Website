@@ -1,5 +1,5 @@
 import { ArrowLeft, CalendarDays, MapPin, Clock, Users, Sparkles, CheckCircle, UserCircle, ImageIcon, PlayCircle, ExternalLink, MinusCircle, XCircle, Plus, Ticket } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   isEventActive,
   eventDateLabel,
@@ -46,19 +46,10 @@ import {
 export default function EventPage() {
   const active = isEventActive();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [showStickyNav, setShowStickyNav] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowStickyNav(window.scrollY > 450);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F5F0E6] via-[#FAF6EE] to-[#F5F0E6] scroll-smooth">
-      <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-10">
+      <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-10 pt-16">
         <button
           onClick={() => { window.location.href = '/'; }}
           className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-[#C9A052] transition-colors mb-8"
@@ -67,10 +58,10 @@ export default function EventPage() {
           Back to Home
         </button>
 
-        {active && showStickyNav && (
-          <div className="fixed top-[72px] left-0 right-0 z-40 bg-slate-900 border-b border-slate-700/50 shadow-lg transition-transform duration-300">
+        {active && (
+          <div className="fixed top-0 left-0 right-0 z-40 bg-slate-900 border-b border-slate-700/50 shadow-lg">
             <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 flex items-center justify-between h-12">
-              <span className="text-white font-semibold text-sm whitespace-nowrap">Pallavi Chatterjee</span>
+              <a href="/" className="text-white font-semibold text-sm whitespace-nowrap hover:text-[#D4AF37] transition-colors">Pallavi Chatterjee</a>
               <div className="flex items-center gap-5 sm:gap-6">
                 <a href="#schedule" className="hidden sm:block text-slate-300 hover:text-white text-sm font-medium transition-colors">Schedule</a>
                 <a href="#venue" className="hidden sm:block text-slate-300 hover:text-white text-sm font-medium transition-colors">Venue</a>
