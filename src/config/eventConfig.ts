@@ -44,7 +44,6 @@ export const schedule: ScheduleItem[] = [
 
 export type Takeaway = { title: string; description: string };
 export const takeawaysHeading = "By the End of the Day, You'll Have:";
-export const takeawaysSubheading = "Here's what you'll actually have by the end of the day";
 export const takeaways: Takeaway[] = [
   { title: 'A Coaching Business Blueprint', description: 'Niche + Ideal Client + Positioning + Offer Direction' },
   { title: 'An AI-Powered Business System', description: 'AI tools to accelerate your branding, marketing & business execution' },

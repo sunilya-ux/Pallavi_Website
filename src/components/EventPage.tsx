@@ -25,7 +25,6 @@ import {
   venueImages,
   venueMapUrl,
   takeawaysHeading,
-  takeawaysSubheading,
   takeaways,
   takeawaysClosingLine,
   beforeAfterHeading,
@@ -236,12 +235,9 @@ export default function EventPage() {
             <div className="mt-16 sm:mt-20">
               <div className="bg-slate-900 rounded-2xl px-6 sm:px-10 py-12 sm:py-16">
                 <div className="text-center mb-10">
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
                     {takeawaysHeading}
                   </h2>
-                  <p className="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto">
-                    {takeawaysSubheading}
-                  </p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 max-w-5xl mx-auto">
                   {takeaways.map((item, i) => (
