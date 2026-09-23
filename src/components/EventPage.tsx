@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarDays, MapPin, Clock, Users, Sparkles, CheckCircle, UserCircle, ImageIcon, PlayCircle, ExternalLink, MinusCircle, XCircle, Plus } from 'lucide-react';
+import { ArrowLeft, CalendarDays, MapPin, Clock, Users, Sparkles, CheckCircle, UserCircle, ImageIcon, PlayCircle, ExternalLink, MinusCircle, XCircle, Plus, Ticket } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import {
   isEventActive,
@@ -34,6 +34,10 @@ import {
   closingSubheading,
   closingTagline,
   closingImage,
+  ticketPrice,
+  ticketLabel,
+  ticketInclusions,
+  ticketBookingUrl,
 } from '../config/eventConfig';
 
 export default function EventPage() {
@@ -463,14 +467,54 @@ export default function EventPage() {
               </div>
             </div>
 
-            {/* CTA block */}
-            <div className="mt-12 sm:mt-16 mb-8 text-center">
-              <a
-                href="#tickets"
-                className="inline-block bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold px-10 py-4 rounded-lg shadow-lg shadow-emerald-200 hover:scale-105 hover:shadow-xl transition-all duration-200"
-              >
-                Reserve Your Seat →
-              </a>
+            {/* Tickets section */}
+            <div id="tickets" className="mt-16 sm:mt-20 scroll-mt-24">
+              <div className="text-center mb-10">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+                  Reserve Your Seat
+                </h2>
+                <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto">
+                  Only 20 seats — book yours before they're gone.
+                </p>
+              </div>
+              <div className="max-w-2xl mx-auto">
+                <div className="bg-white rounded-2xl shadow-lg border border-slate-200 px-6 sm:px-10 py-8 sm:py-10">
+                  <div className="flex items-center justify-center gap-2 mb-3">
+                    <Ticket className="w-4 h-4 text-emerald-600" />
+                    <span className="text-sm font-semibold tracking-wide text-emerald-600 uppercase">{ticketLabel}</span>
+                  </div>
+                  <div className="text-center mb-8">
+                    <span className="text-4xl sm:text-5xl font-bold text-slate-900">{ticketPrice}</span>
+                  </div>
+                  <ul className="flex flex-col gap-4 mb-8">
+                    {ticketInclusions.map((item, i) => (
+                      <li key={i} className="flex items-start gap-3">
+                        <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                        <span className="text-sm sm:text-base text-slate-700 leading-relaxed">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="text-center">
+                    {ticketBookingUrl ? (
+                      <a
+                        href={ticketBookingUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-block bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold px-10 py-4 rounded-lg shadow-lg shadow-emerald-200 hover:scale-105 hover:shadow-xl transition-all duration-200"
+                      >
+                        Reserve Your Seat →
+                      </a>
+                    ) : (
+                      <span className="inline-block bg-slate-100 text-slate-400 font-bold px-10 py-4 rounded-lg cursor-not-allowed">
+                        Booking Link Coming Soon
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-center text-xs text-slate-400 mt-5">
+                    Non-refundable. Transferable up to 48 hours before the event.
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* FAQ section */}

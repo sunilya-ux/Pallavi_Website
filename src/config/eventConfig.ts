@@ -99,6 +99,18 @@ export const venueImages = [
 ];
 export const venueMapUrl = '';
 
+export const ticketPrice = '₹5,500';
+export const ticketLabel = 'Full Day Access';
+export const ticketInclusions: string[] = [
+  'Full access to the entire day, live in the room',
+  'The complete system to build your coaching business, step by step',
+  'Live implementation — build your offer and plan with guidance, not just theory',
+  'Lunch, tea, and coffee included',
+  'Network with a room full of ambitious coaches',
+  'Only 20 seats available',
+];
+export const ticketBookingUrl = '';
+
 function getIndiaToday(): string {
   const params = new URLSearchParams(window.location.search);
   const preview = params.get('previewDate');
