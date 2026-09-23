@@ -111,6 +111,7 @@ export const galleryImages: string[] = [
   '/images/testimonials/testimonial-9.jpg',
 ];
 export const videoLinks: { videoId: string; caption: string }[] = [
+  { videoId: '7Na16xwAzgA', caption: 'A Doctor by Degree, Traveler at Heart — Living Her Ex-Corporate Dreamy Freedom Life & Earned 10 Lakh as a Life Coach' },
   { videoId: 'e-LbG8qcpSc', caption: 'Ex-corporate Woman Restarted Career From Home After 8 Years & Earned 4L as a Life Coach' },
   { videoId: 'NkrBqxaUEPo', caption: '5L in 8 Months Starting From Scratch in Life Coaching' },
   { videoId: 'tBnSeoYFOdk', caption: 'Sr. Director in a Big Firm, Doctorate Degree Holder — So Why Coaching?' },
