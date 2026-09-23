@@ -380,23 +380,16 @@ export default function EventPage() {
             <div className="mt-16 sm:mt-20">
               <div className="text-center mb-10">
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-                  Moments From Our Events
+                  Real Wins From Real Coaches
                 </h2>
-                <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto">
-                  More photos coming soon
-                </p>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto">
-                {(galleryImages.length > 0 ? galleryImages : Array.from({ length: 6 })).map((item, i) => (
+              <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 sm:gap-6 max-w-5xl mx-auto">
+                {galleryImages.map((item, i) => (
                   <div
                     key={i}
-                    className="rounded-xl overflow-hidden bg-gradient-to-br from-[#F5F0E6] to-[#EBE2CC] border border-[#D4AF37]/30 aspect-[4/3] flex items-center justify-center"
+                    className="mb-4 sm:mb-6 break-inside-avoid rounded-xl overflow-hidden shadow-sm border border-slate-200"
                   >
-                    {typeof item === 'string' ? (
-                      <img src={item} alt={`Gallery ${i + 1}`} className="w-full h-full object-cover" />
-                    ) : (
-                      <ImageIcon className="w-8 h-8 text-[#C9A052]" />
-                    )}
+                    <img src={item} alt={`Testimonial ${i + 1}`} className="w-full h-auto block" />
                   </div>
                 ))}
               </div>

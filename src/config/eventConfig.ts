@@ -99,7 +99,17 @@ export const hostStory = [
   "Today, I've empowered 5000+ working professionals and aspiring coaches to do the same using my AI Empowered Life Coach Blueprint.",
   "My mission is simple: help ambitious women build financial independence through life coaching, so they never have to choose between their dignity and their livelihood.",
 ];
-export const galleryImages: string[] = [];
+export const galleryImages: string[] = [
+  '/images/testimonials/testimonial-1.jpg',
+  '/images/testimonials/testimonial-2.jpg',
+  '/images/testimonials/testimonial-3.jpg',
+  '/images/testimonials/testimonial-4.jpg',
+  '/images/testimonials/testimonial-5.jpg',
+  '/images/testimonials/testimonial-6.jpg',
+  '/images/testimonials/testimonial-7.jpg',
+  '/images/testimonials/testimonial-8.jpg',
+  '/images/testimonials/testimonial-9.jpg',
+];
 export const videoLinks: string[] = [];
 
 export const venueAddress = 'Park Inn by Radisson, New Delhi IP Extension';
