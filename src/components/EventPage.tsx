@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarDays, MapPin, Clock, Users, Sparkles, CheckCircle, UserCircle, ImageIcon, PlayCircle, ExternalLink, MinusCircle, XCircle, Plus, Ticket } from 'lucide-react';
+import { CalendarDays, MapPin, Clock, Users, Sparkles, CheckCircle, UserCircle, ImageIcon, PlayCircle, ExternalLink, MinusCircle, XCircle, Plus, Ticket } from 'lucide-react';
 import { useState } from 'react';
 import {
   isEventActive,
@@ -51,14 +51,6 @@ export default function EventPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F5F0E6] via-[#FAF6EE] to-[#F5F0E6] scroll-smooth">
       <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-10 pt-16">
-        <button
-          onClick={() => { window.location.href = '/'; }}
-          className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-[#C9A052] transition-colors mb-8"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Home
-        </button>
-
         {active && (
           <div className="fixed top-0 left-0 right-0 z-40 bg-slate-900 border-b border-slate-700/50 shadow-lg">
             <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 flex items-center justify-between h-12">
