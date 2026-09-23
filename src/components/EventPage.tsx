@@ -1,5 +1,5 @@
 import { ArrowLeft, CalendarDays, MapPin, Clock, Users, Sparkles, CheckCircle, UserCircle, ImageIcon, PlayCircle, ExternalLink, MinusCircle, XCircle, Plus } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   isEventActive,
   eventDateLabel,
@@ -39,9 +39,18 @@ import {
 export default function EventPage() {
   const active = isEventActive();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [showStickyNav, setShowStickyNav] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowStickyNav(window.scrollY > 450);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50 scroll-smooth">
       <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-10">
         <button
           onClick={() => { window.location.href = '/'; }}
@@ -50,6 +59,25 @@ export default function EventPage() {
           <ArrowLeft className="w-4 h-4" />
           Back to Home
         </button>
+
+        {active && showStickyNav && (
+          <div className="fixed top-[72px] left-0 right-0 z-40 bg-slate-900 border-b border-slate-700/50 shadow-lg transition-transform duration-300">
+            <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 flex items-center justify-between h-12">
+              <span className="text-white font-semibold text-sm whitespace-nowrap">Pallavi Chatterjee</span>
+              <div className="flex items-center gap-5 sm:gap-6">
+                <a href="#schedule" className="hidden sm:block text-slate-300 hover:text-white text-sm font-medium transition-colors">Schedule</a>
+                <a href="#venue" className="hidden sm:block text-slate-300 hover:text-white text-sm font-medium transition-colors">Venue</a>
+                <a href="#faq" className="hidden sm:block text-slate-300 hover:text-white text-sm font-medium transition-colors">FAQ</a>
+                <a
+                  href="#tickets"
+                  className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold text-sm px-5 py-2 rounded-lg hover:scale-105 transition-transform whitespace-nowrap"
+                >
+                  Reserve Your Seat →
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
 
         {active ? (
           <>
@@ -446,7 +474,7 @@ export default function EventPage() {
             </div>
 
             {/* FAQ section */}
-            <div className="mt-16 sm:mt-20">
+            <div id="faq" className="mt-16 sm:mt-20 scroll-mt-32">
               <div className="text-center mb-10">
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4">
                   {faqHeading}
