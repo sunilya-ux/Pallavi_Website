@@ -425,6 +425,12 @@ export default function EventPage() {
                             src={`https://img.youtube.com/vi/${video.videoId}/hqdefault.jpg`}
                             alt={`Video ${i + 1} thumbnail`}
                             className="w-full h-full object-cover"
+                            onError={(e) => {
+                              const img = e.currentTarget;
+                              const url = `https://img.youtube.com/vi/${video.videoId}`;
+                              if (img.src.includes('hqdefault')) img.src = `${url}/mqdefault.jpg`;
+                              else if (img.src.includes('mqdefault')) img.src = `${url}/default.jpg`;
+                            }}
                           />
                           <span className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/20 transition-colors">
                             <span className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-black/60 group-hover:bg-black/70 flex items-center justify-center transition-colors">
