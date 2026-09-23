@@ -9,6 +9,14 @@ export const venueName = 'Park Inn by Radisson, New Delhi IP Extension';
 export const seatsLabel = 'Only 20 seats';
 export const heroImage = '/images/host/host-pallavi.jpg';
 
+export type Stat = { value: string; label: string };
+export const stats: Stat[] = [
+  { value: '18+', label: 'Exp. in Coaching & Spirituality' },
+  { value: '1.5 Cr', label: 'Revenue without Ads' },
+  { value: '6000+', label: 'Women Served as a Life Coach' },
+  { value: '100+', label: 'Coaches Trained Worldwide' },
+];
+
 export const aboutHeading = 'Your Coaching Business Needs This Whole Day';
 export const aboutPoints = [
   'You know you want to coach but cannot name your niche',

@@ -38,6 +38,7 @@ import {
   ticketLabel,
   ticketInclusions,
   ticketBookingUrl,
+  stats,
 } from '../config/eventConfig';
 
 export default function EventPage() {
@@ -157,6 +158,23 @@ export default function EventPage() {
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* Stats row */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mt-8 max-w-4xl mx-auto">
+              {stats.map((stat, i) => (
+                <div
+                  key={i}
+                  className="bg-[#FAF6EE] rounded-xl px-4 py-6 text-center"
+                >
+                  <div className="text-2xl sm:text-3xl font-bold text-[#9C6B12] mb-1">
+                    {stat.value}
+                  </div>
+                  <div className="text-xs sm:text-sm text-slate-500 leading-snug">
+                    {stat.label}
+                  </div>
+                </div>
+              ))}
             </div>
 
             {/* About section */}
