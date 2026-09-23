@@ -77,7 +77,7 @@ export default function EventPage() {
                   href={ticketBookingUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-gradient-to-r from-[#D4AF37] to-[#C9A052] text-black font-semibold text-sm px-5 py-2 rounded-lg hover:scale-105 transition-transform whitespace-nowrap"
+                  className="bg-gradient-to-r from-[#D4AF37] to-[#C9A052] text-black font-semibold text-base px-5 py-2 rounded-lg hover:scale-105 transition-transform whitespace-nowrap"
                 >
                   Reserve Your Seat →
                 </a>
@@ -106,13 +106,13 @@ export default function EventPage() {
                       href={ticketBookingUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-[#D4AF37] text-black font-semibold px-6 py-3 rounded-lg hover:bg-[#C9A052] transition-colors"
+                      className="bg-[#D4AF37] text-black font-semibold text-lg px-6 py-3 rounded-lg hover:bg-[#C9A052] transition-colors"
                     >
                       Book Tickets →
                     </a>
                     <a
                       href="#schedule"
-                      className="border border-[#D4AF37]/60 text-[#D4AF37] font-semibold px-6 py-3 rounded-lg hover:bg-[#D4AF37]/10 transition-colors"
+                      className="border border-[#D4AF37]/60 text-[#D4AF37] font-semibold text-lg px-6 py-3 rounded-lg hover:bg-[#D4AF37]/10 transition-colors"
                     >
                       See Schedule
                     </a>
@@ -272,7 +272,7 @@ export default function EventPage() {
                     href={ticketBookingUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-block bg-gradient-to-r from-[#D4AF37] to-[#C9A052] text-black font-bold px-10 py-4 rounded-lg shadow-lg shadow-black/50 hover:scale-105 hover:shadow-xl transition-all duration-200"
+                    className="inline-block bg-gradient-to-r from-[#D4AF37] to-[#C9A052] text-black font-bold text-lg px-10 py-4 rounded-lg shadow-lg shadow-black/50 hover:scale-105 hover:shadow-xl transition-all duration-200"
                   >
                     Reserve Your Seat →
                   </a>
@@ -322,7 +322,7 @@ export default function EventPage() {
                   href={ticketBookingUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-block bg-gradient-to-r from-[#D4AF37] to-[#C9A052] text-black font-bold px-10 py-4 rounded-lg shadow-lg shadow-[#D4AF37]/30 hover:scale-105 hover:shadow-xl transition-all duration-200"
+                  className="inline-block bg-gradient-to-r from-[#D4AF37] to-[#C9A052] text-black font-bold text-lg px-10 py-4 rounded-lg shadow-lg shadow-[#D4AF37]/30 hover:scale-105 hover:shadow-xl transition-all duration-200"
                 >
                   Reserve Your Seat →
                 </a>
@@ -526,7 +526,7 @@ export default function EventPage() {
                         href={ticketBookingUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-block bg-gradient-to-r from-[#D4AF37] to-[#C9A052] text-black font-bold px-10 py-4 rounded-lg shadow-lg shadow-[#D4AF37]/30 hover:scale-105 hover:shadow-xl transition-all duration-200"
+                        className="inline-block bg-gradient-to-r from-[#D4AF37] to-[#C9A052] text-black font-bold text-lg px-10 py-4 rounded-lg shadow-lg shadow-[#D4AF37]/30 hover:scale-105 hover:shadow-xl transition-all duration-200"
                       >
                         Reserve Your Seat →
                       </a>
@@ -609,7 +609,7 @@ export default function EventPage() {
                   href={ticketBookingUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-block bg-gradient-to-r from-[#D4AF37] to-[#C9A052] text-black font-bold px-10 py-4 rounded-lg shadow-lg shadow-[#D4AF37]/30 hover:scale-105 hover:shadow-xl transition-all duration-200"
+                  className="inline-block bg-gradient-to-r from-[#D4AF37] to-[#C9A052] text-black font-bold text-lg px-10 py-4 rounded-lg shadow-lg shadow-[#D4AF37]/30 hover:scale-105 hover:shadow-xl transition-all duration-200"
                 >
                   Reserve Your Seat →
                 </a>
