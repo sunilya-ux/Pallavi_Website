@@ -58,7 +58,7 @@ export default function EventPage() {
       <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-10">
         <button
           onClick={() => { window.location.href = '/'; }}
-          className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-emerald-700 transition-colors mb-8"
+          className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-[#C9A052] transition-colors mb-8"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Home
@@ -74,7 +74,7 @@ export default function EventPage() {
                 <a href="#faq" className="hidden sm:block text-slate-300 hover:text-white text-sm font-medium transition-colors">FAQ</a>
                 <a
                   href="#tickets"
-                  className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold text-sm px-5 py-2 rounded-lg hover:scale-105 transition-transform whitespace-nowrap"
+                  className="bg-gradient-to-r from-[#D4AF37] to-[#C9A052] text-black font-semibold text-sm px-5 py-2 rounded-lg hover:scale-105 transition-transform whitespace-nowrap"
                 >
                   Reserve Your Seat →
                 </a>
@@ -175,7 +175,7 @@ export default function EventPage() {
                     key={i}
                     className="bg-white rounded-xl border border-slate-200 shadow-sm px-6 py-5 flex items-start gap-4"
                   >
-                    <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <CheckCircle className="w-5 h-5 text-[#C9A052] flex-shrink-0 mt-0.5" />
                     <p className="text-sm sm:text-base text-slate-700 leading-relaxed">{point}</p>
                   </div>
                 ))}
@@ -197,7 +197,7 @@ export default function EventPage() {
                   <div key={i}>
                     {i > 0 && <div className="border-t border-slate-100 my-4 sm:my-5" />}
                     <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-6">
-                      <div className="text-sm font-bold text-emerald-600 sm:w-32 flex-shrink-0">
+                      <div className="text-sm font-bold text-[#C9A052] sm:w-32 flex-shrink-0">
                         {item.time}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -233,7 +233,7 @@ export default function EventPage() {
                       key={i}
                       className="bg-slate-800 rounded-xl px-6 py-6 flex flex-col gap-3"
                     >
-                      <CheckCircle className="w-6 h-6 text-emerald-500 flex-shrink-0" />
+                      <CheckCircle className="w-6 h-6 text-[#D4AF37] flex-shrink-0" />
                       <div>
                         <h3 className="text-base sm:text-lg font-bold text-white mb-1">
                           {item.title}
@@ -280,12 +280,12 @@ export default function EventPage() {
                 </div>
                 {/* AFTER card */}
                 <div className="bg-slate-900 rounded-2xl shadow-md px-6 sm:px-8 py-8 flex flex-col">
-                  <div className="text-sm font-bold tracking-wide text-emerald-400 mb-6">AFTER A FULL DAY WITH US</div>
+                  <div className="text-sm font-bold tracking-wide text-[#D4AF37] mb-6">AFTER A FULL DAY WITH US</div>
                   <div className="flex flex-col gap-0">
                     {afterItems.map((item, i) => (
                       <div key={i} className={i > 0 ? 'border-t border-slate-700/60 py-4' : 'py-4'}>
                         <div className="flex items-start gap-3">
-                          <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                          <CheckCircle className="w-5 h-5 text-[#D4AF37] flex-shrink-0 mt-0.5" />
                           <p className="text-sm sm:text-base text-white leading-relaxed">{item}</p>
                         </div>
                       </div>
@@ -311,11 +311,11 @@ export default function EventPage() {
                 </h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center max-w-4xl mx-auto">
-                <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-emerald-100 to-teal-100 border border-emerald-200 min-h-[280px] flex items-center justify-center">
+                <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-[#F5F0E6] to-[#EBE2CC] border border-[#D4AF37]/30 min-h-[280px] flex items-center justify-center">
                   {hostImage ? (
                     <img src={hostImage} alt={hostName} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="flex flex-col items-center gap-3 text-emerald-600 py-16">
+                    <div className="flex flex-col items-center gap-3 text-[#C9A052] py-16">
                       <UserCircle className="w-12 h-12" />
                       <span className="text-sm font-medium">Photo coming soon</span>
                     </div>
@@ -325,7 +325,7 @@ export default function EventPage() {
                   <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2">
                     {hostName}
                   </h3>
-                  <p className="text-emerald-600 font-medium text-sm sm:text-base mb-4">
+                  <p className="text-[#C9A052] font-medium text-sm sm:text-base mb-4">
                     {hostTitle}
                   </p>
                   <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
@@ -349,12 +349,12 @@ export default function EventPage() {
                 {(galleryImages.length > 0 ? galleryImages : Array.from({ length: 6 })).map((item, i) => (
                   <div
                     key={i}
-                    className="rounded-xl overflow-hidden bg-gradient-to-br from-emerald-100 to-teal-100 border border-emerald-200 aspect-[4/3] flex items-center justify-center"
+                    className="rounded-xl overflow-hidden bg-gradient-to-br from-[#F5F0E6] to-[#EBE2CC] border border-[#D4AF37]/30 aspect-[4/3] flex items-center justify-center"
                   >
                     {typeof item === 'string' ? (
                       <img src={item} alt={`Gallery ${i + 1}`} className="w-full h-full object-cover" />
                     ) : (
-                      <ImageIcon className="w-8 h-8 text-emerald-400" />
+                      <ImageIcon className="w-8 h-8 text-[#C9A052]" />
                     )}
                   </div>
                 ))}
@@ -389,7 +389,7 @@ export default function EventPage() {
                 </div>
               ) : (
                 <div className="max-w-md mx-auto">
-                  <div className="rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-100 border border-emerald-200 min-h-[200px] flex flex-col items-center justify-center gap-3 text-emerald-600 py-12">
+                  <div className="rounded-2xl bg-gradient-to-br from-[#F5F0E6] to-[#EBE2CC] border border-[#D4AF37]/30 min-h-[200px] flex flex-col items-center justify-center gap-3 text-[#C9A052] py-12">
                     <PlayCircle className="w-12 h-12" />
                     <span className="text-sm font-medium">Videos coming soon</span>
                   </div>
@@ -416,7 +416,7 @@ export default function EventPage() {
                   <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2">
                     {venueName}
                   </h3>
-                  <p className="text-sm sm:text-base font-medium text-emerald-700 mb-4">
+                  <p className="text-sm sm:text-base font-medium text-[#C9A052] mb-4">
                     {venueAddress}
                   </p>
                   <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-6">
@@ -427,7 +427,7 @@ export default function EventPage() {
                       href={venueMapUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 hover:text-emerald-800 transition-colors mb-6"
+                      className="inline-flex items-center gap-2 text-sm font-semibold text-[#C9A052] hover:text-[#D4AF37] transition-colors mb-6"
                     >
                       View on Google Maps
                       <ExternalLink className="w-4 h-4" />
@@ -435,28 +435,28 @@ export default function EventPage() {
                   )}
                   <div className="grid grid-cols-2 gap-x-4 gap-y-5 border-t border-slate-200 pt-6">
                     <div className="flex items-center gap-3">
-                      <CalendarDays className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                      <CalendarDays className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
                       <div>
                         <div className="text-xs text-slate-500">Date</div>
                         <div className="text-sm font-semibold text-slate-800">{eventDateLabel}</div>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <Clock className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                      <Clock className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
                       <div>
                         <div className="text-xs text-slate-500">Time</div>
                         <div className="text-sm font-semibold text-slate-800">{timeLabel}</div>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <MapPin className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                      <MapPin className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
                       <div>
                         <div className="text-xs text-slate-500">Venue</div>
                         <div className="text-sm font-semibold text-slate-800">{venueName}</div>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <Users className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                      <Users className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
                       <div>
                         <div className="text-xs text-slate-500">Seats</div>
                         <div className="text-sm font-semibold text-slate-800">{seatsLabel}</div>
@@ -478,18 +478,18 @@ export default function EventPage() {
                 </p>
               </div>
               <div className="max-w-2xl mx-auto">
-                <div className="bg-white rounded-2xl shadow-lg border border-slate-200 px-6 sm:px-10 py-8 sm:py-10">
+                <div className="bg-[#F5F0E6] rounded-2xl shadow-lg border border-[#D4AF37]/20 px-6 sm:px-10 py-8 sm:py-10">
                   <div className="flex items-center justify-center gap-2 mb-3">
-                    <Ticket className="w-4 h-4 text-emerald-600" />
-                    <span className="text-sm font-semibold tracking-wide text-emerald-600 uppercase">{ticketLabel}</span>
+                    <Ticket className="w-4 h-4 text-[#C9A052]" />
+                    <span className="text-sm font-semibold tracking-wide text-[#C9A052] uppercase">{ticketLabel}</span>
                   </div>
                   <div className="text-center mb-8">
-                    <span className="text-4xl sm:text-5xl font-bold text-slate-900">{ticketPrice}</span>
+                    <span className="text-4xl sm:text-5xl font-bold text-[#1a1a1a]">{ticketPrice}</span>
                   </div>
                   <ul className="flex flex-col gap-4 mb-8">
                     {ticketInclusions.map((item, i) => (
                       <li key={i} className="flex items-start gap-3">
-                        <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                        <CheckCircle className="w-5 h-5 text-[#C9A052] flex-shrink-0 mt-0.5" />
                         <span className="text-sm sm:text-base text-slate-700 leading-relaxed">{item}</span>
                       </li>
                     ))}
@@ -500,7 +500,7 @@ export default function EventPage() {
                         href={ticketBookingUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-block bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold px-10 py-4 rounded-lg shadow-lg shadow-emerald-200 hover:scale-105 hover:shadow-xl transition-all duration-200"
+                        className="inline-block bg-gradient-to-r from-[#D4AF37] to-[#C9A052] text-black font-bold px-10 py-4 rounded-lg shadow-lg shadow-[#D4AF37]/30 hover:scale-105 hover:shadow-xl transition-all duration-200"
                       >
                         Reserve Your Seat →
                       </a>
@@ -538,7 +538,7 @@ export default function EventPage() {
                       >
                         <span className="text-sm sm:text-base font-semibold text-slate-800">{faq.question}</span>
                         <Plus
-                          className={`w-5 h-5 text-emerald-600 flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}
+                          className={`w-5 h-5 text-[#C9A052] flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}
                         />
                       </button>
                       <div
@@ -558,18 +558,18 @@ export default function EventPage() {
 
             {/* Closing section */}
             <div className="mt-16 sm:mt-20">
-              <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border border-emerald-100 shadow-sm px-6 sm:px-10 py-12 sm:py-16 text-center">
+              <div className="bg-gradient-to-br from-[#F5F0E6] to-[#EBE2CC] rounded-2xl border border-[#D4AF37]/20 shadow-sm px-6 sm:px-10 py-12 sm:py-16 text-center">
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-3">
                   {closingHeading}
                 </h2>
-                <p className="text-lg sm:text-xl italic text-emerald-700 mb-8">
+                <p className="text-lg sm:text-xl italic text-[#C9A052] mb-8">
                   {closingSubheading}
                 </p>
-                <div className="max-w-sm mx-auto rounded-2xl overflow-hidden bg-gradient-to-br from-emerald-100 to-teal-100 border border-emerald-200 aspect-[4/3] flex items-center justify-center mb-8">
+                <div className="max-w-sm mx-auto rounded-2xl overflow-hidden bg-gradient-to-br from-[#F5F0E6] to-[#EBE2CC] border border-[#D4AF37]/30 aspect-[4/3] flex items-center justify-center mb-8">
                   {closingImage ? (
                     <img src={closingImage} alt={closingHeading} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="flex flex-col items-center gap-3 text-emerald-600 py-16">
+                    <div className="flex flex-col items-center gap-3 text-[#C9A052] py-16">
                       <ImageIcon className="w-10 h-10" />
                       <span className="text-sm font-medium">Photo coming soon</span>
                     </div>
@@ -589,8 +589,8 @@ export default function EventPage() {
           </>
         ) : (
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 px-8 py-12 text-center">
-            <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Sparkles className="w-8 h-8 text-emerald-600" />
+            <div className="w-16 h-16 bg-[#F5F0E6] rounded-full flex items-center justify-center mx-auto mb-6">
+              <Sparkles className="w-8 h-8 text-[#C9A052]" />
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
               Thank you for attending our event!
