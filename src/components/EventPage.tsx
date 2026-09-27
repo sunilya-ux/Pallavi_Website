@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import {
   isEventActive,
   eventDate,
+  registrationCloseDate,
   eventDateLabel,
   tagline,
   description,
@@ -50,7 +51,7 @@ export default function EventPage() {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
-    const target = new Date(eventDate + 'T09:00:00+05:30').getTime();
+    const target = new Date(registrationCloseDate).getTime();
     const tick = () => {
       const now = Date.now();
       const diff = target - now;
@@ -536,7 +537,7 @@ export default function EventPage() {
             {timeLeft.days + timeLeft.hours + timeLeft.minutes + timeLeft.seconds > 0 && (
               <div className="mt-16 sm:mt-20">
                 <h3 className="text-center text-lg sm:text-xl font-bold text-slate-800 mb-6">
-                  Seats Are Filling Fast — Event Starts In:
+                  Seats Are Filling Fast - Registration Closes In:
                 </h3>
                 <div className="flex justify-center gap-3 sm:gap-4 max-w-2xl mx-auto">
                   {[
