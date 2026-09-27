@@ -6,7 +6,7 @@ export const tagline = 'Build Your Passion Coaching Business in Just 1 Day';
 export const description = 'A full day with Pallavi Chatterjee, an award-winning Life & Business Coach with 18 years of experience. Leave with clarity on your niche, a signature offer, and your launch plan.';
 export const timeLabel = '9:00 AM – 6:00 PM';
 export const venueName = 'Park Inn by Radisson, New Delhi IP Extension';
-export const seatsLabel = 'Only 20 seats';
+export const seatsLabel = 'Limited Seats Filling Fast';
 export const heroImage = '/images/host/host-pallavi.jpg';
 
 export type Stat = { value: string; label: string };
@@ -33,7 +33,7 @@ export const schedule: ScheduleItem[] = [
   { time: '9:30 – 10:30 AM', title: 'Life Coaching Foundations', description: 'Understand what Life Coaching really is, its scope, how it differs from therapy/counselling, and whether coaching is the right career path for you.' },
   { time: '10:30 – 11:15 AM', title: 'LIVE Coaching Experience', description: 'Watch and experience real coaching through live demonstrations — see how powerful coaching conversations create clarity, shifts and action.' },
   { time: '11:15 AM – 12:00 PM', title: 'Break Your Stagnation / Fear to Start Your Business', description: 'Work through the mindset, identity, money and visibility blocks that keep aspiring and existing coaches from moving forward.' },
-  { time: '12:00 – 1:00 PM', title: 'Vision → 10X Growth → Activation', description: 'Build your AI-powered Life & Business Vision; existing coaches also identify their biggest growth gaps and next 10X opportunities.' },
+  { time: '12:00 – 1:00 PM', title: 'Vision → 10X Growth → Money Activation', description: 'Build your AI-powered Life & Business Vision; existing coaches also identify their biggest growth gaps and next 10X opportunities.' },
   { time: '1:00 – 2:00 PM', title: 'Premium Lunch + Networking', description: 'Enjoy an elaborate lunch in a premium hotel setting while connecting, exchanging ideas and building your coach circle.' },
   { time: '2:00 – 3:00 PM', title: 'AI Life Coach Business Upgrade', description: 'Use AI to work through your niche, positioning, coaching strategy, marketing and business direction — turning expertise into a clear business foundation.' },
   { time: '3:00 – 3:45 PM', title: 'AI Branding + Visibility Experience', description: 'Create your personal brand assets with AI and learn how to show up professionally and confidently as a Life Coach.' },
