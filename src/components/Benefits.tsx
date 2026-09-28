@@ -6,25 +6,25 @@ export default function Benefits() {
       icon: Heart,
       title: 'Reduce Stress & Mental Overwhelm',
       description: 'Break free from the daily grind of juggling office and home responsibilities. Learn tools to manage stress and reclaim your peace of mind.',
-      gradient: 'from-rose-500 to-pink-500',
+      gradient: 'from-brand-gold to-brand-gold-dark',
     },
     {
       icon: Sparkles,
       title: 'Build Confidence & Self-Worth',
       description: 'Discover your unique strengths and value. Transform self-doubt into unshakeable confidence as you step into entrepreneurship.',
-      gradient: 'from-emerald-500 to-teal-500',
+      gradient: 'from-brand-gold to-brand-gold-dark',
     },
     {
       icon: Users,
       title: 'Improve Relationships & Emotional Balance',
       description: 'Create harmony between your personal and professional life. Strengthen relationships while pursuing your dreams.',
-      gradient: 'from-violet-500 to-purple-500',
+      gradient: 'from-brand-gold to-brand-gold-dark',
     },
     {
       icon: TrendingUp,
       title: 'Achieve Clarity in Career & Life Decisions',
       description: 'Find your passion and purpose. Make the bold transition from employee to entrepreneur with a clear, actionable roadmap.',
-      gradient: 'from-amber-500 to-orange-500',
+      gradient: 'from-brand-gold to-brand-gold-dark',
     },
   ];
 
@@ -50,7 +50,7 @@ export default function Benefits() {
               >
                 <div className="flex items-start gap-6">
                   <div className={`flex-shrink-0 w-16 h-16 rounded-xl bg-gradient-to-br ${benefit.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className="w-8 h-8 text-white" />
+                    <Icon className="w-8 h-8 text-brand-black" />
                   </div>
 
                   <div className="flex-1">
@@ -67,11 +67,11 @@ export default function Benefits() {
           })}
         </div>
 
-        <div className="mt-16 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-8 md:p-12 text-center text-white shadow-2xl">
+        <div className="mt-16 bg-gradient-to-r from-brand-black via-brand-charcoal to-brand-ink rounded-2xl p-8 md:p-12 text-center text-white shadow-2xl">
           <p className="text-2xl md:text-3xl font-bold mb-4">
             Work Less. Earn More. Live Joyfully.
           </p>
-          <p className="text-lg md:text-xl text-emerald-50 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-white/80 max-w-3xl mx-auto">
             This is the exact same transformation I experienced, and now I help other women professionals achieve the same freedom and fulfillment.
           </p>
         </div>
