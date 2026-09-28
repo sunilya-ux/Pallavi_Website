@@ -3,6 +3,19 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      colors: {
+        brand: {
+          black: '#0a0a0a',
+          charcoal: '#141414',
+          ink: '#1a1a1a',
+          gold: '#D4AF37',
+          'gold-dark': '#C9A052',
+          bronze: '#9C6B12',
+          cream: '#F5F0E6',
+          'cream-light': '#FAF6EE',
+          'cream-deep': '#EBE2CC',
+        },
+      },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
       },
