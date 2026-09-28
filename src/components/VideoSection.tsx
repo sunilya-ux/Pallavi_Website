@@ -18,15 +18,15 @@ export default function VideoSection() {
         </div>
 
         <div className="relative group">
-          <div className="absolute -inset-1 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity"></div>
+          <div className="absolute -inset-1 bg-gradient-to-r from-brand-gold to-brand-gold-dark rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity"></div>
 
           <a
             href={videoUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="relative block bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl overflow-hidden shadow-2xl aspect-video cursor-pointer"
+            className="relative block bg-gradient-to-br from-brand-black to-brand-ink rounded-2xl overflow-hidden shadow-2xl aspect-video cursor-pointer"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/20 to-teal-600/20 z-10"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-brand-gold/10 to-brand-black/20 z-10"></div>
 
             <img
               src={thumbnailUrl}
@@ -36,7 +36,7 @@ export default function VideoSection() {
 
             <div className="absolute inset-0 flex items-center justify-center z-20">
               <div className="bg-white/95 backdrop-blur-sm rounded-full p-8 group-hover:scale-110 transition-transform duration-300 shadow-2xl">
-                <Play className="w-16 h-16 text-emerald-600 fill-current" />
+                <Play className="w-16 h-16 text-brand-bronze fill-current" />
               </div>
             </div>
 
@@ -59,16 +59,16 @@ export default function VideoSection() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 mt-12">
-          <div className="bg-slate-50 rounded-xl p-6 text-center">
-            <p className="text-3xl font-bold text-emerald-600 mb-2">Less Work</p>
+          <div className="bg-brand-cream-light rounded-xl p-6 text-center">
+            <p className="text-3xl font-bold text-brand-bronze mb-2">Less Work</p>
             <p className="text-slate-600">Freedom from 9-to-5 grind</p>
           </div>
-          <div className="bg-slate-50 rounded-xl p-6 text-center">
-            <p className="text-3xl font-bold text-emerald-600 mb-2">More Income</p>
+          <div className="bg-brand-cream-light rounded-xl p-6 text-center">
+            <p className="text-3xl font-bold text-brand-bronze mb-2">More Income</p>
             <p className="text-slate-600">Financial independence & growth</p>
           </div>
-          <div className="bg-slate-50 rounded-xl p-6 text-center">
-            <p className="text-3xl font-bold text-emerald-600 mb-2">True Joy</p>
+          <div className="bg-brand-cream-light rounded-xl p-6 text-center">
+            <p className="text-3xl font-bold text-brand-bronze mb-2">True Joy</p>
             <p className="text-slate-600">Living with passion & purpose</p>
           </div>
         </div>
