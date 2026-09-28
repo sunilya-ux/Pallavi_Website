@@ -22,7 +22,7 @@ export default function Awards() {
             <div className="absolute inset-0 bg-gradient-to-br from-brand-gold to-brand-gold-dark rounded-3xl blur-2xl opacity-20 group-hover:opacity-30 transition-opacity"></div>
             <div className="relative bg-white rounded-3xl shadow-2xl overflow-hidden border-4 border-brand-gold/30">
               <img
-                src="/Award Image.png"
+                src="/images/host/host-pallavi-award.jpg"
                 alt="Awarded Life Coaching Coach - Pallavi Chatterjee"
                 className="w-full h-auto"
               />
