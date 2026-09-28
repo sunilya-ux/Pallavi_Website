@@ -569,7 +569,7 @@ export default function EventPage() {
                   Reserve Your Seat
                 </h2>
                 <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto">
-                  Only 20 seats — book yours before they're gone.
+                  Limited Seats Filling Fast — book yours before they're gone.
                 </p>
               </div>
               <div className="max-w-2xl mx-auto">

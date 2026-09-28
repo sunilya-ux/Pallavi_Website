@@ -139,7 +139,7 @@ export const ticketInclusions: string[] = [
   'Live implementation — build your offer and plan with guidance, not just theory',
   'Lunch, tea, and coffee included',
   'Network with a room full of ambitious coaches',
-  'Only 20 seats available',
+  'Limited Seats Filling Fast',
 ];
 export const ticketBookingUrl = 'https://lifecoach-pallavi.mojo.page/ai-empowered-life-coach-live-implement';
 
