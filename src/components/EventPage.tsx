@@ -278,7 +278,7 @@ export default function EventPage() {
                     You don't leave with more information.
                   </p>
                   <p className="text-base sm:text-lg font-bold text-white mb-6">
-                    You leave with <span className="text-[#D4AF37]">BUSINESS ASSETS, STRATEGY & ACTION READY TO EXECUTE.</span>
+                    You leave with <span className="text-[#D4AF37]">BUSINESS ASSETS, STRATEGY & ACTION READY TO INVITE CLIENTS.</span>
                   </p>
                   <a
                     href={ticketBookingUrl}
