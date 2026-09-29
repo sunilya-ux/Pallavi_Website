@@ -1,4 +1,4 @@
-import { CalendarDays, MapPin, Clock, Users, Sparkles, CheckCircle, UserCircle, ImageIcon, PlayCircle, ExternalLink, MinusCircle, XCircle, Plus, Ticket } from 'lucide-react';
+import { CalendarDays, MapPin, Clock, Users, Sparkles, CheckCircle, UserCircle, ImageIcon, PlayCircle, ExternalLink, MinusCircle, XCircle, Plus, Ticket, MessageCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import {
   isEventActive,
@@ -572,6 +572,29 @@ export default function EventPage() {
                   Limited Seats Filling Fast — book yours before they're gone.
                 </p>
               </div>
+
+              <div className="max-w-2xl mx-auto mb-6 bg-brand-cream-light rounded-2xl border-2 border-brand-gold/60 shadow-md p-5">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-full bg-[#25D366] flex items-center justify-center flex-shrink-0">
+                      <MessageCircle className="w-6 h-6 text-white" />
+                    </div>
+                    <p className="font-semibold text-slate-900">
+                      Join our <span className="text-brand-bronze font-bold">FREE</span> Event Community for more updates
+                    </p>
+                  </div>
+                  <a
+                    href="https://chat.whatsapp.com/Ehnt6NPMm1xJKTMj8m2B3N"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 rounded-lg bg-[#25D366] hover:bg-[#1EBE5A] text-white font-semibold px-5 py-2.5 transition-colors flex-shrink-0"
+                  >
+                    <MessageCircle className="w-5 h-5" />
+                    Join WhatsApp Community
+                  </a>
+                </div>
+              </div>
+
               <div className="max-w-2xl mx-auto">
                 <div className="bg-[#F5F0E6] rounded-2xl shadow-lg border border-[#D4AF37]/20 px-6 sm:px-10 py-8 sm:py-10">
                   <div className="flex items-center justify-center gap-2 mb-3 bg-[#9C6B12]/8 rounded-full px-4 py-1.5">
