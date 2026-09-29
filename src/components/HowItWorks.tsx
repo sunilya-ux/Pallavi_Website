@@ -30,7 +30,7 @@ export default function HowItWorks() {
 
   return (
     <section className="py-20 lg:py-28 bg-white relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(16,185,129,0.05),transparent_50%)]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(212,175,55,0.06),transparent_50%)]"></div>
 
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
         <div className="text-center mb-16 space-y-4">
@@ -51,17 +51,17 @@ export default function HowItWorks() {
                 className="relative group"
               >
                 {index < steps.length - 1 && (
-                  <div className="hidden lg:block absolute top-20 left-full w-full h-0.5 bg-gradient-to-r from-emerald-200 to-transparent -z-10"></div>
+                  <div className="hidden lg:block absolute top-20 left-full w-full h-0.5 bg-gradient-to-r from-brand-gold/40 to-transparent -z-10"></div>
                 )}
 
-                <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-100 hover:border-emerald-200 h-full">
+                <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-100 hover:border-brand-gold/40 h-full">
                   <div className="flex flex-col items-center text-center space-y-6">
                     <div className="relative">
-                      <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-full blur-xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                      <div className="relative bg-gradient-to-br from-emerald-600 to-teal-600 rounded-full w-20 h-20 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                        <Icon className="w-10 h-10 text-white" />
+                      <div className="absolute inset-0 bg-gradient-to-br from-brand-gold to-brand-gold-dark rounded-full blur-xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                      <div className="relative bg-gradient-to-br from-brand-gold to-brand-gold-dark rounded-full w-20 h-20 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <Icon className="w-10 h-10 text-brand-black" />
                       </div>
-                      <div className="absolute -top-2 -right-2 bg-slate-900 text-white rounded-full w-10 h-10 flex items-center justify-center text-sm font-bold">
+                      <div className="absolute -top-2 -right-2 bg-brand-black text-white rounded-full w-10 h-10 flex items-center justify-center text-sm font-bold">
                         {step.number}
                       </div>
                     </div>
@@ -80,7 +80,7 @@ export default function HowItWorks() {
           })}
         </div>
 
-        <div className="mt-16 bg-slate-50 rounded-2xl p-8 md:p-12">
+        <div className="mt-16 bg-brand-cream-light rounded-2xl p-8 md:p-12">
           <div className="max-w-3xl mx-auto text-center">
             <h3 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4">
               Why My Approach Works
