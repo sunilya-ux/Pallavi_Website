@@ -40,12 +40,12 @@ export default function Testimonials() {
   ];
 
   return (
-    <section className="py-20 lg:py-28 bg-gradient-to-br from-slate-900 to-slate-800 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(16,185,129,0.1),transparent_50%)]"></div>
+    <section className="py-20 lg:py-28 bg-gradient-to-br from-brand-black via-brand-charcoal to-brand-ink relative overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(212,175,55,0.1),transparent_50%)]"></div>
 
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
         <div className="text-center mb-16 space-y-4">
-          <p className="text-emerald-400 font-semibold text-lg uppercase tracking-wider">
+          <p className="text-brand-gold font-semibold text-lg uppercase tracking-wider">
             Success Stories
           </p>
           <h2 className="text-4xl sm:text-5xl font-bold text-white">
@@ -62,19 +62,19 @@ export default function Testimonials() {
               key={index}
               className="bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 relative"
             >
-              <Quote className="absolute top-6 right-6 w-12 h-12 text-emerald-100" />
+              <Quote className="absolute top-6 right-6 w-12 h-12 text-brand-cream-deep" />
 
               <div className="flex items-center gap-4 mb-6">
                 <img
                   src={testimonial.image}
                   alt={testimonial.name}
-                  className="w-16 h-16 rounded-full object-cover border-4 border-emerald-100"
+                  className="w-16 h-16 rounded-full object-cover border-4 border-brand-gold/40"
                 />
                 <div>
                   <h4 className="font-bold text-slate-900 text-lg">
                     {testimonial.name}
                   </h4>
-                  <p className="text-sm text-emerald-600 font-medium">
+                  <p className="text-sm text-brand-bronze font-medium">
                     {testimonial.role}
                   </p>
                 </div>
@@ -82,7 +82,7 @@ export default function Testimonials() {
 
               <div className="flex gap-1 mb-4">
                 {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 fill-amber-400 text-amber-400" />
+                  <Star key={i} className="w-5 h-5 fill-brand-gold text-brand-gold" />
                 ))}
               </div>
 
@@ -99,19 +99,19 @@ export default function Testimonials() {
               key={index + 3}
               className="bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 relative"
             >
-              <Quote className="absolute top-6 right-6 w-12 h-12 text-emerald-100" />
+              <Quote className="absolute top-6 right-6 w-12 h-12 text-brand-cream-deep" />
 
               <div className="flex items-center gap-4 mb-6">
                 <img
                   src={testimonial.image}
                   alt={testimonial.name}
-                  className="w-16 h-16 rounded-full object-cover border-4 border-emerald-100"
+                  className="w-16 h-16 rounded-full object-cover border-4 border-brand-gold/40"
                 />
                 <div>
                   <h4 className="font-bold text-slate-900 text-lg">
                     {testimonial.name}
                   </h4>
-                  <p className="text-sm text-emerald-600 font-medium">
+                  <p className="text-sm text-brand-bronze font-medium">
                     {testimonial.role}
                   </p>
                 </div>
@@ -119,7 +119,7 @@ export default function Testimonials() {
 
               <div className="flex gap-1 mb-4">
                 {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 fill-amber-400 text-amber-400" />
+                  <Star key={i} className="w-5 h-5 fill-brand-gold text-brand-gold" />
                 ))}
               </div>
 
@@ -131,9 +131,9 @@ export default function Testimonials() {
         </div>
 
         <div className="mt-16 text-center">
-          <div className="inline-block bg-white/10 backdrop-blur-sm rounded-2xl px-12 py-8 border border-white/20">
+          <div className="inline-block bg-white/10 backdrop-blur-sm rounded-2xl px-12 py-8 border border-brand-gold/30">
             <p className="text-3xl font-bold text-white mb-2">5000+ Lives Transformed</p>
-            <p className="text-emerald-400 text-lg">You Could Be Next</p>
+            <p className="text-brand-gold text-lg">You Could Be Next</p>
           </div>
         </div>
       </div>
