@@ -47,17 +47,17 @@ export default function FAQ() {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className="bg-white rounded-2xl border-2 border-slate-100 hover:border-emerald-200 transition-all duration-300 shadow-sm hover:shadow-lg overflow-hidden"
+              className="bg-white rounded-2xl border-2 border-slate-100 hover:border-brand-gold/40 transition-all duration-300 shadow-sm hover:shadow-lg overflow-hidden"
             >
               <button
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
                 className="w-full px-8 py-6 flex items-center justify-between gap-4 text-left group"
               >
-                <h3 className="text-lg md:text-xl font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">
+                <h3 className="text-lg md:text-xl font-bold text-slate-900 group-hover:text-brand-bronze transition-colors">
                   {faq.question}
                 </h3>
                 <ChevronDown
-                  className={`w-6 h-6 text-emerald-600 flex-shrink-0 transition-transform duration-300 ${
+                  className={`w-6 h-6 text-brand-bronze flex-shrink-0 transition-transform duration-300 ${
                     openIndex === index ? 'rotate-180' : ''
                   }`}
                 />
@@ -78,14 +78,14 @@ export default function FAQ() {
           ))}
         </div>
 
-        <div className="mt-16 bg-gradient-to-br from-slate-50 to-emerald-50 rounded-2xl p-8 md:p-12 text-center border border-emerald-100">
+        <div className="mt-16 bg-gradient-to-br from-brand-cream-light to-brand-cream rounded-2xl p-8 md:p-12 text-center border border-brand-gold/40">
           <h3 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4">
             Still Have Questions?
           </h3>
           <p className="text-lg text-slate-600 mb-6">
             Book a free discovery call and I'll answer all your questions personally
           </p>
-          <button className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:shadow-xl hover:shadow-emerald-500/50 transition-all duration-300 hover:scale-105">
+          <button className="bg-gradient-to-r from-brand-gold to-brand-gold-dark text-brand-black px-8 py-4 rounded-lg font-semibold text-lg hover:shadow-xl hover:shadow-brand-gold/50 transition-all duration-300 hover:scale-105">
             Schedule Free Call
           </button>
         </div>
