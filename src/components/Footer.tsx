@@ -1,4 +1,4 @@
-import { Mail, Phone, Facebook, Instagram, Linkedin, Youtube, Heart } from 'lucide-react';
+import { Mail, Heart } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -13,36 +13,6 @@ export default function Footer() {
             <p className="text-slate-400 leading-relaxed">
               Empowering unhappy working women professionals to find their passion and start thriving businesses.
             </p>
-            <div className="flex gap-4">
-              <a
-                href="#"
-                className="bg-brand-ink hover:bg-brand-gold hover:text-brand-black p-3 rounded-lg transition-colors duration-300"
-                aria-label="Facebook"
-              >
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a
-                href="#"
-                className="bg-brand-ink hover:bg-brand-gold hover:text-brand-black p-3 rounded-lg transition-colors duration-300"
-                aria-label="Instagram"
-              >
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a
-                href="#"
-                className="bg-brand-ink hover:bg-brand-gold hover:text-brand-black p-3 rounded-lg transition-colors duration-300"
-                aria-label="LinkedIn"
-              >
-                <Linkedin className="w-5 h-5" />
-              </a>
-              <a
-                href="#"
-                className="bg-brand-ink hover:bg-brand-gold hover:text-brand-black p-3 rounded-lg transition-colors duration-300"
-                aria-label="YouTube"
-              >
-                <Youtube className="w-5 h-5" />
-              </a>
-            </div>
           </div>
 
           <div>
@@ -112,22 +82,11 @@ export default function Footer() {
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
                 <Mail className="w-5 h-5 text-brand-gold flex-shrink-0 mt-1" />
-                <a href="mailto:contact@pallavichatterjee.com" className="hover:text-brand-gold transition-colors">
-                  contact@pallavichatterjee.com
-                </a>
-              </li>
-              <li className="flex items-start gap-3">
-                <Phone className="w-5 h-5 text-brand-gold flex-shrink-0 mt-1" />
-                <a href="tel:+919876543210" className="hover:text-brand-gold transition-colors">
-                  +91 98765 43210
+                <a href="mailto:info@lifecoachpallavichatterjee.com" className="hover:text-brand-gold transition-colors">
+                  info@lifecoachpallavichatterjee.com
                 </a>
               </li>
             </ul>
-
-            <div className="mt-6 bg-brand-ink rounded-lg p-4">
-              <p className="text-sm text-slate-400 mb-2">WhatsApp Support Available</p>
-              <p className="text-brand-gold font-semibold">24/7 Client Support</p>
-            </div>
           </div>
         </div>
 
