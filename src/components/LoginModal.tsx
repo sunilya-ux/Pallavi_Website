@@ -80,9 +80,9 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           <X className="w-6 h-6" />
         </button>
 
-        <div className="bg-gradient-to-r from-emerald-600 to-teal-600 p-8 text-center">
+        <div className="bg-gradient-to-r from-brand-black via-brand-charcoal to-brand-ink p-8 text-center">
           <h2 className="text-3xl font-bold text-white">Welcome Back</h2>
-          <p className="text-emerald-50 mt-2">Sign in to your account</p>
+          <p className="text-white/80 mt-2">Sign in to your account</p>
         </div>
 
         <form onSubmit={handleLogin} className="p-8 space-y-6">
@@ -105,7 +105,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full pl-11 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                className="w-full pl-11 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-brand-gold transition-all"
                 placeholder="your@email.com"
               />
             </div>
@@ -123,7 +123,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full pl-11 pr-12 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                className="w-full pl-11 pr-12 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-brand-gold transition-all"
                 placeholder="Enter your password"
               />
               <button
@@ -143,7 +143,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-gradient-to-r from-brand-gold to-brand-gold-dark text-brand-black py-3 rounded-lg font-semibold hover:shadow-lg hover:shadow-brand-gold/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
