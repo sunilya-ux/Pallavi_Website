@@ -41,20 +41,20 @@ export default function Header() {
         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">PC</span>
+              <div className="w-10 h-10 bg-gradient-to-br from-brand-gold to-brand-gold-dark rounded-lg flex items-center justify-center">
+                <span className="text-brand-black font-bold text-xl">PC</span>
               </div>
               <div>
                 <h1 className="text-xl font-bold text-slate-900">Pallavi Chatterjee</h1>
-                <p className="text-xs text-emerald-600">Life & Business Coach</p>
+                <p className="text-xs text-brand-bronze">Life & Business Coach</p>
               </div>
             </div>
 
             {user ? (
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 bg-emerald-50 px-4 py-2 rounded-lg">
-                  <User className="w-4 h-4 text-emerald-600" />
-                  <span className="text-sm font-medium text-emerald-700">{user.email}</span>
+                <div className="flex items-center gap-2 bg-brand-cream px-4 py-2 rounded-lg">
+                  <User className="w-4 h-4 text-brand-bronze" />
+                  <span className="text-sm font-medium text-brand-bronze">{user.email}</span>
                 </div>
                 <button
                   onClick={handleLogout}
@@ -69,14 +69,14 @@ export default function Header() {
                 {isEventActive() && (
                   <a
                     href="/event"
-                    className="text-sm font-semibold text-slate-700 hover:text-emerald-700 transition-colors hidden sm:inline"
+                    className="text-sm font-semibold text-slate-700 hover:text-brand-bronze transition-colors hidden sm:inline"
                   >
                     Event
                   </a>
                 )}
                 <button
                   onClick={() => setIsLoginOpen(true)}
-                  className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 hover:scale-105"
+                  className="flex items-center gap-2 bg-gradient-to-r from-brand-gold to-brand-gold-dark text-brand-black px-6 py-2.5 rounded-lg font-semibold hover:shadow-lg hover:shadow-brand-gold/30 transition-all duration-300 hover:scale-105"
                 >
                   <LogIn className="w-4 h-4" />
                   Login
