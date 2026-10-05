@@ -1,6 +1,6 @@
 export const eventName = 'Event';
 export const eventDate = '2026-10-31';
-export const registrationCloseDate = '2026-10-05T23:59:59+05:30';
+export const registrationCloseDate = '2026-10-15T23:59:59+05:30';
 export const eventDateLabel = '31 Oct 2026';
 export const bannerText = 'Live Event · 31 Oct 2026 · Delhi · Only 20 seats';
 export const tagline = 'Build Your Passion Coaching Business in Just 1 Day';
