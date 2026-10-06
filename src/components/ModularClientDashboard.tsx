@@ -17,6 +17,7 @@ import BigMoneyContentGenerator from './BigMoneyContentGenerator';
 import WebinarBuilder from './WebinarBuilder';
 import HookBuilder from './HookBuilder';
 import MonetizablePassionAnalysis from './MonetizablePassionAnalysis';
+import BybPassionAnalysis from './BybPassionAnalysis';
 import LifePurposeGenerator from './LifePurposeGenerator';
 import FAQChatWidget from './FAQChatWidget';
 import { supabase } from '../lib/supabase';
@@ -411,6 +412,8 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
             <HookBuilder />
           ) : activeToolRoute === 'monetizable-passion-analysis' ? (
             <MonetizablePassionAnalysis clientId={clientId} />
+          ) : activeToolRoute === 'byb-passion-analysis' ? (
+            <BybPassionAnalysis clientId={clientId} />
           ) : activeToolRoute === 'life-purpose-generator' ? (
             <LifePurposeGenerator clientId={clientId} />
           ) : activeToolRoute?.startsWith('courses/') ? (
