@@ -249,7 +249,8 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
                             </button>
                           );
                         })}
-                        {/* Assignments entry — always shown for non-courses modules */}
+                        {/* Assignments entry — shown for non-courses modules except build_your_business */}
+                        {module.name !== 'build_your_business' && (
                         <button
                           onClick={() => handleAssignmentsClick(module)}
                           className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-left ${
@@ -261,6 +262,7 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
                           <ClipboardList className="w-5 h-5 flex-shrink-0" />
                           <span className="font-medium text-sm flex-1">Assignments</span>
                         </button>
+                        )}
                       </>
                     )}
                   </div>
