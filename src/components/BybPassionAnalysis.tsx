@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { Upload, X, Loader, Sparkles, Copy, Check, RotateCcw, Download, ImagePlus, FileText, Trash2 } from 'lucide-react';
+import { Upload, X, Loader, Sparkles, Copy, Check, RotateCcw, Download, ImagePlus, FileText, Trash2, ArrowRight } from 'lucide-react';
+import NicheClarity from './NicheClarity';
 
 interface BybPassionAnalysisProps {
   clientId: string;
@@ -95,7 +96,7 @@ interface ReportSection {
   careerOptions?: CareerOption[];
 }
 
-interface CareerOption {
+export interface CareerOption {
   name: string;
   rating: string;
   whyFits: string[];
@@ -233,6 +234,7 @@ export default function BybPassionAnalysis({ clientId }: BybPassionAnalysisProps
   const [exportingPDF, setExportingPDF] = useState(false);
   const [exportMessage, setExportMessage] = useState('');
   const [dragActive, setDragActive] = useState(false);
+  const [showNicheClarity, setShowNicheClarity] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -361,6 +363,7 @@ export default function BybPassionAnalysis({ clientId }: BybPassionAnalysisProps
   };
 
   const handleRegenerate = () => {
+    setShowNicheClarity(false);
     setShowForm(false);
     setGenerating(true);
     setAiContent('');
@@ -369,6 +372,7 @@ export default function BybPassionAnalysis({ clientId }: BybPassionAnalysisProps
   };
 
   const handleGenerateNew = () => {
+    setShowNicheClarity(false);
     setAiContent('');
     setShowForm(true);
     setError('');
@@ -413,6 +417,24 @@ export default function BybPassionAnalysis({ clientId }: BybPassionAnalysisProps
   };
 
   const sections = aiContent ? parseReport(aiContent) : [];
+
+  const careerOptions = sections.find(s => s.title === 'CAREER OPTIONS WITH RATINGS')?.careerOptions || [];
+  const recommendedName = (() => {
+    const recSection = sections.find(s => s.title === 'BEST CAREER PATH (RECOMMENDED)');
+    if (!recSection) return '';
+    const firstLine = recSection.content.split('\n').map(l => l.trim()).find(l => l.length > 0) || '';
+    return firstLine.replace(/[*#]+/g, '').trim();
+  })();
+
+  const handleNextNicheClarity = () => {
+    setShowNicheClarity(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleBackFromNicheClarity = () => {
+    setShowNicheClarity(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="space-y-6">
@@ -573,6 +595,13 @@ export default function BybPassionAnalysis({ clientId }: BybPassionAnalysisProps
 
       {/* RESULTS */}
       {aiContent && !showForm && (
+        showNicheClarity ? (
+        <NicheClarity
+          careerOptions={careerOptions}
+          recommendedName={recommendedName}
+          onBack={handleBackFromNicheClarity}
+        />
+      ) : (
         <div ref={resultRef} className="max-w-4xl mx-auto space-y-5">
           {/* Header */}
           <div className="bg-gradient-to-r from-teal-600 to-emerald-600 rounded-xl p-6 sm:p-8 text-white shadow-lg">
@@ -644,7 +673,17 @@ export default function BybPassionAnalysis({ clientId }: BybPassionAnalysisProps
               </div>
             )}
           </div>
+
+          {/* Next: Find Your People */}
+          <button
+            onClick={handleNextNicheClarity}
+            className="w-full bg-gradient-to-r from-teal-500 to-emerald-500 text-white py-4 rounded-xl font-semibold hover:shadow-lg hover:shadow-teal-500/30 transition-all duration-300 flex items-center justify-center gap-2"
+          >
+            <span>Next: Find Your People</span>
+            <ArrowRight className="w-5 h-5" />
+          </button>
         </div>
+      )
       )}
     </div>
   );
