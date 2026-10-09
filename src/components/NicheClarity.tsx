@@ -23,6 +23,13 @@ interface Answers {
   naturalHelpSeekers: CheckboxQuestion;
   lifeStageDetail: string;
   naturalHelpDetail: string;
+  patternAudience: string;
+  patternProblem: string;
+  patternTransformation: string;
+  patternExpertise: string;
+  nicheAudience: string;
+  nicheProblem: string;
+  nicheAchievement: string;
 }
 
 const MAX_CHECKBOX = 3;
@@ -61,6 +68,13 @@ export default function NicheClarity({ careerOptions, recommendedName, onBack }:
     naturalHelpSeekers: { options: SECTION_5_OPTIONS, selected: [], otherText: '' },
     lifeStageDetail: '',
     naturalHelpDetail: '',
+    patternAudience: '',
+    patternProblem: '',
+    patternTransformation: '',
+    patternExpertise: '',
+    nicheAudience: '',
+    nicheProblem: '',
+    nicheAchievement: '',
   });
 
   const sortedOptions = [...careerOptions].sort((a, b) => {
@@ -112,6 +126,9 @@ export default function NicheClarity({ careerOptions, recommendedName, onBack }:
 
     return (
       <>
+        {atMax && (
+          <p className="text-xs text-amber-600 font-medium mb-3">You can choose up to 3.</p>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {options.map((option) => {
             const isSelected = q.selected.includes(option);
@@ -135,8 +152,6 @@ export default function NicheClarity({ careerOptions, recommendedName, onBack }:
                   <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
                     isSelected
                       ? 'border-teal-500 bg-teal-500'
-                      : isDisabled
-                      ? 'border-slate-300'
                       : 'border-slate-300'
                   }`}>
                     {isSelected && <Check className="w-3 h-3 text-white" />}
@@ -145,11 +160,6 @@ export default function NicheClarity({ careerOptions, recommendedName, onBack }:
                     {option}
                   </span>
                 </div>
-                {isDisabled && (
-                  <span className="absolute top-1.5 right-2 text-[10px] text-slate-400 font-medium">
-                    You can choose up to 3.
-                  </span>
-                )}
               </button>
             );
           })}
@@ -337,6 +347,133 @@ export default function NicheClarity({ careerOptions, recommendedName, onBack }:
             placeholder="Describe what people usually come to you for..."
             className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all text-sm text-slate-900 placeholder:text-slate-400 resize-none"
           />
+        </div>
+      </div>
+
+      {/* Section 6: The Pattern Finder */}
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8">
+        <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-3">6. ⭐ The Pattern Finder</h3>
+        <p className="text-sm text-slate-600 mb-5">
+          Now look at your answers to all the questions above. Ask yourself: who keeps appearing again and again?
+        </p>
+        <div className="space-y-5">
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">My audience</label>
+            <p className="text-xs text-slate-400 mb-2">Who keeps appearing again and again?</p>
+            <textarea
+              rows={2}
+              value={answers.patternAudience}
+              onChange={(e) => setAnswers((prev) => ({ ...prev, patternAudience: e.target.value }))}
+              placeholder="Describe your audience..."
+              className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all text-sm text-slate-900 placeholder:text-slate-400 resize-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">Their problem</label>
+            <p className="text-xs text-slate-400 mb-2">What problem or situation keeps appearing?</p>
+            <textarea
+              rows={2}
+              value={answers.patternProblem}
+              onChange={(e) => setAnswers((prev) => ({ ...prev, patternProblem: e.target.value }))}
+              placeholder="Describe their problem..."
+              className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all text-sm text-slate-900 placeholder:text-slate-400 resize-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">My transformation</label>
+            <p className="text-xs text-slate-400 mb-2">What transformation have I personally experienced?</p>
+            <textarea
+              rows={2}
+              value={answers.patternTransformation}
+              onChange={(e) => setAnswers((prev) => ({ ...prev, patternTransformation: e.target.value }))}
+              placeholder="Describe your transformation..."
+              className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all text-sm text-slate-900 placeholder:text-slate-400 resize-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">My natural expertise</label>
+            <p className="text-xs text-slate-400 mb-2">What do people already trust me to help them with?</p>
+            <textarea
+              rows={2}
+              value={answers.patternExpertise}
+              onChange={(e) => setAnswers((prev) => ({ ...prev, patternExpertise: e.target.value }))}
+              placeholder="Describe your natural expertise..."
+              className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all text-sm text-slate-900 placeholder:text-slate-400 resize-none"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Section 7: Your First Niche Draft */}
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8">
+        <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-3">7. 🎯 Your First Niche Draft</h3>
+        <p className="text-sm text-slate-600 mb-5">Now complete your niche statement:</p>
+
+        <div className="flex flex-col gap-2 text-sm sm:text-base text-slate-700 mb-5">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1.5">
+            <span>I want to help</span>
+            <input
+              type="text"
+              value={answers.nicheAudience}
+              onChange={(e) => setAnswers((prev) => ({ ...prev, nicheAudience: e.target.value }))}
+              placeholder="e.g. ambitious working women"
+              className="flex-1 px-3 py-2 rounded-lg border border-slate-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all text-sm text-slate-900 placeholder:text-slate-400"
+            />
+          </div>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1.5">
+            <span>who are struggling with</span>
+            <input
+              type="text"
+              value={answers.nicheProblem}
+              onChange={(e) => setAnswers((prev) => ({ ...prev, nicheProblem: e.target.value }))}
+              placeholder="e.g. feeling stuck in their corporate careers"
+              className="flex-1 px-3 py-2 rounded-lg border border-slate-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all text-sm text-slate-900 placeholder:text-slate-400"
+            />
+          </div>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1.5">
+            <span>achieve</span>
+            <input
+              type="text"
+              value={answers.nicheAchievement}
+              onChange={(e) => setAnswers((prev) => ({ ...prev, nicheAchievement: e.target.value }))}
+              placeholder="e.g. a fulfilling second career"
+              className="flex-1 px-3 py-2 rounded-lg border border-slate-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all text-sm text-slate-900 placeholder:text-slate-400"
+            />
+          </div>
+        </div>
+
+        {/* Live preview */}
+        <div className="bg-teal-50 border border-teal-200 rounded-lg p-4 mb-4">
+          <p className="text-sm sm:text-base text-slate-800 leading-relaxed">
+            I want to help{' '}
+            <span className="font-semibold text-teal-700">
+              {answers.nicheAudience.trim() || '____'}
+            </span>{' '}
+            who are struggling with{' '}
+            <span className="font-semibold text-teal-700">
+              {answers.nicheProblem.trim() || '____'}
+            </span>{' '}
+            achieve{' '}
+            <span className="font-semibold text-teal-700">
+              {answers.nicheAchievement.trim() || '____'}
+            </span>.
+          </p>
+        </div>
+
+        {/* Examples */}
+        <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+          <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Examples:</p>
+          <ul className="space-y-2">
+            <li className="text-sm text-slate-600 leading-relaxed">
+              "I want to help ambitious working women who feel stuck in their corporate careers transition into fulfilling second careers."
+            </li>
+            <li className="text-sm text-slate-600 leading-relaxed">
+              "I want to help first-time women managers build confidence and become impactful leaders."
+            </li>
+            <li className="text-sm text-slate-600 leading-relaxed">
+              "I want to help women entrepreneurs who are earning but struggling to scale build a profitable and visible business."
+            </li>
+          </ul>
         </div>
       </div>
     </div>
