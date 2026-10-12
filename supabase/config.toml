@@ -1,0 +1,53 @@
+[functions.analyze-passion-images]
+verify_jwt = true
+
+[functions.generate-big-money-content]
+verify_jwt = true
+
+[functions.generate-channel-description]
+verify_jwt = true
+
+[functions.generate-channel-trailer-script]
+verify_jwt = true
+
+[functions.generate-goal-draft]
+verify_jwt = true
+
+[functions.generate-goal-plan]
+verify_jwt = true
+
+[functions.generate-hooks]
+verify_jwt = true
+
+[functions.generate-life-purpose]
+verify_jwt = true
+
+[functions.generate-niche-finder]
+verify_jwt = true
+
+[functions.generate-passion-coaching-content]
+verify_jwt = true
+
+[functions.generate-passion-roadmap]
+verify_jwt = true
+
+[functions.generate-pdf]
+verify_jwt = true
+
+[functions.generate-roadmap]
+verify_jwt = true
+
+[functions.generate-smart-goal]
+verify_jwt = true
+
+[functions.generate-vision-board]
+verify_jwt = true
+
+[functions.generate-webinar]
+verify_jwt = true
+
+[functions.generate-youtube-script]
+verify_jwt = true
+
+[functions.generate-brand-kit]
+verify_jwt = true

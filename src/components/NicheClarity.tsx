@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { ArrowLeft, Star, Check } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { ArrowLeft, Star, Check, Loader2, Copy, RefreshCw } from 'lucide-react';
 import type { CareerOption } from './BybPassionAnalysis';
 
 interface NicheClarityProps {
@@ -58,6 +58,26 @@ const SECTION_5_OPTIONS = [
   'People seeking purpose', 'People wanting to start something new', 'Other',
 ];
 
+interface BrandKit {
+  instagram: {
+    name_field: string;
+    bio_options: string[];
+    keywords: string[];
+  };
+  brand_colors: {
+    personality: string;
+    palette: { role: string; name: string; hex: string; meaning: string }[];
+  };
+}
+
+const SPINNER_MESSAGES = [
+  'Reading your answers...',
+  'Finding your searchable keywords...',
+  'Writing your Instagram bio...',
+  'Choosing your brand colours...',
+  'Almost done...',
+];
+
 export default function NicheClarity({ careerOptions, recommendedName, onBack }: NicheClarityProps) {
   const [answers, setAnswers] = useState<Answers>({
     selectedNiche: null,
@@ -76,6 +96,99 @@ export default function NicheClarity({ careerOptions, recommendedName, onBack }:
     nicheProblem: '',
     nicheAchievement: '',
   });
+  const [generating, setGenerating] = useState(false);
+  const [brandKit, setBrandKit] = useState<BrandKit | null>(null);
+  const [genError, setGenError] = useState(false);
+  const [validationMsg, setValidationMsg] = useState(false);
+  const [spinnerIdx, setSpinnerIdx] = useState(0);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
+  const spinnerTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (generating) {
+      spinnerTimerRef.current = setInterval(() => {
+        setSpinnerIdx((prev) => (prev + 1) % SPINNER_MESSAGES.length);
+      }, 2500);
+    } else {
+      if (spinnerTimerRef.current) {
+        clearInterval(spinnerTimerRef.current);
+        spinnerTimerRef.current = null;
+      }
+      setSpinnerIdx(0);
+    }
+    return () => {
+      if (spinnerTimerRef.current) {
+        clearInterval(spinnerTimerRef.current);
+        spinnerTimerRef.current = null;
+      }
+    };
+  }, [generating]);
+
+  useEffect(() => {
+    if (brandKit && resultsRef.current) {
+      setTimeout(() => {
+        resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [brandKit]);
+
+  const selectedNicheName = answers.selectedNiche || (answers.customNiche.trim() || '');
+
+  const handleGenerate = async () => {
+    const nicheChosen = answers.selectedNiche || answers.customNiche.trim().length > 0;
+    const nicheDraftComplete = answers.nicheAudience.trim() && answers.nicheProblem.trim() && answers.nicheAchievement.trim();
+
+    if (!nicheChosen || !nicheDraftComplete) {
+      setValidationMsg(true);
+      return;
+    }
+    setValidationMsg(false);
+    setGenError(false);
+    setBrandKit(null);
+    setGenerating(true);
+
+    try {
+      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-brand-kit`;
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          niche: selectedNicheName,
+          answers,
+        }),
+      });
+
+      if (!response.ok) {
+        setGenError(true);
+        return;
+      }
+
+      const data = await response.json();
+      if (!data || !data.instagram || !data.brand_colors) {
+        setGenError(true);
+        return;
+      }
+      setBrandKit(data);
+    } catch {
+      setGenError(true);
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const handleCopy = async (text: string, fieldId: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedField(fieldId);
+      setTimeout(() => setCopiedField(null), 2000);
+    } catch {
+      // ignore
+    }
+  };
 
   const sortedOptions = [...careerOptions].sort((a, b) => {
     const aNum = parseInt(a.rating) || 0;
@@ -476,6 +589,141 @@ export default function NicheClarity({ careerOptions, recommendedName, onBack }:
           </ul>
         </div>
       </div>
+
+      {/* Generate button */}
+      <div className="space-y-3">
+        {validationMsg && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+            <p className="text-sm text-amber-800">
+              Almost there! Please choose your niche in section 1 and complete your niche statement in section 7.
+            </p>
+          </div>
+        )}
+        {genError && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <p className="text-sm text-red-800">
+              Lots of people are creating their brand right now. Please wait a moment and click Generate again.
+            </p>
+          </div>
+        )}
+        <button
+          onClick={handleGenerate}
+          disabled={generating}
+          className="w-full bg-gradient-to-r from-teal-500 to-emerald-500 text-white py-4 rounded-xl font-semibold hover:shadow-lg hover:shadow-teal-500/30 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+        >
+          {generating ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span>{SPINNER_MESSAGES[spinnerIdx]}</span>
+            </>
+          ) : (
+            <span>✨ Generate My Instagram Bio &amp; Brand Colours</span>
+          )}
+        </button>
+      </div>
+
+      {/* Results */}
+      {brandKit && (
+        <div ref={resultsRef} className="space-y-6 scroll-mt-4">
+          {/* Card 1: Instagram Profile */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8">
+            <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-5">📱 Your Instagram Profile</h3>
+
+            {/* Name field */}
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Name field (this is what Instagram searches)
+              </label>
+              <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg p-3">
+                <span className="flex-1 text-sm text-slate-900 font-medium break-all">{brandKit.instagram.name_field}</span>
+                <button
+                  onClick={() => handleCopy(brandKit.instagram.name_field, 'nameField')}
+                  className="flex-shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-teal-50 text-teal-700 text-xs font-semibold hover:bg-teal-100 transition-colors"
+                >
+                  {copiedField === 'nameField' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copiedField === 'nameField' ? 'Copied!' : 'Copy'}
+                </button>
+              </div>
+            </div>
+
+            {/* Bio options */}
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-slate-700 mb-3">Choose your bio</label>
+              <div className="space-y-3">
+                {brandKit.instagram.bio_options.map((bio, idx) => (
+                  <div key={idx} className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                    <div className="flex items-start justify-between gap-3 mb-2">
+                      <p className="flex-1 text-sm text-slate-800 whitespace-pre-line leading-relaxed">{bio}</p>
+                      <button
+                        onClick={() => handleCopy(bio, `bio-${idx}`)}
+                        className="flex-shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-teal-50 text-teal-700 text-xs font-semibold hover:bg-teal-100 transition-colors"
+                      >
+                        {copiedField === `bio-${idx}` ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                        {copiedField === `bio-${idx}` ? 'Copied!' : 'Copy'}
+                      </button>
+                    </div>
+                    <p className="text-xs text-slate-400 font-medium">{bio.length}/150</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Keywords */}
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-3">Your search keywords</label>
+              <div className="flex flex-wrap gap-2">
+                {brandKit.instagram.keywords.map((kw, idx) => (
+                  <span key={idx} className="inline-flex items-center px-3 py-1.5 rounded-full bg-teal-50 text-teal-700 text-sm font-medium border border-teal-200">
+                    {kw}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2: Brand Colours */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8">
+            <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-3">🎨 Your Brand Colours</h3>
+            <p className="text-sm italic text-slate-500 mb-5">{brandKit.brand_colors.personality}</p>
+
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+              {brandKit.brand_colors.palette.map((color, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleCopy(color.hex, `color-${idx}`)}
+                  className="text-left rounded-xl border border-slate-200 overflow-hidden hover:shadow-md transition-all duration-200"
+                >
+                  <div
+                    className="w-full h-20 sm:h-24 rounded-t-xl"
+                    style={{ backgroundColor: color.hex }}
+                  />
+                  <div className="p-3">
+                    <p className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mb-0.5">{color.role}</p>
+                    <p className="text-sm font-bold text-slate-900 mb-0.5">{color.name}</p>
+                    <div className="flex items-center gap-1.5 mb-1.5">
+                      <span className="text-xs font-mono text-slate-600">{color.hex}</span>
+                      {copiedField === `color-${idx}` && (
+                        <span className="text-[10px] text-teal-600 font-semibold">Copied!</span>
+                      )}
+                    </div>
+                    <p className="text-xs text-slate-500 leading-relaxed">{color.meaning}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Generate again */}
+          <button
+            onClick={handleGenerate}
+            disabled={generating}
+            className="w-full bg-white border-2 border-teal-200 text-teal-700 py-3.5 rounded-xl font-semibold hover:bg-teal-50 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-70"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Generate again
+          </button>
+        </div>
+      )}
     </div>
   );
 }
