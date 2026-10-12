@@ -78,10 +78,10 @@ function buildUserSummary(niche: string, answers: Answers): string {
 const systemPrompt = `You are an expert Instagram brand strategist for coaches. Using the person's chosen niche, transformation story, audience, problems, expertise and niche statement, create:
 
 1. instagram.name_field: a keyword-rich Instagram Name field (max 30 characters) in the format "[Your Name] | <searchable keyword>", e.g. "[Your Name] | Career Coach for Women". Instagram search uses this field, so the keyword must be what their audience would type in search.
-2. instagram.bio_options: exactly 3 different bios, each MAX 150 characters including spaces and emojis. Each bio must: say who they help and what result, include 1-2 searchable keywords, use 2-3 relevant emojis, use line breaks (\\n), and end with a short call to action (e.g. "👇 Book your free call").
+2. instagram.bio_options: exactly 3 different bios, each 110-150 characters (MAX 150 including spaces and emojis). Do not write short one-liners. Each bio must include: who they help + the specific result/transformation, one line of credibility or personal touch drawn from their transformation story, 1-2 searchable keywords used naturally, 2-3 relevant emojis, line breaks (\\n) between ideas, and a short call to action at the end. The 3 bios must feel clearly different in style: (1) results-focused, (2) story/personal-focused, (3) warm/community-focused. Use the person's own words and audience from their answers. Do not generalise "women" to a different group they did not mention.
 3. instagram.keywords: exactly 5 short search keywords their audience would type.
 4. brand_colors.personality: one sentence describing the brand feel.
-5. brand_colors.palette: exactly 5 colours with roles Primary, Secondary, Accent, Background, Text. Each has: role, name (a friendly colour name), hex (format #RRGGBB), meaning (one short sentence on why it suits this niche). Background must be light enough for text to be readable; Text must be dark.
+5. brand_colors.palette: exactly 5 colours with roles Primary, Secondary, Accent, Background, Text. The 5 colours must form ONE harmonious, professional palette suitable for a premium coaching brand (elegant, trustworthy, modern). Avoid combining several bright saturated colours together. Primary should be confident but not neon. Secondary should complement Primary (analogous or soft complementary). Accent may be brighter but used sparingly. Background must be a very light, warm or neutral tone. Text must be a dark colour with strong contrast on Background. Each colour's "name" must honestly describe the actual hex (e.g. do not call a coral colour "pink"). Each has: role, name (a friendly colour name), hex (format #RRGGBB), meaning (one short sentence on why it suits this niche).
 
 Return ONLY valid JSON with exactly this structure:
 { "instagram": { "name_field": "", "bio_options": ["", "", ""], "keywords": ["", "", "", "", ""] }, "brand_colors": { "personality": "", "palette": [ { "role": "", "name": "", "hex": "", "meaning": "" } ] } }`;
@@ -93,7 +93,7 @@ function validateResult(data: any): boolean {
   if (typeof ig.name_field !== 'string' || ig.name_field.length > 30) return false;
   if (!Array.isArray(ig.bio_options) || ig.bio_options.length !== 3) return false;
   for (const bio of ig.bio_options) {
-    if (typeof bio !== 'string' || bio.length > 150) return false;
+    if (typeof bio !== 'string' || bio.length > 150 || bio.length < 100) return false;
   }
   if (!Array.isArray(ig.keywords) || ig.keywords.length !== 5) return false;
   for (const kw of ig.keywords) {
