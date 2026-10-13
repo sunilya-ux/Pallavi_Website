@@ -9,6 +9,8 @@ export const timeLabel = '9:00 AM – 6:00 PM';
 export const venueName = 'Park Inn by Radisson, New Delhi IP Extension';
 export const seatsLabel = 'Limited Seats Filling Fast';
 export const heroImage = '/images/host/host-pallavi.jpg';
+export const ecosystemHeadline = 'INDIA\u2019S ONLY COMPLETE LIFE COACHING + BUSINESS-BUILDING ECOSYSTEM';
+export const ecosystemSubline = '( Professional Certification + AI-Powered Done for you Business Building + Personal Handholding )';
 
 export type Stat = { value: string; label: string };
 export const stats: Stat[] = [

@@ -11,6 +11,8 @@ import {
   venueName,
   seatsLabel,
   heroImage,
+  ecosystemHeadline,
+  ecosystemSubline,
   aboutHeading,
   aboutPoints,
   schedule,
@@ -98,6 +100,15 @@ export default function EventPage() {
         {active ? (
           <>
             <div className="bg-gradient-to-br from-[#0a0a0a] via-[#141414] to-[#1a1a1a] rounded-2xl overflow-hidden shadow-sm">
+              <div className="px-8 pt-10 sm:pt-12 md:pt-14 text-center">
+                <h2 className="text-lg sm:text-2xl md:text-3xl font-extrabold uppercase tracking-wide bg-gradient-to-r from-[#F5D77A] via-[#D4AF37] to-[#C9A052] bg-clip-text text-transparent leading-snug">
+                  {ecosystemHeadline}
+                </h2>
+                <p className="mt-3 text-sm sm:text-base md:text-lg text-[#F5F0E6]/85 leading-relaxed">
+                  {ecosystemSubline}
+                </p>
+                <div className="mx-auto mt-5 h-px w-[120px] bg-[#D4AF37]/30" />
+              </div>
               <div className="grid md:grid-cols-2 gap-8 items-center px-8 py-12 md:py-16">
                 <div>
                   <div className="inline-flex items-center gap-2 bg-[#D4AF37]/15 border border-[#D4AF37]/40 text-[#D4AF37] text-sm font-medium px-3 py-1 rounded-full mb-5">
