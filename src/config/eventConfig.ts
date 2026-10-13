@@ -9,7 +9,7 @@ export const timeLabel = '9:00 AM – 6:00 PM';
 export const venueName = 'Park Inn by Radisson, New Delhi IP Extension';
 export const seatsLabel = 'Limited Seats Filling Fast';
 export const heroImage = '/images/host/host-pallavi.jpg';
-export const ecosystemHeadline = 'INDIA\u2019S ONLY COMPLETE LIFE COACHING + BUSINESS-BUILDING ECOSYSTEM';
+export const ecosystemHeadline = 'INDIA\u2019S ONLY COMPLETE LIFE COACHING + BUSINESS\u2011BUILDING ECOSYSTEM';
 export const ecosystemSubline = '( Professional Certification + AI-Powered Done for you Business Building + Personal Handholding )';
 
 export type Stat = { value: string; label: string };
@@ -133,7 +133,7 @@ export const venueImages = [
 ];
 export const venueMapUrl = 'https://maps.app.goo.gl/L5xn57qg6oxbDLVAA';
 
-export const ticketPrice = '₹5,500';
+export const ticketPrice = '₹6,000';
 export const ticketLabel = 'Full Day Access';
 export const ticketInclusions: string[] = [
   'Full access to the entire day, live in the room',
