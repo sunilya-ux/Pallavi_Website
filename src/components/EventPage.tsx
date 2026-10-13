@@ -41,6 +41,7 @@ import {
   closingImage,
   ticketPrice,
   ticketLabel,
+  pricingValueLine,
   ticketInclusions,
   ticketBookingUrl,
   stats,
@@ -608,9 +609,9 @@ export default function EventPage() {
 
               <div className="max-w-2xl mx-auto">
                 <div className="bg-[#F5F0E6] rounded-2xl shadow-lg border border-[#D4AF37]/20 px-6 sm:px-10 py-8 sm:py-10">
-                  <div className="flex items-center justify-center gap-2 mb-3 bg-[#9C6B12]/8 rounded-full px-4 py-1.5">
-                    <Ticket className="w-4 h-4 text-[#9C6B12]" strokeWidth={2.25} />
-                    <span className="text-sm font-semibold tracking-wide text-[#9C6B12] uppercase">{ticketLabel}</span>
+                  <div className="flex items-center justify-center gap-2 mb-3">
+                    <Ticket className="w-4 h-5 text-[#9C6B12] flex-shrink-0 mt-0.5" strokeWidth={2.25} />
+                    <span className="text-base sm:text-lg font-semibold text-[#9C6B12] text-center leading-snug">{pricingValueLine}</span>
                   </div>
                   <div className="text-center mb-8">
                     <span className="text-4xl sm:text-5xl font-bold text-[#1a1a1a]">{ticketPrice}</span>

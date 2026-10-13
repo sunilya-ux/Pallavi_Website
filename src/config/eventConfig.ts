@@ -134,13 +134,14 @@ export const venueImages = [
 export const venueMapUrl = 'https://maps.app.goo.gl/L5xn57qg6oxbDLVAA';
 
 export const ticketPrice = '₹6,000';
+export const pricingValueLine = 'Value worth ₹2L+, available to you at this event at just ₹6K';
 export const ticketLabel = 'Full Day Access';
 export const ticketInclusions: string[] = [
   'Full access to the entire day, live in the room',
   'The complete system to build your coaching business, step by step',
   'Live implementation — build your offer and plan with guidance, not just theory',
   'Lunch, tea, and coffee included',
-  'Network with a room full of ambitious coaches',
+  'Network with ambitious coaches, corporate & college hiring managers, and influential creators.',
   'Limited Seats Filling Fast',
 ];
 export const ticketBookingUrl = 'https://lifecoach-pallavi.mojo.page/ai-empowered-life-coach-live-implement';
