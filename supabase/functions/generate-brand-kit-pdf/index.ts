@@ -259,7 +259,7 @@ function renderBrandKitPDF(
   // 5. Search Keywords
   drawHeading("Search Keywords");
   const keywords = brandKit.instagram.keywords.map((k) => cleanText(k)).filter((k) => k.length > 0);
-  const kwLine = keywords.join("  *  ");
+  const kwLine = keywords.join("  |  ");
   drawBody(kwLine, { fontSize: 10, color: { r: 13, g: 148, b: 136 } });
   y += 2;
 

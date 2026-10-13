@@ -223,6 +223,56 @@ function fileToBase64(file: File): Promise<string> {
   });
 }
 
+async function compressImage(file: File): Promise<{ blob: Blob; base64: string; width: number; height: number } | null> {
+  try {
+    const url = URL.createObjectURL(file);
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const el = new Image();
+      el.onload = () => resolve(el);
+      el.onerror = () => reject(new Error('load failed'));
+      el.src = url;
+    });
+    URL.revokeObjectURL(url);
+
+    let width = img.naturalWidth;
+    let height = img.naturalHeight;
+    const maxSide = 1600;
+    if (Math.max(width, height) > maxSide) {
+      const scale = maxSide / Math.max(width, height);
+      width = Math.round(width * scale);
+      height = Math.round(height * scale);
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, width, height);
+    ctx.drawImage(img, 0, 0, width, height);
+
+    const blob = await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('toBlob failed'))), 'image/jpeg', 0.82);
+    });
+
+    const base64 = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result as string;
+        resolve(result.split(',')[1]);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+
+    return { blob, base64, width, height };
+  } catch {
+    return null;
+  }
+}
+
 export default function BybPassionAnalysis({ clientId }: BybPassionAnalysisProps) {
   const [images, setImages] = useState<ImageFile[]>([]);
   const [generating, setGenerating] = useState(false);
@@ -235,6 +285,7 @@ export default function BybPassionAnalysis({ clientId }: BybPassionAnalysisProps
   const [exportMessage, setExportMessage] = useState('');
   const [dragActive, setDragActive] = useState(false);
   const [showNicheClarity, setShowNicheClarity] = useState(false);
+  const [retrying, setRetrying] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -266,13 +317,33 @@ export default function BybPassionAnalysis({ clientId }: BybPassionAnalysisProps
       if (!validTypes.includes(file.type)) continue;
       if (images.length + newFiles.length >= 10) break;
 
-      const base64 = await fileToBase64(file);
-      newFiles.push({
-        file,
-        preview: URL.createObjectURL(file),
-        base64,
-        mimeType: file.type,
-      });
+      const originalSizeKB = Math.round(file.size / 1024);
+      let base64: string;
+      let preview: string;
+      let mimeType: string;
+
+      if (file.type === 'image/gif') {
+        base64 = await fileToBase64(file);
+        preview = URL.createObjectURL(file);
+        mimeType = file.type;
+        console.log(`Image (GIF, unchanged): ${file.name} — ${originalSizeKB}KB`);
+      } else {
+        const compressed = await compressImage(file);
+        if (compressed) {
+          base64 = compressed.base64;
+          preview = URL.createObjectURL(compressed.blob);
+          mimeType = 'image/jpeg';
+          const compressedSizeKB = Math.round(compressed.blob.size / 1024);
+          console.log(`Image compressed: ${file.name} — original: ${originalSizeKB}KB, compressed: ${compressedSizeKB}KB, ${compressed.width}x${compressed.height}`);
+        } else {
+          base64 = await fileToBase64(file);
+          preview = URL.createObjectURL(file);
+          mimeType = file.type;
+          console.log(`Image compression failed, using original: ${file.name} — ${originalSizeKB}KB`);
+        }
+      }
+
+      newFiles.push({ file, preview, base64, mimeType });
     }
 
     setImages((prev) => [...prev, ...newFiles]);
@@ -302,52 +373,88 @@ export default function BybPassionAnalysis({ clientId }: BybPassionAnalysisProps
     }
 
     setGenerating(true);
+    setRetrying(false);
     setAiContent('');
+
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    const requestBody = JSON.stringify({
+      images: images.map((img) => ({
+        base64: img.base64,
+        mimeType: img.mimeType,
+      })),
+    });
 
     try {
       abortControllerRef.current = new AbortController();
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      const retryableStatuses = [429, 500, 502, 503, 504];
+      let succeeded = false;
 
-      const response = await fetch(
-        `${supabaseUrl}/functions/v1/analyze-passion-images`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${supabaseAnonKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            images: images.map((img) => ({
-              base64: img.base64,
-              mimeType: img.mimeType,
-            })),
-          }),
-          signal: abortControllerRef.current.signal,
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          const response = await fetch(
+            `${supabaseUrl}/functions/v1/analyze-passion-images`,
+            {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${supabaseAnonKey}`,
+                'Content-Type': 'application/json',
+              },
+              body: requestBody,
+              signal: abortControllerRef.current.signal,
+            }
+          );
+
+          if (!response.ok) {
+            const status = response.status;
+            let errorBody = '';
+            try { errorBody = JSON.stringify(await response.json()); } catch { /* ignore */ }
+            console.error(`analyze-passion-images attempt ${attempt + 1} failed: status ${status}`, errorBody);
+
+            if (retryableStatuses.includes(status) && attempt < 1) {
+              setRetrying(true);
+              await new Promise((r) => setTimeout(r, 3000));
+              continue;
+            }
+            break;
+          }
+
+          const data = await response.json();
+          setAiContent(data.content);
+          setShowForm(false);
+          succeeded = true;
+          break;
+        } catch (err: any) {
+          if (err.name === 'AbortError') throw err;
+          console.error(`analyze-passion-images attempt ${attempt + 1} failed:`, err);
+          if (attempt < 1) {
+            setRetrying(true);
+            await new Promise((r) => setTimeout(r, 3000));
+            continue;
+          }
+          break;
         }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to analyze images');
       }
 
-      const data = await response.json();
-      setAiContent(data.content);
-      setShowForm(false);
-
-      setTimeout(() => {
-        resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
+      if (!succeeded) {
+        setError("We couldn't create your report right now. Please check your internet connection and click Generate again — your photos are still here.");
+        setShowForm(true);
+      } else {
+        setTimeout(() => {
+          resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+      }
     } catch (err: any) {
       if (err.name === 'AbortError') {
         setError('Analysis cancelled.');
       } else {
-        setError(err.message || 'Failed to analyze images. Please try again.');
+        console.error('analyze-passion-images unexpected error:', err);
+        setError("We couldn't create your report right now. Please check your internet connection and click Generate again — your photos are still here.");
       }
       setShowForm(true);
     } finally {
       setGenerating(false);
+      setRetrying(false);
       abortControllerRef.current = null;
     }
   };
@@ -574,7 +681,7 @@ export default function BybPassionAnalysis({ clientId }: BybPassionAnalysisProps
               </div>
             </div>
             <div className="space-y-4">
-              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 min-h-[2.5rem] transition-all duration-500">{PROGRESS_MESSAGES[progressMessageIndex]}</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 min-h-[2.5rem] transition-all duration-500">{retrying ? "Taking a little longer than usual — trying again for you..." : PROGRESS_MESSAGES[progressMessageIndex]}</h2>
               <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
                 {progressMessageIndex < PROGRESS_MESSAGES.length - 1 ? "Analyzing images takes about 30-90 seconds." : "Almost there -- thank you for waiting."}
               </p>
