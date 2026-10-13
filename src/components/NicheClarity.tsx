@@ -98,7 +98,7 @@ export default function NicheClarity({ careerOptions, recommendedName, onBack }:
   });
   const [generating, setGenerating] = useState(false);
   const [brandKit, setBrandKit] = useState<BrandKit | null>(null);
-  const [genError, setGenError] = useState(false);
+  const [genError, setGenError] = useState<'rate_limited' | 'generic' | null>(null);
   const [validationMsg, setValidationMsg] = useState(false);
   const [spinnerIdx, setSpinnerIdx] = useState(0);
   const [copiedField, setCopiedField] = useState<string | null>(null);
@@ -146,7 +146,7 @@ export default function NicheClarity({ careerOptions, recommendedName, onBack }:
       return;
     }
     setValidationMsg(false);
-    setGenError(false);
+    setGenError(null);
     setBrandKit(null);
     setGenerating(true);
 
@@ -165,18 +165,27 @@ export default function NicheClarity({ careerOptions, recommendedName, onBack }:
       });
 
       if (!response.ok) {
-        setGenError(true);
+        let reason = '';
+        try {
+          const errBody = await response.json();
+          reason = errBody?.reason || '';
+        } catch { /* ignore parse error */ }
+        const isRateLimited = response.status === 429 || reason === 'rate_limited';
+        console.error('generate-brand-kit failed:', response.status, reason);
+        setGenError(isRateLimited ? 'rate_limited' : 'generic');
         return;
       }
 
       const data = await response.json();
       if (!data || !data.instagram || !data.brand_colors) {
-        setGenError(true);
+        console.error('generate-brand-kit: invalid response shape');
+        setGenError('generic');
         return;
       }
       setBrandKit(data);
-    } catch {
-      setGenError(true);
+    } catch (err) {
+      console.error('generate-brand-kit: network error', err);
+      setGenError('generic');
     } finally {
       setGenerating(false);
     }
@@ -645,10 +654,17 @@ export default function NicheClarity({ careerOptions, recommendedName, onBack }:
             </p>
           </div>
         )}
-        {genError && (
+        {genError === 'rate_limited' && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
             <p className="text-sm text-red-800">
               Lots of people are creating their brand right now. Please wait a moment and click Generate again.
+            </p>
+          </div>
+        )}
+        {genError === 'generic' && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <p className="text-sm text-red-800">
+              Something went wrong while creating your brand kit. Please click Generate again.
             </p>
           </div>
         )}

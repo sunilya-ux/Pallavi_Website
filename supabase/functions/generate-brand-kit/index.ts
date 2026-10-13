@@ -31,6 +31,7 @@ interface Answers {
 }
 
 const hexRegex = /^#[0-9A-Fa-f]{6}$/;
+const DEFAULT_ROLES = ['Primary', 'Secondary', 'Accent', 'Background', 'Text'];
 
 function buildUserSummary(niche: string, answers: Answers): string {
   const lines: string[] = [];
@@ -81,45 +82,125 @@ const systemPrompt = `You are an expert Instagram brand strategist for coaches. 
 2. instagram.bio_options: exactly 3 different bios, each 110-150 characters (MAX 150 including spaces and emojis). Do not write short one-liners. Each bio must include: who they help + the specific result/transformation, one line of credibility or personal touch drawn from their transformation story, 1-2 searchable keywords used naturally, 2-3 relevant emojis, line breaks (\\n) between ideas, and a short call to action at the end. The 3 bios must feel clearly different in style: (1) results-focused, (2) story/personal-focused, (3) warm/community-focused. Use the person's own words and audience from their answers. Do not generalise "women" to a different group they did not mention.
 3. instagram.keywords: exactly 5 short search keywords their audience would type.
 4. brand_colors.personality: one sentence describing the brand feel.
-5. brand_colors.palette: exactly 5 colours with roles Primary, Secondary, Accent, Background, Text. The 5 colours must form ONE harmonious, professional palette suitable for a premium coaching brand (elegant, trustworthy, modern). Avoid combining several bright saturated colours together. Primary should be confident but not neon. Secondary should complement Primary (analogous or soft complementary). Accent may be brighter but used sparingly. Background must be a very light, warm or neutral tone. Text must be a dark colour with strong contrast on Background. Each colour's "name" must honestly describe the actual hex (e.g. do not call a coral colour "pink"). Each has: role, name (a friendly colour name), hex (format #RRGGBB), meaning (one short sentence on why it suits this niche).
+5. brand_colors.palette: exactly 5 colours with roles Primary, Secondary, Accent, Background, Text. The 5 colours must form ONE harmonious, professional palette suitable for a premium coaching brand (elegant, trustworthy, modern). Avoid combining several bright saturated colours together. Primary should be confident but not neon. Secondary should complement Primary (analogous or soft complementary). Accent may be brighter but used sparingly. Background must be a very light, warm or neutral tone. Text must be a dark colour with strong contrast on Background. Each colour's "name" must honestly describe the actual hex (e.g. do not call a coral colour "pink"). Each has: role, name, hex (format #RRGGBB), meaning (one short sentence on why it suits this niche).
 
 Return ONLY valid JSON with exactly this structure:
 { "instagram": { "name_field": "", "bio_options": ["", "", ""], "keywords": ["", "", "", "", ""] }, "brand_colors": { "personality": "", "palette": [ { "role": "", "name": "", "hex": "", "meaning": "" } ] } }`;
 
-function validateResult(data: any): boolean {
-  if (!data || typeof data !== 'object') return false;
+// ——— HARD checks: only these cause a retry ———
+function hardCheck(data: any): { ok: boolean; reason: string } {
+  if (!data || typeof data !== 'object') return { ok: false, reason: 'invalid_json' };
   const ig = data.instagram;
-  if (!ig || typeof ig !== 'object') return false;
-  if (typeof ig.name_field !== 'string' || ig.name_field.length > 30) return false;
-  if (!Array.isArray(ig.bio_options) || ig.bio_options.length !== 3) return false;
-  for (const bio of ig.bio_options) {
-    if (typeof bio !== 'string' || bio.length > 150 || bio.length < 100) return false;
-  }
-  if (!Array.isArray(ig.keywords) || ig.keywords.length !== 5) return false;
-  for (const kw of ig.keywords) {
-    if (typeof kw !== 'string' || kw.length === 0) return false;
-  }
+  if (!ig || typeof ig !== 'object') return { ok: false, reason: 'incomplete_result' };
   const bc = data.brand_colors;
-  if (!bc || typeof bc !== 'object') return false;
-  if (typeof bc.personality !== 'string' || bc.personality.length === 0) return false;
-  if (!Array.isArray(bc.palette) || bc.palette.length !== 5) return false;
-  const validRoles = ['Primary', 'Secondary', 'Accent', 'Background', 'Text'];
-  const seenRoles = new Set<string>();
-  for (const color of bc.palette) {
-    if (!color || typeof color !== 'object') return false;
-    if (typeof color.role !== 'string' || !validRoles.includes(color.role)) return false;
-    if (seenRoles.has(color.role)) return false;
-    seenRoles.add(color.role);
-    if (typeof color.name !== 'string' || color.name.length === 0) return false;
-    if (typeof color.hex !== 'string' || !hexRegex.test(color.hex)) return false;
-    if (typeof color.meaning !== 'string' || color.meaning.length === 0) return false;
-  }
-  return true;
+  if (!bc || typeof bc !== 'object') return { ok: false, reason: 'incomplete_result' };
+
+  // bio_options: at least 3 non-empty strings
+  if (!Array.isArray(ig.bio_options)) return { ok: false, reason: 'incomplete_result' };
+  const nonEmptyBios = ig.bio_options.filter((b: any) => typeof b === 'string' && b.trim().length > 0);
+  if (nonEmptyBios.length < 3) return { ok: false, reason: 'incomplete_result' };
+
+  // palette: at least 5 items, each with a valid hex
+  if (!Array.isArray(bc.palette)) return { ok: false, reason: 'incomplete_result' };
+  const validHexColors = bc.palette.filter(
+    (c: any) => c && typeof c === 'object' && typeof c.hex === 'string' && hexRegex.test(c.hex)
+  );
+  if (validHexColors.length < 5) return { ok: false, reason: 'incomplete_result' };
+
+  return { ok: true, reason: '' };
 }
 
-function friendlyError(status: number) {
+// ——— SOFT fixes: applied silently after hard checks pass ———
+function trimBio(bio: string): string {
+  if (bio.length <= 150) return bio;
+  // Try cutting at the last line break before 150
+  const cut = bio.slice(0, 150);
+  const lastBreak = cut.lastIndexOf('\n');
+  if (lastBreak > 60) return cut.slice(0, lastBreak).trimEnd();
+  // Otherwise cut at the last word boundary before 150
+  const lastSpace = cut.lastIndexOf(' ');
+  if (lastSpace > 60) return cut.slice(0, lastSpace).trimEnd();
+  return cut.trimEnd();
+}
+
+function trimAtWord(text: string, max: number): string {
+  if (text.length <= max) return text;
+  const cut = text.slice(0, max);
+  const lastSpace = cut.lastIndexOf(' ');
+  if (lastSpace > 0) return cut.slice(0, lastSpace).trimEnd();
+  return cut.trimEnd();
+}
+
+function softFix(data: any): any {
+  const ig = data.instagram;
+  const bc = data.brand_colors;
+
+  // --- bio_options: keep first 3, trim each to 150 ---
+  const bios = (ig.bio_options as any[])
+    .filter((b: any) => typeof b === 'string' && b.trim().length > 0)
+    .slice(0, 3)
+    .map((b: string) => trimBio(b));
+
+  // --- name_field: max 64, trim at word boundary; default if empty ---
+  let nameField = typeof ig.name_field === 'string' ? ig.name_field.trim() : '';
+  if (nameField.length === 0) {
+    nameField = '[Your Name] | Coach';
+  } else if (nameField.length > 64) {
+    nameField = trimAtWord(nameField, 64);
+  }
+
+  // --- keywords: keep up to 5 non-empty, accept 3+ ---
+  const keywords = Array.isArray(ig.keywords)
+    ? (ig.keywords as any[])
+        .filter((k: any) => typeof k === 'string' && k.trim().length > 0)
+        .slice(0, 5)
+    : [];
+
+  // --- palette: keep first 5 valid-hex colours, fix roles/names/meanings ---
+  const palette = (bc.palette as any[])
+    .filter((c: any) => c && typeof c === 'object' && typeof c.hex === 'string' && hexRegex.test(c.hex))
+    .slice(0, 5)
+    .map((c: any, i: number) => ({
+      role: (typeof c.role === 'string' && c.role.trim().length > 0) ? c.role : DEFAULT_ROLES[i],
+      name: (typeof c.name === 'string' && c.name.trim().length > 0) ? c.name : DEFAULT_ROLES[i],
+      hex: c.hex,
+      meaning: (typeof c.meaning === 'string' && c.meaning.trim().length > 0) ? c.meaning : '',
+    }));
+
+  // Reassign roles by position if any are missing or duplicated
+  const seenRoles = new Set<string>();
+  let hasDupOrMissing = false;
+  for (const c of palette) {
+    if (seenRoles.has(c.role) || !DEFAULT_ROLES.includes(c.role)) {
+      hasDupOrMissing = true;
+    }
+    seenRoles.add(c.role);
+  }
+  if (hasDupOrMissing) {
+    palette.forEach((c, i) => { c.role = DEFAULT_ROLES[i]; });
+  }
+
+  // --- personality: default if empty ---
+  const personality = (typeof bc.personality === 'string' && bc.personality.trim().length > 0)
+    ? bc.personality
+    : 'A warm, confident and professional brand.';
+
+  return {
+    instagram: {
+      name_field: nameField,
+      bio_options: bios,
+      keywords,
+    },
+    brand_colors: {
+      personality,
+      palette,
+    },
+  };
+}
+
+function errorResponse(status: number, reason: string) {
   return new Response(
-    JSON.stringify({ error: "friendly" }),
+    JSON.stringify({ error: "friendly", reason }),
     { status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
   );
 }
@@ -133,15 +214,12 @@ Deno.serve(async (req: Request) => {
     const { niche, answers }: { niche: string; answers: Answers } = await req.json();
 
     if (!niche || typeof niche !== 'string' || niche.trim().length === 0) {
-      return new Response(
-        JSON.stringify({ error: "friendly" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return errorResponse(400, "invalid_json");
     }
 
     const openaiApiKey = Deno.env.get("OPENAI_API_KEY");
     if (!openaiApiKey) {
-      return friendlyError(500);
+      return errorResponse(500, "missing_api_key");
     }
 
     const userSummary = buildUserSummary(niche.trim(), answers);
@@ -164,38 +242,51 @@ Deno.serve(async (req: Request) => {
         }),
       });
 
-      if (response.status === 429 || response.status >= 500) {
-        throw { retryable: true };
+      if (response.status === 429) {
+        throw { retryable: true, reason: 'rate_limited' };
+      }
+
+      if (response.status >= 500) {
+        throw { retryable: true, reason: 'openai_error' };
       }
 
       if (!response.ok) {
-        throw { retryable: false };
+        throw { retryable: false, reason: 'openai_error' };
       }
 
       const data = await response.json();
       const content = data.choices[0].message.content;
-      return JSON.parse(content);
+      try {
+        return JSON.parse(content);
+      } catch {
+        throw { retryable: true, reason: 'invalid_json' };
+      }
     };
 
     let result: any = null;
-    let parsed = false;
+    let success = false;
+    let lastReason = 'openai_error';
 
-    // Up to 3 attempts for rate-limit/5xx retries
+    // Maximum 3 OpenAI calls total
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
         result = await callOpenAI();
-        if (validateResult(result)) {
-          parsed = true;
+        const check = hardCheck(result);
+        if (check.ok) {
+          success = true;
           break;
         }
-        // Validation failed — retry once with a fresh call
+        lastReason = check.reason;
+        console.log(`generate-brand-kit: attempt ${attempt + 1} failed — ${lastReason}`);
         if (attempt < 2) {
-          await new Promise((r) => setTimeout(r, 3000));
-          continue;
+          await new Promise((r) => setTimeout(r, 2000));
         }
       } catch (err: any) {
-        if (err && err.retryable && attempt < 2) {
-          await new Promise((r) => setTimeout(r, 3000));
+        lastReason = err?.reason || 'openai_error';
+        const retryable = err?.retryable ?? false;
+        console.log(`generate-brand-kit: attempt ${attempt + 1} failed — ${lastReason} (retryable: ${retryable})`);
+        if (retryable && attempt < 2) {
+          await new Promise((r) => setTimeout(r, 2000));
           continue;
         }
         // Non-retryable or out of attempts
@@ -203,28 +294,18 @@ Deno.serve(async (req: Request) => {
       }
     }
 
-    // If not parsed/valid, try one more call (completeness retry)
-    if (!parsed) {
-      try {
-        result = await callOpenAI();
-        if (validateResult(result)) {
-          parsed = true;
-        }
-      } catch {
-        // give up
-      }
+    if (!success || !result) {
+      return errorResponse(500, lastReason);
     }
 
-    if (!parsed || !result) {
-      return friendlyError(500);
-    }
+    const fixed = softFix(result);
 
-    return new Response(JSON.stringify(result), {
+    return new Response(JSON.stringify(fixed), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Error:", error);
-    return friendlyError(500);
+    console.error("generate-brand-kit error:", error);
+    return errorResponse(500, "openai_error");
   }
 });
