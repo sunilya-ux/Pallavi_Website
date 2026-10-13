@@ -51,3 +51,6 @@ verify_jwt = true
 
 [functions.generate-brand-kit]
 verify_jwt = true
+
+[functions.generate-brand-kit-pdf]
+verify_jwt = true

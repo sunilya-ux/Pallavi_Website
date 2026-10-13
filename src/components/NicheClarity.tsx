@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, Star, Check, Loader2, Copy, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Star, Check, Loader2, Copy, RefreshCw, Download } from 'lucide-react';
 import type { CareerOption } from './BybPassionAnalysis';
 
 interface NicheClarityProps {
@@ -102,6 +102,8 @@ export default function NicheClarity({ careerOptions, recommendedName, onBack }:
   const [validationMsg, setValidationMsg] = useState(false);
   const [spinnerIdx, setSpinnerIdx] = useState(0);
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [downloadingPDF, setDownloadingPDF] = useState(false);
+  const [pdfError, setPdfError] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
   const spinnerTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -187,6 +189,50 @@ export default function NicheClarity({ careerOptions, recommendedName, onBack }:
       setTimeout(() => setCopiedField(null), 2000);
     } catch {
       // ignore
+    }
+  };
+
+  const nicheStatementText = answers.nicheAudience.trim() && answers.nicheProblem.trim() && answers.nicheAchievement.trim()
+    ? `I want to help ${answers.nicheAudience.trim()} who are struggling with ${answers.nicheProblem.trim()} achieve ${answers.nicheAchievement.trim()}.`
+    : '';
+
+  const handleDownloadPDF = async () => {
+    if (!brandKit || !selectedNicheName) return;
+    setPdfError(false);
+    setDownloadingPDF(true);
+    try {
+      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-brand-kit-pdf`;
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          niche: selectedNicheName,
+          nicheStatement: nicheStatementText,
+          brandKit,
+        }),
+      });
+
+      if (!response.ok) {
+        setPdfError(true);
+        return;
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'my-brand-kit.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch {
+      setPdfError(true);
+    } finally {
+      setDownloadingPDF(false);
     }
   };
 
@@ -713,15 +759,43 @@ export default function NicheClarity({ careerOptions, recommendedName, onBack }:
             </div>
           </div>
 
-          {/* Generate again */}
-          <button
-            onClick={handleGenerate}
-            disabled={generating}
-            className="w-full bg-white border-2 border-teal-200 text-teal-700 py-3.5 rounded-xl font-semibold hover:bg-teal-50 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-70"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Generate again
-          </button>
+          {/* PDF error */}
+          {pdfError && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <p className="text-sm text-red-800">
+                Couldn't create your PDF right now. Please try again in a moment.
+              </p>
+            </div>
+          )}
+
+          {/* Action buttons */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button
+              onClick={handleGenerate}
+              disabled={generating}
+              className="flex-1 bg-white border-2 border-teal-200 text-teal-700 py-3.5 rounded-xl font-semibold hover:bg-teal-50 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-70"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Generate again
+            </button>
+            <button
+              onClick={handleDownloadPDF}
+              disabled={downloadingPDF || generating}
+              className="flex-1 bg-gradient-to-r from-teal-500 to-emerald-500 text-white py-3.5 rounded-xl font-semibold hover:shadow-lg hover:shadow-teal-500/30 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              {downloadingPDF ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Preparing your PDF...
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4" />
+                  Download My Brand Kit (PDF)
+                </>
+              )}
+            </button>
+          </div>
         </div>
       )}
     </div>
