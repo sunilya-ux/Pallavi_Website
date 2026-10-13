@@ -102,16 +102,28 @@ export const hostStory = [
   "Today, I've empowered 5000+ working professionals and aspiring coaches to do the same using my AI Empowered Life Coach Blueprint.",
   "My mission is simple: help ambitious women build financial independence through life coaching, so they never have to choose between their dignity and their livelihood.",
 ];
-export const galleryImages: string[] = [
-  '/images/testimonials/testimonial-1.jpg',
-  '/images/testimonials/testimonial-2.jpg',
-  '/images/testimonials/testimonial-3.jpg',
-  '/images/testimonials/testimonial-4.jpg',
-  '/images/testimonials/testimonial-5.jpg',
-  '/images/testimonials/testimonial-6.jpg',
-  '/images/testimonials/testimonial-7.jpg',
-  '/images/testimonials/testimonial-8.jpg',
-  '/images/testimonials/testimonial-9.jpg',
+export type WinCard = {
+  image: string;
+  caption?: string;
+  highlight?: string;
+  sortAmount: number;
+  alt: string;
+};
+
+export const winCards: WinCard[] = [
+  { image: '/images/testimonials/testimonial-1.jpg', sortAmount: 0, alt: 'Coach win testimonial 1' },
+  { image: '/images/testimonials/testimonial-2.jpg', sortAmount: 0, alt: 'Coach win testimonial 2' },
+  { image: '/images/testimonials/testimonial-3.jpg', sortAmount: 0, alt: 'Coach win testimonial 3' },
+  { image: '/images/testimonials/testimonial-4.jpg', sortAmount: 0, alt: 'Coach win testimonial 4' },
+  { image: '/images/testimonials/testimonial-5.jpg', sortAmount: 0, alt: 'Coach win testimonial 5' },
+  { image: '/images/testimonials/testimonial-6.jpg', sortAmount: 0, alt: 'Coach win testimonial 6' },
+  { image: '/images/testimonials/testimonial-7.jpg', sortAmount: 0, alt: 'Coach win testimonial 7' },
+  { image: '/images/testimonials/testimonial-8.jpg', sortAmount: 0, alt: 'Coach win testimonial 8' },
+  { image: '/images/testimonials/testimonial-9.jpg', sortAmount: 0, alt: 'Coach win testimonial 9' },
+  { image: '/images/wins/win-50k-65k.jpeg', caption: 'Charging 50K – 65K / client', highlight: '50K – 65K', sortAmount: 65, alt: 'Coach win screenshot – 50K to 65K client' },
+  { image: '/images/wins/win-95k.jpeg', caption: 'Charging 95K / client', highlight: '95K', sortAmount: 95, alt: 'Coach win screenshot – 95K client' },
+  { image: '/images/wins/win-90k.jpeg', caption: 'Charging 90K / client', highlight: '90K', sortAmount: 90, alt: 'Coach win screenshot – 90K client' },
+  { image: '/images/wins/win-1-lakh.jpeg', caption: 'Charging 1 Lakh / client', highlight: '1 Lakh', sortAmount: 100, alt: 'Coach win screenshot – 1 Lakh client' },
 ];
 export const videoLinks: { videoId: string; caption: string }[] = [
   { videoId: '7Na16xwAzgA', caption: 'A Doctor by Degree, Traveler at Heart — Living Her Ex-Corporate Dreamy Freedom Life & Earned 15 Lakh as a Life Coach' },
