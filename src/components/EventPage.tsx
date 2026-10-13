@@ -31,6 +31,7 @@ import {
   takeawaysHeading,
   takeaways,
   takeawaysClosingLine,
+  totalValueLine,
   beforeAfterHeading,
   beforeItems,
   afterItems,
@@ -282,10 +283,16 @@ export default function EventPage() {
                           {item.description}
                         </p>
                       </div>
+                      <span className="mt-auto self-start text-sm font-semibold text-[#D4AF37] bg-[#D4AF37]/10 border border-[#D4AF37]/30 rounded-full px-3 py-1">
+                        {item.worth}
+                      </span>
                     </div>
                   ))}
                 </div>
                 <div className="mt-10 text-center">
+                  <p className="text-xl sm:text-2xl font-bold text-[#D4AF37] mb-8 mt-4">
+                    {totalValueLine}
+                  </p>
                   <p className="text-sm sm:text-base text-slate-400 mb-3">
                     You don't leave with more information.
                   </p>

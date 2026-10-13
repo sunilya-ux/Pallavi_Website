@@ -45,17 +45,18 @@ export const schedule: ScheduleItem[] = [
   { time: '5:30 – 6:00 PM', title: 'Celebrate • Connect • Next Level', description: 'Celebrations, Q&A, networking and your Coach Accelerator Goodie Bag — packed with resources to help you show up and grow like a businesswoman.' },
 ];
 
-export type Takeaway = { title: string; description: string };
+export type Takeaway = { title: string; description: string; worth: string };
 export const takeawaysHeading = "By the End of the Day, You'll Have:";
 export const takeaways: Takeaway[] = [
-  { title: 'A Coaching Business Blueprint', description: 'Niche + Ideal Client + Positioning + Offer Direction' },
-  { title: 'An AI-Powered Business System', description: 'AI tools to accelerate your branding, marketing & business execution' },
-  { title: 'A Client Acquisition Roadmap', description: 'A practical system to move from visibility to conversations to clients' },
-  { title: '30 Days of Content Ready to Go', description: 'Hooks + ideas + AI-assisted content — created and started LIVE' },
-  { title: 'A Professional Coach Brand', description: 'HD brand photos + personal branding assets to show up professionally' },
-  { title: 'Your Next-Level Growth Roadmap', description: "Your next moves mapped out — whether you're starting, restarting or ready to scale" },
+  { title: 'A Coaching Business Blueprint', description: 'Niche + Ideal Client + Positioning + Offer Direction', worth: 'Worth ₹20K' },
+  { title: 'An AI-Powered Business System', description: 'AI tools to accelerate your branding, marketing & business execution', worth: 'Worth ₹1 Lakh' },
+  { title: 'A Client Acquisition Roadmap', description: 'A practical system to move from visibility to conversations to clients', worth: 'Worth ₹20K' },
+  { title: '30 Days of Content Ready to Go', description: 'Hooks + ideas + AI-assisted content — created and started LIVE', worth: 'Worth ₹50K' },
+  { title: 'A Professional Coach Brand', description: 'HD brand photos + personal branding assets to show up professionally', worth: 'Worth ₹20K' },
+  { title: 'Your Next-Level Growth Roadmap', description: "Your next moves mapped out — whether you're starting, restarting or ready to scale", worth: 'Priceless' },
 ];
 export const takeawaysClosingLine = "You don't leave with more information. You leave with BUSINESS ASSETS, STRATEGY & ACTION READY TO EXECUTE.";
+export const totalValueLine = 'Total Value: ₹2,10,000+';
 
 export const beforeAfterHeading = "Here's What Changes After This One Day";
 export const beforeItems = [
