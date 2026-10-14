@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { ArrowLeft, Star, Check, Loader2, Copy, RefreshCw, Download } from 'lucide-react';
 import type { CareerOption } from './BybPassionAnalysis';
+import HighlightCovers from './HighlightCovers';
 
 interface NicheClarityProps {
   careerOptions: CareerOption[];
@@ -774,6 +775,8 @@ export default function NicheClarity({ careerOptions, recommendedName, onBack }:
               ))}
             </div>
           </div>
+
+          <HighlightCovers palette={brandKit.brand_colors.palette} />
 
           {/* PDF error */}
           {pdfError && (
