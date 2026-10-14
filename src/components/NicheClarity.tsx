@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { ArrowLeft, Star, Check, Loader2, Copy, RefreshCw, Download } from 'lucide-react';
 import type { CareerOption } from './BybPassionAnalysis';
-import HighlightCovers from './HighlightCovers';
 
 interface NicheClarityProps {
   careerOptions: CareerOption[];
@@ -69,7 +68,6 @@ interface BrandKit {
     personality: string;
     palette: { role: string; name: string; hex: string; meaning: string }[];
   };
-  highlights: { use_for: string; icon: string }[];
 }
 
 const SPINNER_MESSAGES = [
@@ -777,7 +775,6 @@ export default function NicheClarity({ careerOptions, recommendedName, onBack }:
             </div>
           </div>
 
-          <HighlightCovers palette={brandKit.brand_colors.palette} highlights={brandKit.highlights} />
 
           {/* PDF error */}
           {pdfError && (
