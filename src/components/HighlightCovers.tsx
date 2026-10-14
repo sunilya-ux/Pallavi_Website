@@ -2,12 +2,19 @@ import { useEffect, useRef, useState } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import type { LucideIcon } from 'lucide-react';
 import {
+  Baby,
   BookOpen,
+  Brain,
+  Briefcase,
   CalendarHeart,
+  Dumbbell,
+  Flower2,
+  Gem,
   GraduationCap,
   Handshake,
   Heart,
   HelpCircle,
+  Home,
   Leaf,
   MessageSquareQuote,
   MonitorPlay,
@@ -15,8 +22,11 @@ import {
   Plane,
   ShoppingBag,
   Signpost,
+  Smile,
   Sparkles,
+  Star,
   Sunrise,
+  Target,
   Trophy,
   TrendingUp,
   UserRound,
@@ -30,135 +40,157 @@ export interface HighlightPaletteItem {
   hex: string;
 }
 
+export interface HighlightItem {
+  use_for: string;
+  icon: string;
+}
+
 interface HighlightCoversProps {
   palette: HighlightPaletteItem[];
+  highlights: HighlightItem[];
 }
 
-interface HighlightRow {
-  id: number;
-  name: string;
-  iconName: string;
-  manuallySelected: boolean;
+const ICONS: Record<string, LucideIcon> = {
+  Signpost,
+  UserRound,
+  MessageSquareQuote,
+  Trophy,
+  Handshake,
+  GraduationCap,
+  MonitorPlay,
+  Sunrise,
+  ShoppingBag,
+  Phone,
+  HelpCircle,
+  CalendarHeart,
+  Heart,
+  Leaf,
+  TrendingUp,
+  Users,
+  Plane,
+  Utensils,
+  BookOpen,
+  Briefcase,
+  Dumbbell,
+  Brain,
+  Flower2,
+  Sparkles,
+  Star,
+  Gem,
+  Home,
+  Baby,
+  Smile,
+  Target,
+};
+
+const FALLBACK_ICON = 'Sparkles';
+
+interface CoverColors {
+  primary: string;
+  secondary: string;
+  accent: string;
+  background: string;
+  text: string;
 }
 
-interface IconOption {
-  name: string;
-  label: string;
-  icon: LucideIcon;
+function validHex(value: string | undefined, fallback: string): string {
+  return value && /^#[0-9a-f]{6}$/i.test(value) ? value : fallback;
 }
 
-const ICON_OPTIONS: IconOption[] = [
-  { name: 'Signpost', label: 'Start here', icon: Signpost },
-  { name: 'UserRound', label: 'About me', icon: UserRound },
-  { name: 'MessageSquareQuote', label: 'Testimonials', icon: MessageSquareQuote },
-  { name: 'Trophy', label: 'Wins', icon: Trophy },
-  { name: 'Handshake', label: 'Work with me', icon: Handshake },
-  { name: 'GraduationCap', label: 'Learning', icon: GraduationCap },
-  { name: 'MonitorPlay', label: 'Video', icon: MonitorPlay },
-  { name: 'Sunrise', label: 'Lifestyle', icon: Sunrise },
-  { name: 'ShoppingBag', label: 'Products', icon: ShoppingBag },
-  { name: 'Phone', label: 'Contact', icon: Phone },
-  { name: 'HelpCircle', label: 'FAQ', icon: HelpCircle },
-  { name: 'CalendarHeart', label: 'Events', icon: CalendarHeart },
-  { name: 'Heart', label: 'Family', icon: Heart },
-  { name: 'Leaf', label: 'Wellness', icon: Leaf },
-  { name: 'TrendingUp', label: 'Money', icon: TrendingUp },
-  { name: 'Users', label: 'Community', icon: Users },
-  { name: 'Plane', label: 'Travel', icon: Plane },
-  { name: 'Utensils', label: 'Food', icon: Utensils },
-  { name: 'BookOpen', label: 'Books', icon: BookOpen },
-  { name: 'Sparkles', label: 'Sparkles', icon: Sparkles },
-];
+function paletteColor(
+  palette: HighlightPaletteItem[],
+  role: string,
+  position: number,
+  fallback: string,
+): string {
+  const roleMatch = palette.find((item) => item.role.trim().toLowerCase() === role.toLowerCase());
+  return validHex(roleMatch?.hex || palette[position]?.hex, fallback);
+}
 
-const KEYWORD_MATCHES: Array<{ keywords: string[]; iconName: string }> = [
-  { keywords: ['start', 'begin', 'welcome'], iconName: 'Signpost' },
-  { keywords: ['about', 'me', 'story', 'who'], iconName: 'UserRound' },
-  { keywords: ['testimonial', 'review', 'feedback', 'love'], iconName: 'MessageSquareQuote' },
-  { keywords: ['win', 'result', 'earning', 'success', 'client'], iconName: 'Trophy' },
-  { keywords: ['work', 'service', 'offer', 'program', 'coach'], iconName: 'Handshake' },
-  { keywords: ['free', 'training', 'class', 'learn', 'course', 'tips'], iconName: 'GraduationCap' },
-  { keywords: ['video', 'live', 'reel'], iconName: 'MonitorPlay' },
-  { keywords: ['life', 'day', 'lifestyle', 'journey'], iconName: 'Sunrise' },
-  { keywords: ['price', 'shop', 'product', 'buy'], iconName: 'ShoppingBag' },
-  { keywords: ['contact', 'call', 'book', 'dm'], iconName: 'Phone' },
-  { keywords: ['faq', 'question', 'ask'], iconName: 'HelpCircle' },
-  { keywords: ['event', 'workshop', 'seminar'], iconName: 'CalendarHeart' },
-  { keywords: ['family', 'kids', 'parent', 'mom'], iconName: 'Heart' },
-  { keywords: ['health', 'fitness', 'wellness', 'yoga'], iconName: 'Leaf' },
-  { keywords: ['money', 'finance', 'business'], iconName: 'TrendingUp' },
-  { keywords: ['community', 'group', 'team'], iconName: 'Users' },
-  { keywords: ['travel'], iconName: 'Plane' },
-  { keywords: ['food', 'recipe'], iconName: 'Utensils' },
-  { keywords: ['book', 'read', 'blog'], iconName: 'BookOpen' },
-];
-
-const PLACEHOLDERS = [
-  'e.g. Start Here',
-  'e.g. About Me',
-  'e.g. Testimonials',
-  'e.g. Work With Me',
-  'e.g. Free Tips',
-];
-
-const INITIAL_ROWS: HighlightRow[] = PLACEHOLDERS.map((_, index) => ({
-  id: index + 1,
-  name: '',
-  iconName: 'Sparkles',
-  manuallySelected: false,
-}));
+function mixColor(hex: string, target: string, amount: number): string {
+  const value = hex.slice(1);
+  const targetValue = target.slice(1);
+  const red = Number.parseInt(value.slice(0, 2), 16);
+  const green = Number.parseInt(value.slice(2, 4), 16);
+  const blue = Number.parseInt(value.slice(4, 6), 16);
+  const targetRed = Number.parseInt(targetValue.slice(0, 2), 16);
+  const targetGreen = Number.parseInt(targetValue.slice(2, 4), 16);
+  const targetBlue = Number.parseInt(targetValue.slice(4, 6), 16);
+  const mix = (channel: number, targetChannel: number) => Math.round(channel + (targetChannel - channel) * amount);
+  return `#${[mix(red, targetRed), mix(green, targetGreen), mix(blue, targetBlue)].map((channel) => channel.toString(16).padStart(2, '0')).join('')}`;
+}
 
 function getIcon(iconName: string): LucideIcon {
-  return ICON_OPTIONS.find((option) => option.name === iconName)?.icon || Sparkles;
-}
-
-function getAutoIconName(name: string): string {
-  const normalizedName = name.toLowerCase();
-  const match = KEYWORD_MATCHES.find(({ keywords }) =>
-    keywords.some((keyword) => normalizedName.includes(keyword)),
-  );
-  return match?.iconName || 'Sparkles';
-}
-
-function getPaletteColor(palette: HighlightPaletteItem[], role: string, fallbackIndex: number, fallback: string): string {
-  const matchingColor = palette.find((item) => item.role.trim().toLowerCase() === role.toLowerCase());
-  const fallbackColor = palette[fallbackIndex];
-  const value = matchingColor?.hex || fallbackColor?.hex || fallback;
-  return /^#[0-9a-f]{6}$/i.test(value) ? value : fallback;
+  return ICONS[iconName] || ICONS[FALLBACK_ICON];
 }
 
 function CoverSvg({
-  iconName,
-  rowIndex,
+  item,
+  index,
   colors,
 }: {
-  iconName: string;
-  rowIndex: number;
-  colors: { primary: string; secondary: string; accent: string; background: string; text: string };
+  item: HighlightItem;
+  index: number;
+  colors: CoverColors;
 }) {
-  const Icon = getIcon(iconName);
-  const isDark = rowIndex % 2 === 0;
-  const gradientId = `highlight-gradient-${rowIndex}`;
-  const edgeColor = isDark ? colors.primary : colors.secondary;
+  const Icon = getIcon(item.icon);
+  const isDark = index % 2 === 0;
+  const accentLight = mixColor(colors.accent, '#ffffff', 0.4);
+  const accentDark = mixColor(colors.accent, '#000000', 0.3);
+  const primaryLight = mixColor(colors.primary, '#ffffff', 0.12);
+  const primaryDark = mixColor(colors.primary, '#000000', 0.18);
+  const secondaryLight = mixColor(colors.background, colors.secondary, 0.12);
+  const waveColor = isDark ? mixColor(colors.primary, '#ffffff', 0.12) : mixColor(colors.background, colors.secondary, 0.25);
+  const gradientId = `highlight-inner-${index}`;
+  const ringGradientId = `highlight-ring-${index}`;
+  const clipId = `highlight-clip-${index}`;
 
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" role="img" aria-hidden="true">
       <defs>
-        <radialGradient id={gradientId} cx="50%" cy="42%" r="70%">
-          <stop offset="0%" stopColor={isDark ? colors.primary : colors.background} />
-          <stop offset="100%" stopColor={edgeColor} />
+        <linearGradient id={ringGradientId} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={accentLight} />
+          <stop offset="38%" stopColor={colors.accent} />
+          <stop offset="70%" stopColor={accentDark} />
+          <stop offset="100%" stopColor={accentLight} />
+        </linearGradient>
+        <radialGradient id={gradientId} cx="50%" cy="38%" r="72%">
+          {isDark ? (
+            <>
+              <stop offset="0%" stopColor={primaryLight} />
+              <stop offset="100%" stopColor={primaryDark} />
+            </>
+          ) : (
+            <>
+              <stop offset="0%" stopColor={colors.background} />
+              <stop offset="100%" stopColor={secondaryLight} />
+            </>
+          )}
         </radialGradient>
+        <clipPath id={clipId}>
+          <circle cx="540" cy="540" r="454" />
+        </clipPath>
       </defs>
-      <circle cx="540" cy="540" r="500" fill={`url(#${gradientId})`} stroke={colors.accent} strokeWidth="28" />
+      <circle cx="540" cy="540" r="500" fill={`url(#${gradientId})`} stroke={`url(#${ringGradientId})`} strokeWidth="34" />
+      <circle cx="540" cy="540" r="468" fill="none" stroke={accentLight} strokeWidth="2" opacity="0.85" />
+      <g clipPath={`url(#${clipId})`} opacity="0.2" fill={waveColor}>
+        <path d="M40 820C220 720 350 790 540 830c190 40 320 110 500-10v310H40z" />
+      </g>
       <g fill={colors.accent} opacity="0.9">
-        <path d="M820 180l8 24 24 8-24 8-8 24-8-24-24-8 24-8z" />
-        <path d="M890 250l5 15 15 5-15 5-5 15-5-15-15-5 15-5z" />
-        <path d="M770 245l5 15 15 5-15 5-5 15-5-15-15-5 15-5z" />
+        <path d="M790 230l8 25 25 8-25 8-8 25-8-25-25-8 25-8z" />
+        <path d="M875 285l6 18 18 6-18 6-6 18-6-18-18-6 18-6z" />
+        <path d="M735 255l5 15 15 5-15 5-5 15-5-15-15-5 15-5z" />
+      </g>
+      <g stroke={accentLight} strokeWidth="9" strokeLinecap="round" opacity="0.75">
+        <path d="M515 250v-34" />
+        <path d="M580 250l10-32" />
+        <path d="M450 270l-17-28" />
       </g>
       <Icon
-        x="302"
-        y="302"
-        width="476"
-        height="476"
+        x="315"
+        y="285"
+        width="450"
+        height="450"
         color={isDark ? colors.background : colors.primary}
         strokeWidth={1.6}
         strokeLinecap="round"
@@ -168,29 +200,21 @@ function CoverSvg({
   );
 }
 
-function slugify(name: string): string {
-  return name
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '') || 'cover';
+function createColors(palette: HighlightPaletteItem[]): CoverColors {
+  return {
+    primary: paletteColor(palette, 'Primary', 0, '#0f766e'),
+    secondary: paletteColor(palette, 'Secondary', 1, '#14b8a6'),
+    accent: paletteColor(palette, 'Accent', 2, '#f59e0b'),
+    background: paletteColor(palette, 'Background', 3, '#f8fafc'),
+    text: paletteColor(palette, 'Text', 4, '#0f172a'),
+  };
 }
 
-export default function HighlightCovers({ palette }: HighlightCoversProps) {
-  const [rows, setRows] = useState<HighlightRow[]>(INITIAL_ROWS);
-  const [openPickerId, setOpenPickerId] = useState<number | null>(null);
+export default function HighlightCovers({ palette, highlights }: HighlightCoversProps) {
   const [downloadStatus, setDownloadStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const statusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const colors = {
-    primary: getPaletteColor(palette, 'Primary', 0, '#0f766e'),
-    secondary: getPaletteColor(palette, 'Secondary', 1, '#14b8a6'),
-    accent: getPaletteColor(palette, 'Accent', 2, '#f59e0b'),
-    background: getPaletteColor(palette, 'Background', 3, '#f8fafc'),
-    text: getPaletteColor(palette, 'Text', 4, '#0f172a'),
-  };
-
-  const namedRows = rows.filter((row) => row.name.trim());
+  const colors = createColors(palette);
+  const covers = highlights.slice(0, 7);
 
   useEffect(() => () => {
     if (statusTimerRef.current) clearTimeout(statusTimerRef.current);
@@ -202,43 +226,11 @@ export default function HighlightCovers({ palette }: HighlightCoversProps) {
     statusTimerRef.current = setTimeout(() => setDownloadStatus('idle'), 2200);
   };
 
-  const updateName = (id: number, name: string) => {
-    setRows((currentRows) => currentRows.map((row) => {
-      if (row.id !== id) return row;
-      return {
-        ...row,
-        name,
-        iconName: row.manuallySelected ? row.iconName : getAutoIconName(name),
-      };
-    }));
-  };
-
-  const chooseIcon = (id: number, iconName: string) => {
-    setRows((currentRows) => currentRows.map((row) =>
-      row.id === id ? { ...row, iconName, manuallySelected: true } : row,
-    ));
-    setOpenPickerId(null);
-  };
-
-  const removeRow = (id: number) => {
-    setRows((currentRows) => currentRows.filter((row) => row.id !== id));
-    setOpenPickerId(null);
-  };
-
-  const addRow = () => {
-    setRows((currentRows) => currentRows.length >= 10
-      ? currentRows
-      : [...currentRows, { id: Date.now(), name: '', iconName: 'Sparkles', manuallySelected: false }]);
-  };
-
-  const downloadCover = async (row: HighlightRow, rowIndex: number) => {
+  const downloadCover = async (item: HighlightItem, index: number) => {
     try {
-      const svgMarkup = renderToStaticMarkup(
-        <CoverSvg iconName={row.iconName} rowIndex={rowIndex} colors={colors} />,
-      );
+      const svgMarkup = renderToStaticMarkup(<CoverSvg item={item} index={index} colors={colors} />);
       const image = new Image();
-      const imageUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgMarkup)}`;
-      image.src = imageUrl;
+      image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgMarkup)}`;
       await new Promise<void>((resolve, reject) => {
         image.onload = () => resolve();
         image.onerror = () => reject(new Error('image'));
@@ -250,15 +242,15 @@ export default function HighlightCovers({ palette }: HighlightCoversProps) {
       const context = canvas.getContext('2d');
       if (!context) throw new Error('canvas');
       context.fillStyle = colors.background;
-      context.fillRect(0, 0, canvas.width, canvas.height);
-      context.drawImage(image, 0, (canvas.height - 1080) / 2, 1080, 1080);
+      context.fillRect(0, 0, 1080, 1920);
+      context.drawImage(image, 0, 420, 1080, 1080);
 
       const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
       if (!blob) throw new Error('blob');
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `highlight-${slugify(row.name)}.png`;
+      link.download = `highlight-${index + 1}.png`;
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -270,9 +262,9 @@ export default function HighlightCovers({ palette }: HighlightCoversProps) {
   };
 
   const downloadAll = async () => {
-    for (let index = 0; index < namedRows.length; index += 1) {
-      await downloadCover(namedRows[index], rows.indexOf(namedRows[index]));
-      if (index < namedRows.length - 1) {
+    for (let index = 0; index < covers.length; index += 1) {
+      await downloadCover(covers[index], index);
+      if (index < covers.length - 1) {
         await new Promise<void>((resolve) => setTimeout(resolve, 300));
       }
     }
@@ -281,117 +273,48 @@ export default function HighlightCovers({ palette }: HighlightCoversProps) {
   return (
     <section className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8">
       <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2">📸 Your Instagram Highlight Covers</h3>
-      <p className="text-sm text-slate-600 mb-5">
-        Type the names of your Instagram highlights. We&apos;ll create matching covers in your brand colours.
+      <p className="text-sm text-slate-600 mb-6">
+        Made in your brand colours for your niche. Tap a cover to download it, then add your own highlight name in Instagram.
       </p>
 
-      <div className="space-y-3">
-        {rows.map((row, index) => (
-          <div key={row.id} className="flex items-start gap-2">
-            <div className="relative flex-1">
-              <input
-                type="text"
-                maxLength={20}
-                value={row.name}
-                onChange={(event) => updateName(row.id, event.target.value)}
-                placeholder={PLACEHOLDERS[index] || 'e.g. My Highlights'}
-                className="w-full min-h-11 px-4 py-2.5 pr-12 rounded-lg border border-slate-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all text-sm text-slate-900 placeholder:text-slate-400"
-              />
-              <button
-                type="button"
-                onClick={() => setOpenPickerId(openPickerId === row.id ? null : row.id)}
-                aria-label={`Choose icon for ${row.name || `highlight ${index + 1}`}`}
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-teal-50 text-teal-700 flex items-center justify-center hover:bg-teal-100 transition-colors"
-              >
-                {(() => {
-                  const Icon = getIcon(row.iconName);
-                  return <Icon className="w-4 h-4" />;
-                })()}
-              </button>
-              {openPickerId === row.id && (
-                <div className="absolute z-20 left-0 right-0 top-full mt-2 p-3 rounded-xl bg-white border border-slate-200 shadow-xl">
-                  <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-                    {ICON_OPTIONS.map(({ name, label, icon: Icon }) => (
-                      <button
-                        key={name}
-                        type="button"
-                        title={label}
-                        aria-label={label}
-                        onClick={() => chooseIcon(row.id, name)}
-                        className={`min-h-11 min-w-11 rounded-lg flex items-center justify-center transition-colors ${row.iconName === name ? 'bg-teal-100 text-teal-800 ring-2 ring-teal-400' : 'bg-slate-50 text-slate-600 hover:bg-teal-50 hover:text-teal-700'}`}
-                      >
-                        <Icon className="w-5 h-5" />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-            <button
-              type="button"
-              onClick={() => removeRow(row.id)}
-              aria-label={`Remove ${row.name || `highlight ${index + 1}`}`}
-              className="min-h-11 min-w-11 rounded-lg border border-slate-200 text-slate-400 hover:border-red-200 hover:bg-red-50 hover:text-red-600 transition-colors flex items-center justify-center"
-            >
-              <span aria-hidden="true">✕</span>
-            </button>
-          </div>
-        ))}
-      </div>
-
-      {rows.length < 10 && (
+      <div className="flex items-center justify-between gap-3 mb-5">
+        <h4 className="text-sm font-bold uppercase tracking-wider text-slate-700">Preview</h4>
         <button
           type="button"
-          onClick={addRow}
-          className="mt-4 text-sm font-semibold text-teal-700 hover:text-teal-800 transition-colors"
+          onClick={downloadAll}
+          disabled={covers.length === 0}
+          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-teal-600 text-white text-xs sm:text-sm font-semibold hover:bg-teal-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          + Add another highlight
+          <span aria-hidden="true">⬇</span>
+          Download all covers
         </button>
-      )}
-
-      <div className="mt-8 pt-6 border-t border-slate-200">
-        <div className="flex items-center justify-between gap-3 mb-4">
-          <h4 className="text-sm font-bold uppercase tracking-wider text-slate-700">Preview</h4>
-          <button
-            type="button"
-            onClick={downloadAll}
-            disabled={namedRows.length === 0}
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-teal-600 text-white text-xs sm:text-sm font-semibold hover:bg-teal-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <span aria-hidden="true">⬇</span>
-            Download all covers
-          </button>
-        </div>
-
-        {downloadStatus === 'success' && <p className="text-sm text-teal-700 font-medium mb-3">Downloaded!</p>}
-        {downloadStatus === 'error' && <p className="text-sm text-red-600 font-medium mb-3">Couldn&apos;t download. Please try again.</p>}
-
-        {namedRows.length === 0 ? (
-          <p className="text-sm text-slate-400 text-center py-8">Your covers will appear here as you type.</p>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5 sm:gap-6">
-            {namedRows.map((row) => {
-              const rowIndex = rows.indexOf(row);
-              return (
-                <button
-                  key={row.id}
-                  type="button"
-                  onClick={() => downloadCover(row, rowIndex)}
-                  className="group flex flex-col items-center gap-2 rounded-xl p-2 hover:bg-slate-50 transition-colors"
-                  aria-label={`Download ${row.name} highlight cover`}
-                >
-                  <span className="block w-[90px] h-[90px] sm:w-[110px] sm:h-[110px] rounded-full overflow-hidden shadow-sm group-hover:shadow-md transition-shadow">
-                    <CoverSvg iconName={row.iconName} rowIndex={rowIndex} colors={colors} />
-                  </span>
-                  <span className="text-[11px] font-bold uppercase tracking-wide text-slate-700 text-center break-words max-w-full">
-                    {row.name}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        )}
       </div>
+
+      {downloadStatus === 'success' && <p className="text-sm text-teal-700 font-medium mb-3">Downloaded!</p>}
+      {downloadStatus === 'error' && <p className="text-sm text-red-600 font-medium mb-3">Couldn&apos;t download. Please try again.</p>}
+
+      {covers.length === 0 ? (
+        <p className="text-sm text-slate-400 text-center py-8">Your covers will appear here.</p>
+      ) : (
+        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-x-3 gap-y-5 sm:gap-x-4 sm:gap-y-6 items-start">
+          {covers.map((item, index) => (
+            <button
+              key={`${item.use_for}-${index}`}
+              type="button"
+              onClick={() => downloadCover(item, index)}
+              className="group flex min-w-0 flex-col items-center gap-2 rounded-xl p-1.5 hover:bg-slate-50 transition-colors"
+              aria-label={`Download highlight ${index + 1}`}
+            >
+              <span className="block w-[90px] h-[90px] lg:w-[120px] lg:h-[120px] rounded-full overflow-hidden shadow-[0_8px_18px_rgba(15,23,42,0.16)] group-hover:shadow-[0_10px_22px_rgba(15,23,42,0.24)] transition-shadow">
+                <CoverSvg item={item} index={index} colors={colors} />
+              </span>
+              <span className="text-[10px] sm:text-[11px] leading-snug text-center break-words max-w-full" style={{ color: colors.text }}>
+                Use for: {item.use_for}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

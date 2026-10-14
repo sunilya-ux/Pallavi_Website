@@ -32,6 +32,21 @@ interface Answers {
 
 const hexRegex = /^#[0-9A-Fa-f]{6}$/;
 const DEFAULT_ROLES = ['Primary', 'Secondary', 'Accent', 'Background', 'Text'];
+const HIGHLIGHT_ICONS = [
+  'Signpost', 'UserRound', 'MessageSquareQuote', 'Trophy', 'Handshake', 'GraduationCap',
+  'MonitorPlay', 'Sunrise', 'ShoppingBag', 'Phone', 'HelpCircle', 'CalendarHeart',
+  'Heart', 'Leaf', 'TrendingUp', 'Users', 'Plane', 'Utensils', 'BookOpen', 'Briefcase',
+  'Dumbbell', 'Brain', 'Flower2', 'Sparkles', 'Star', 'Gem', 'Home', 'Baby', 'Smile', 'Target',
+];
+const DEFAULT_HIGHLIGHTS = [
+  { use_for: 'Start Here', icon: 'Signpost' },
+  { use_for: 'About Me', icon: 'UserRound' },
+  { use_for: 'Testimonials', icon: 'MessageSquareQuote' },
+  { use_for: 'Client Wins', icon: 'Trophy' },
+  { use_for: 'Work With Me', icon: 'Handshake' },
+  { use_for: 'Free Tips', icon: 'GraduationCap' },
+  { use_for: 'My Life', icon: 'Sunrise' },
+];
 
 function buildUserSummary(niche: string, answers: Answers): string {
   const lines: string[] = [];
@@ -83,9 +98,10 @@ const systemPrompt = `You are an expert Instagram brand strategist for coaches. 
 3. instagram.keywords: exactly 5 short search keywords their audience would type.
 4. brand_colors.personality: one sentence describing the brand feel.
 5. brand_colors.palette: exactly 5 colours with roles Primary, Secondary, Accent, Background, Text. The 5 colours must form ONE harmonious, professional palette suitable for a premium coaching brand (elegant, trustworthy, modern). Avoid combining several bright saturated colours together. Primary should be confident but not neon. Secondary should complement Primary (analogous or soft complementary). Accent may be brighter but used sparingly. Background must be a very light, warm or neutral tone. Text must be a dark colour with strong contrast on Background. Each colour's "name" must honestly describe the actual hex (e.g. do not call a coral colour "pink"). Each has: role, name, hex (format #RRGGBB), meaning (one short sentence on why it suits this niche).
+6. highlights: exactly 7 Instagram highlight covers that suit this person's niche and audience. Each item must have a short "use_for" highlight purpose (maximum 20 characters, adapted to the niche) and one "icon" chosen only from this list: Signpost, UserRound, MessageSquareQuote, Trophy, Handshake, GraduationCap, MonitorPlay, Sunrise, ShoppingBag, Phone, HelpCircle, CalendarHeart, Heart, Leaf, TrendingUp, Users, Plane, Utensils, BookOpen, Briefcase, Dumbbell, Brain, Flower2, Sparkles, Star, Gem, Home, Baby, Smile, Target. The first item must be a start-here or welcome type highlight. Choose icons that clearly match the niche.
 
 Return ONLY valid JSON with exactly this structure:
-{ "instagram": { "name_field": "", "bio_options": ["", "", ""], "keywords": ["", "", "", "", ""] }, "brand_colors": { "personality": "", "palette": [ { "role": "", "name": "", "hex": "", "meaning": "" } ] } }`;
+{ "instagram": { "name_field": "", "bio_options": ["", "", ""], "keywords": ["", "", "", "", ""] }, "brand_colors": { "personality": "", "palette": [ { "role": "", "name": "", "hex": "", "meaning": "" } ] }, "highlights": [ { "use_for": "", "icon": "" } ] }`;
 
 // ——— HARD checks: only these cause a retry ———
 function hardCheck(data: any): { ok: boolean; reason: string } {
@@ -185,8 +201,24 @@ function softFix(data: any): any {
     ? bc.personality
     : 'A warm, confident and professional brand.';
 
+  const highlights = (Array.isArray(data.highlights) ? data.highlights : [])
+    .slice(0, 7)
+    .filter((item: any) => item && typeof item === 'object')
+    .map((item: any, index: number) => ({
+      use_for: typeof item.use_for === 'string' && item.use_for.trim().length > 0
+        ? trimAtWord(item.use_for.trim(), 20)
+        : DEFAULT_HIGHLIGHTS[index].use_for,
+      icon: typeof item.icon === 'string' && HIGHLIGHT_ICONS.includes(item.icon)
+        ? item.icon
+        : 'Sparkles',
+    }));
+
+  while (highlights.length < 7) {
+    highlights.push(DEFAULT_HIGHLIGHTS[highlights.length]);
+  }
+
   return {
-    instagram: {
+    instagram: { 
       name_field: nameField,
       bio_options: bios,
       keywords,
@@ -195,6 +227,7 @@ function softFix(data: any): any {
       personality,
       palette,
     },
+    highlights,
   };
 }
 
