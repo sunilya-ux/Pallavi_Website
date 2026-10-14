@@ -116,7 +116,7 @@ export const winCards: WinCard[] = [
   { image: '/images/testimonials/testimonial-3.jpg', sortAmount: 0, alt: 'Coach win testimonial 3' },
   { image: '/images/testimonials/testimonial-4.jpg', sortAmount: 0, alt: 'Coach win testimonial 4' },
   { image: '/images/testimonials/testimonial-5.jpg', sortAmount: 0, alt: 'Coach win testimonial 5' },
-  { image: '/images/testimonials/testimonial-6.jpg', sortAmount: 0, alt: 'Coach win testimonial 6' },
+  { image: '/images/wins/win-55k-replacement.png', sortAmount: 0, alt: 'Coach win screenshot – 55K client' },
   { image: '/images/testimonials/testimonial-7.jpg', sortAmount: 0, alt: 'Coach win testimonial 7' },
   { image: '/images/testimonials/testimonial-8.jpg', sortAmount: 0, alt: 'Coach win testimonial 8' },
   { image: '/images/testimonials/testimonial-9.jpg', sortAmount: 0, alt: 'Coach win testimonial 9' },
