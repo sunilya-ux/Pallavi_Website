@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, Star, Check, Loader2, Copy, RefreshCw, Download } from 'lucide-react';
+import { ArrowLeft, Star, Check, Loader2, Copy, RefreshCw, Download, ArrowRight } from 'lucide-react';
 import type { CareerOption } from './BybPassionAnalysis';
+import ProgramBuilder from './ProgramBuilder';
 
 interface NicheClarityProps {
   careerOptions: CareerOption[];
@@ -104,6 +105,7 @@ export default function NicheClarity({ careerOptions, recommendedName, onBack }:
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [downloadingPDF, setDownloadingPDF] = useState(false);
   const [pdfError, setPdfError] = useState(false);
+  const [showProgram, setShowProgram] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
   const spinnerTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -345,6 +347,18 @@ export default function NicheClarity({ careerOptions, recommendedName, onBack }:
       </>
     );
   };
+
+  if (showProgram) {
+    return (
+      <ProgramBuilder
+        niche={selectedNicheName}
+        who={answers.nicheAudience.trim()}
+        struggle={answers.nicheProblem.trim()}
+        result={answers.nicheAchievement.trim()}
+        onBack={() => setShowProgram(false)}
+      />
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
@@ -813,6 +827,16 @@ export default function NicheClarity({ careerOptions, recommendedName, onBack }:
               )}
             </button>
           </div>
+
+          {brandKit && (
+            <button
+              onClick={() => setShowProgram(true)}
+              className="w-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-4 rounded-xl font-semibold hover:shadow-lg hover:shadow-teal-500/30 transition-all duration-300 flex items-center justify-center gap-2 mt-3"
+            >
+              Proceed to Program
+              <ArrowRight className="w-5 h-5" />
+            </button>
+          )}
         </div>
       )}
     </div>
