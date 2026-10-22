@@ -44,6 +44,25 @@ export const schedule: ScheduleItem[] = [
   { time: '5:30 – 6:00 PM', title: 'Celebrate • Connect • Next Level', description: 'Celebrations, Q&A, networking and your Coach Accelerator Goodie Bag — packed with resources to help you show up and grow like a businesswoman.' },
 ];
 
+export const bonusesSection = {
+  title: "Exclusive Bonuses & Guest Experts",
+  subtitle: "Included with your seat, at no extra cost",
+  bonusesHeading: "Exclusive Bonuses",
+  bonuses: [
+    "The One Post That Keeps Generating Lakhs, Again and Again",
+    "The Instagram Story That Made ₹4.5 Lakh in a Single Day",
+    "How I Cracked ₹10 Lakh in Just 1 Day",
+    "My Profitable, Sustainable ₹0 → ₹1 Crore Coaching Roadmap",
+  ],
+  speakersHeading: "Guest Trainers & Speakers",
+  speakers: [
+    "Personality Enhancement for Coaches & Business Owners",
+    "Building a Coaching Venture for a Social Cause",
+    "A College Placement Head on the Scope of Coaching in Colleges",
+  ],
+  speakersMore: "…and much more",
+};
+
 export type Takeaway = { title: string; description: string; worth: string };
 export const takeawaysHeading = "By the End of the Day, You'll Have:";
 export const takeaways: Takeaway[] = [
