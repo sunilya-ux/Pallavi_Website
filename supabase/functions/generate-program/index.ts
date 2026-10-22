@@ -26,6 +26,15 @@ NAMING STYLE (very important) — names must be short (2–7 words), emotional, 
 "Basics Of Mathematics & Focused Mind", "Getaway from Anxious to Assured in Mathematics", "3 Point Pro-Res Video Setup", "Instant Video Topic Generator", "Magic Scripting Formula", "40 Instantly Clickable Video Titles", "DIY ₹3300 Studio", "Magic EMI Calculator", "Get Super Assertive Quiz", "Viral Video Ideas Cheatsheet", "The Ultimate Guide to [Specific Topic]", "The Step-by-Step Blueprint for [Achieving Desired Result]", and for weight loss: "Fit Into Your Old Dress Again".
 Power words you may use: Magic, Formula, Blueprint, Ultimate, Instant, Secret, Cheatsheet, Code, Shortcut, DIY, numbers. The program name may use a "From [pain] to [result]" or "Getaway from X to Y" style.
 
+Additional module naming rules:
+- Module names must describe a CONCRETE, visible result or a specific tool — something the reader can picture. Good: "Fit Into Your Old Dress Again", "Speak Up in the Boardroom Without Shaking", "Ask for the Raise in 5 Sentences", "40 Instantly Clickable Video Titles", "DIY ₹3300 Studio".
+- Bad (do NOT write like this): abstract words with a power word added at the end, e.g. "Spark Your Energy Formula", "Self-Assurance Mastery Blueprint", "Work-Life Harmony Secrets", "Confidence Playbook".
+- Use the audience's own everyday words, not coaching jargon (avoid: mastery, harmony, empowerment, unlock, journey, transformation).
+- Where it fits, include a number, a time frame, or a specific situation (e.g. "in 21 days", "5 sentences", "before 9 AM", "in the Monday meeting").
+- At most ONE of the 4 module names may use a power word like Blueprint/Formula/Secrets/Playbook/Cheatsheet.
+- Each module name max 8 words. The 4 names must feel different from each other in structure.
+- Keep the program name style as it is.
+
 Return ONLY valid JSON:
 { "program_name": "",
   "steps": [ { "title": "", "description": "",
