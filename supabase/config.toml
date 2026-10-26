@@ -57,3 +57,6 @@ verify_jwt = true
 
 [functions.generate-program]
 verify_jwt = true
+
+[functions.generate-program-pdf]
+verify_jwt = true

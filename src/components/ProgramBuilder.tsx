@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, Loader2, RefreshCw, Copy, Check, CheckCircle2, Sparkles } from 'lucide-react';
+import { ArrowLeft, Loader2, RefreshCw, Copy, Check, CheckCircle2, Sparkles, Download } from 'lucide-react';
 
 interface ProgramStep {
   label: string;
@@ -85,6 +85,8 @@ export default function ProgramBuilder({ niche, who, struggle, result, onBack }:
   const [validationMsg, setValidationMsg] = useState(false);
   const [spinnerIdx, setSpinnerIdx] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const [pdfError, setPdfError] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
   const spinnerTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -181,6 +183,43 @@ export default function ProgramBuilder({ niche, who, struggle, result, onBack }:
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch { /* ignore */ }
+  };
+
+  const handleDownloadPDF = async () => {
+    if (!program || pdfLoading) return;
+    setPdfLoading(true);
+    setPdfError(false);
+    try {
+      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-program-pdf`;
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ program }),
+      });
+      if (!response.ok) {
+        setPdfError(true);
+        return;
+      }
+      const blob = await response.blob();
+      const disposition = response.headers.get('Content-Disposition') || '';
+      const match = disposition.match(/filename="([^"]+)"/);
+      const fileName = match ? match[1] : 'my-signature-program.pdf';
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch {
+      setPdfError(true);
+    } finally {
+      setPdfLoading(false);
+    }
   };
 
   return (
@@ -354,18 +393,43 @@ export default function ProgramBuilder({ niche, who, struggle, result, onBack }:
           )}
 
           {/* Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col gap-3">
             <button
-              onClick={handleCopy}
-              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-teal-50 text-teal-700 text-sm font-semibold hover:bg-teal-100 transition-colors"
+              onClick={handleDownloadPDF}
+              disabled={pdfLoading}
+              className="w-full bg-gradient-to-r from-teal-500 to-emerald-500 text-white py-4 rounded-xl font-semibold hover:shadow-lg hover:shadow-teal-500/30 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              {copied ? 'Copied!' : '📋 Copy my program'}
+              {pdfLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>Preparing your PDF...</span>
+                </>
+              ) : (
+                <>
+                  <Download className="w-5 h-5" />
+                  <span>Download My Program (PDF)</span>
+                </>
+              )}
             </button>
+
+            {pdfError && (
+              <p className="text-sm text-red-700 text-center">Couldn't create your PDF right now. Please try again in a moment.</p>
+            )}
+
+            <div className="text-center">
+              <button
+                onClick={handleCopy}
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-teal-700 hover:text-teal-800 transition-colors"
+              >
+                {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                {copied ? 'Copied!' : 'or copy the text instead'}
+              </button>
+            </div>
+
             <button
               onClick={handleBuild}
               disabled={building}
-              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white border-2 border-teal-200 text-teal-700 text-sm font-semibold hover:bg-teal-50 transition-all duration-200 disabled:opacity-70"
+              className="w-full bg-white border-2 border-teal-200 text-teal-700 py-3.5 rounded-xl font-semibold hover:bg-teal-50 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-70"
             >
               <RefreshCw className="w-4 h-4" />
               Build again

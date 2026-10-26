@@ -80,6 +80,10 @@
     "generate-youtube-script": {
       "hasChanged": false,
       "hash": "ae953ad29f9302900bae7b33fbc2f3ec0501525f7f3d439144bdba6a0450b723"
+    },
+    "generate-program-pdf": {
+      "hasChanged": false,
+      "hash": "3d65be93bc0288ccaf632171b5e4eab9a7406cc681c57cd0d6bdbd5656bcdace"
     }
   }
 }
