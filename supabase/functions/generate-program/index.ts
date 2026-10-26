@@ -13,35 +13,31 @@ interface ProgramInput {
   result: string;
 }
 
-const systemPrompt = `You are an expert coaching program designer. Using the coach's niche, who they help, their struggle and the desired result, build a 4-module coaching program in 4 stages:
+const systemPrompt = `You are an expert premium coaching-offer designer. Create a complete, sales-ready coaching program offer for this coach.
 
-STAGE 1 — Write exactly 4 steps a person in this audience must take to go from their current situation to the desired result. Each step: short title + one-line description.
-STAGE 2 — DIPICTO: for EACH step, list what this audience will face while taking it: Doubts, Issues, Pains, Irritation/frustration, Challenges, Troubles, Obstacles. One short, specific point for each of the 7 (in the audience's own words, real and emotional).
-STAGE 3 — Turn EACH DIPICTO point into a concrete, result-oriented "How to ..." question (e.g. "How to lose baby weight without strict dieting?", "How to earn your first ₹1 lakh as a coach?").
-STAGE 4 — For each step, choose the ONE most powerful how-to question, and give it ONE catchy module name.
+INTERNAL THINKING (do NOT include in the output): first work out 4 steps the audience must take to reach the result; for each step think through their Doubts, Issues, Pains, Irritations, Challenges, Troubles and Obstacles (DIPICTO); turn these into concrete "How to…" questions; then use the most powerful ones to shape the 4 steps below.
 
-Also create ONE overall program name.
+FORMAT RULE (very important): NEVER mention the program format anywhere — no duration (weeks/months/days), no number of sessions, no "1:1", "private", "group", "live", "online" or "offline". The coach will decide the format herself.
 
-NAMING STYLE (very important) — names must be short (2–7 words), emotional, result-oriented, and paint a picture in the reader's mind. Avoid generic names like "Module 1: Basics" or "Introduction to Fitness". Learn from these examples of great names:
-"Basics Of Mathematics & Focused Mind", "Getaway from Anxious to Assured in Mathematics", "3 Point Pro-Res Video Setup", "Instant Video Topic Generator", "Magic Scripting Formula", "40 Instantly Clickable Video Titles", "DIY ₹3300 Studio", "Magic EMI Calculator", "Get Super Assertive Quiz", "Viral Video Ideas Cheatsheet", "The Ultimate Guide to [Specific Topic]", "The Step-by-Step Blueprint for [Achieving Desired Result]", and for weight loss: "Fit Into Your Old Dress Again".
-Power words you may use: Magic, Formula, Blueprint, Ultimate, Instant, Secret, Cheatsheet, Code, Shortcut, DIY, numbers. The program name may use a "From [pain] to [result]" or "Getaway from X to Y" style.
-
-Additional module naming rules:
-- Module names must describe a CONCRETE, visible result or a specific tool — something the reader can picture. Good: "Fit Into Your Old Dress Again", "Speak Up in the Boardroom Without Shaking", "Ask for the Raise in 5 Sentences", "40 Instantly Clickable Video Titles", "DIY ₹3300 Studio".
-- Bad (do NOT write like this): abstract words with a power word added at the end, e.g. "Spark Your Energy Formula", "Self-Assurance Mastery Blueprint", "Work-Life Harmony Secrets", "Confidence Playbook".
-- Use the audience's own everyday words, not coaching jargon (avoid: mastery, harmony, empowerment, unlock, journey, transformation).
-- Where it fits, include a number, a time frame, or a specific situation (e.g. "in 21 days", "5 sentences", "before 9 AM", "in the Monday meeting").
-- At most ONE of the 4 module names may use a power word like Blueprint/Formula/Secrets/Playbook/Cheatsheet.
-- Each module name max 8 words. The 4 names must feel different from each other in structure.
-- Keep the program name style as it is.
+OUTPUT, written in warm, confident, simple English that the audience would use, specific to this niche (no generic coaching jargon like "unlock your potential", "journey", "empower"):
+1. program_name — short, memorable, ends with ™ (e.g. "The Money Expansion Method™").
+2. tagline — one punchy line (e.g. "Break Through Your Money Ceiling. Own Your Value. Build a Business That Earns More.").
+3. subtitle — one sentence: "A Coaching Experience for [audience] Ready to [result]…" (no duration or format).
+4. core_promise — 1–2 sentences: "Move from [current pain] to [desired result]…".
+5. designed_for — exactly 6 bullets describing who this program is for (their situation, struggles, ambitions).
+6. steps — exactly 4 steps, each with:
+   - label: 2–4 word UPPERCASE theme (e.g. "BREAK THE CEILING", "OWN YOUR VALUE").
+   - title: a long, exciting, result-oriented title ending with ™ that paints a picture, may include a number or rupee figure where it fits (e.g. "Break Free from Your ₹3L–₹5L Income Ceiling & Unlock Your Next Level of Money™", "Charge Premium Prices, Attract Aligned Clients & Get Paid What You're Truly Worth™").
+   - intro: 1–2 sentences starting with "Stop …" then what they will start doing.
+   - imagine: 5–6 bullets completing "Imagine being able to:" — concrete, visible, everyday results.
+   - dream_outcome: one first-person quote from the client, in their own emotional words.
+7. includes — exactly 6 deliverables / tools that make the offer feel premium (e.g. a personal assessment, a personalised pattern map, a personalised roadmap, accountability support, a progress tracker, a toolkit or cheatsheet). Each: title + one-sentence description of what it gives the client. Do NOT mention session counts, duration or delivery format, and do NOT invent named therapy/coaching methods or certifications.
 
 Return ONLY valid JSON:
-{ "program_name": "",
-  "steps": [ { "title": "", "description": "",
-               "dipicto": [ { "type": "Doubts", "point": "", "how_to": "" }, ... 7 items in order Doubts, Issues, Pains, Irritation, Challenges, Troubles, Obstacles ],
-               "module": { "how_to": "", "name": "" } } ] }`;
-
-const DIPICTO_TYPES = ['Doubts', 'Issues', 'Pains', 'Irritation', 'Challenges', 'Troubles', 'Obstacles'];
+{ "program_name": "", "tagline": "", "subtitle": "", "core_promise": "",
+  "designed_for": ["", "", "", "", "", ""],
+  "steps": [ { "label": "", "title": "", "intro": "", "imagine": ["", ""], "dream_outcome": "" } ],
+  "includes": [ { "title": "", "description": "" } ] }`;
 
 function buildUserSummary(input: ProgramInput): string {
   const lines: string[] = [];
@@ -50,14 +46,6 @@ function buildUserSummary(input: ProgramInput): string {
   lines.push(`Their struggle: ${input.struggle.trim()}`);
   lines.push(`Desired result: ${input.result.trim()}`);
   return lines.join('\n');
-}
-
-function trimAtWord(text: string, max: number): string {
-  if (text.length <= max) return text;
-  const cut = text.slice(0, max);
-  const lastSpace = cut.lastIndexOf(' ');
-  if (lastSpace > 0) return cut.slice(0, lastSpace).trimEnd();
-  return cut.trimEnd();
 }
 
 function hardCheck(data: any): { ok: boolean; reason: string } {
@@ -74,15 +62,16 @@ function hardCheck(data: any): { ok: boolean; reason: string } {
   for (let i = 0; i < 4; i++) {
     const step = data.steps[i];
     if (!step || typeof step !== 'object') return { ok: false, reason: 'incomplete_result' };
+    if (typeof step.label !== 'string' || step.label.trim().length === 0) {
+      return { ok: false, reason: 'incomplete_result' };
+    }
     if (typeof step.title !== 'string' || step.title.trim().length === 0) {
       return { ok: false, reason: 'incomplete_result' };
     }
-    const mod = step.module;
-    if (!mod || typeof mod !== 'object') return { ok: false, reason: 'incomplete_result' };
-    if (typeof mod.name !== 'string' || mod.name.trim().length === 0) {
+    if (typeof step.dream_outcome !== 'string' || step.dream_outcome.trim().length === 0) {
       return { ok: false, reason: 'incomplete_result' };
     }
-    if (typeof mod.how_to !== 'string' || mod.how_to.trim().length === 0) {
+    if (!Array.isArray(step.imagine) || step.imagine.length < 3) {
       return { ok: false, reason: 'incomplete_result' };
     }
   }
@@ -91,42 +80,96 @@ function hardCheck(data: any): { ok: boolean; reason: string } {
 }
 
 function softFix(data: any): any {
-  const programName = trimAtWord(
-    (typeof data.program_name === 'string' ? data.program_name.trim() : 'Your Signature Program') || 'Your Signature Program',
-    80,
-  );
+  const programName =
+    typeof data.program_name === 'string' && data.program_name.trim().length > 0
+      ? data.program_name.trim()
+      : 'Your Signature Program™';
 
-  const steps = (data.steps as any[])
-    .filter((s: any) => s && typeof s === 'object')
-    .slice(0, 4)
-    .map((s: any) => {
-      const dipicto = Array.isArray(s.dipicto)
-        ? s.dipicto
-            .filter((d: any) => d && typeof d === 'object')
-            .slice(0, 7)
-            .map((d: any) => ({
-              type: (typeof d.type === 'string' && d.type.trim().length > 0) ? d.type.trim() : 'Doubts',
-              point: (typeof d.point === 'string' && d.point.trim().length > 0) ? d.point.trim() : '',
-              how_to: (typeof d.how_to === 'string' && d.how_to.trim().length > 0) ? d.how_to.trim() : '',
-            }))
-        : [];
+  const tagline =
+    typeof data.tagline === 'string' && data.tagline.trim().length > 0
+      ? data.tagline.trim()
+      : '';
 
-      const mod = s.module && typeof s.module === 'object' ? s.module : {};
-      return {
-        title: (typeof s.title === 'string' && s.title.trim().length > 0) ? s.title.trim() : 'Step',
-        description: (typeof s.description === 'string' && s.description.trim().length > 0) ? s.description.trim() : '',
-        dipicto,
-        module: {
-          how_to: (typeof mod.how_to === 'string' && mod.how_to.trim().length > 0) ? mod.how_to.trim() : '',
-          name: trimAtWord(
-            (typeof mod.name === 'string' && mod.name.trim().length > 0) ? mod.name.trim() : 'Module',
-            80,
-          ),
-        },
-      };
-    });
+  const subtitle =
+    typeof data.subtitle === 'string' && data.subtitle.trim().length > 0
+      ? data.subtitle.trim()
+      : '';
 
-  return { program_name: programName, steps };
+  const corePromise =
+    typeof data.core_promise === 'string' && data.core_promise.trim().length > 0
+      ? data.core_promise.trim()
+      : '';
+
+  const designedFor: string[] = Array.isArray(data.designed_for)
+    ? data.designed_for
+        .filter((d: any) => typeof d === 'string' && d.trim().length > 0)
+        .map((d: any) => d.trim())
+        .slice(0, 6)
+    : [];
+
+  const steps = Array.isArray(data.steps)
+    ? data.steps
+        .filter((s: any) => s && typeof s === 'object')
+        .slice(0, 4)
+        .map((s: any) => {
+          const imagine: string[] = Array.isArray(s.imagine)
+            ? s.imagine
+                .filter((im: any) => typeof im === 'string' && im.trim().length > 0)
+                .map((im: any) => im.trim())
+                .slice(0, 6)
+            : [];
+
+          let dreamOutcome =
+            typeof s.dream_outcome === 'string' && s.dream_outcome.trim().length > 0
+              ? s.dream_outcome.trim()
+              : '';
+
+          dreamOutcome = dreamOutcome.replace(/^["'"']+|["'"']+$/g, '');
+
+          return {
+            label:
+              typeof s.label === 'string' && s.label.trim().length > 0
+                ? s.label.trim()
+                : 'STEP',
+            title:
+              typeof s.title === 'string' && s.title.trim().length > 0
+                ? s.title.trim()
+                : 'Step',
+            intro:
+              typeof s.intro === 'string' && s.intro.trim().length > 0
+                ? s.intro.trim()
+                : '',
+            imagine,
+            dream_outcome: dreamOutcome,
+          };
+        })
+    : [];
+
+  const includes = Array.isArray(data.includes)
+    ? data.includes
+        .filter((inc: any) => inc && typeof inc === 'object')
+        .slice(0, 6)
+        .map((inc: any) => ({
+          title:
+            typeof inc.title === 'string' && inc.title.trim().length > 0
+              ? inc.title.trim()
+              : '',
+          description:
+            typeof inc.description === 'string' && inc.description.trim().length > 0
+              ? inc.description.trim()
+              : '',
+        }))
+    : [];
+
+  return {
+    program_name: programName,
+    tagline,
+    subtitle,
+    core_promise: corePromise,
+    designed_for: designedFor,
+    steps,
+    includes,
+  };
 }
 
 function errorResponse(status: number, reason: string) {
@@ -169,7 +212,7 @@ Deno.serve(async (req: Request) => {
           model: "gpt-4o",
           response_format: { type: "json_object" },
           temperature: 0.8,
-          max_tokens: 4000,
+          max_tokens: 4500,
           messages: [
             { role: "system", content: systemPrompt },
             { role: "user", content: userSummary },

@@ -1,0 +1,85 @@
+{
+  "projectId": "61006299",
+  "functions": {
+    "analyze-passion-images": {
+      "hasChanged": false,
+      "hash": "9a0f84c330d2c055e8e72ded0b0c2b6bfdd5bab4a5734a010a9f92308dad535a"
+    },
+    "generate-big-money-content": {
+      "hasChanged": false,
+      "hash": "4b9875a183149d3f5efe3fa5fa7eb86602edee8801d0e4d18425968e0074b59f"
+    },
+    "generate-brand-kit": {
+      "hasChanged": false,
+      "hash": "b1677f55dcc62324120da7a0bf50d2ecc82a88aca9dd5d9525bd772138bd7cd9"
+    },
+    "generate-brand-kit-pdf": {
+      "hasChanged": false,
+      "hash": "7e4aa6611721cb41ebdb2aebf71f92b6934338affe8b0e56856ca1efe1d1b129"
+    },
+    "generate-channel-description": {
+      "hasChanged": false,
+      "hash": "1aa490d59e7fe9b467d829bf77cf651cdd57dee85d0957a52453c6e28b6fff3f"
+    },
+    "generate-channel-trailer-script": {
+      "hasChanged": false,
+      "hash": "abcc498d51ae451619e05b18351fd1c405f74896cd486d5f68f09698911549c0"
+    },
+    "generate-goal-draft": {
+      "hasChanged": false,
+      "hash": "6512a4e29e6cb8381b264c7afe4aa28954970da61b62b2eb580bac591f2fb8c3"
+    },
+    "generate-goal-plan": {
+      "hasChanged": false,
+      "hash": "8b2aae68933b837469daaa2613e941032123a86212b2fcd48763bff1d73521e7"
+    },
+    "generate-hooks": {
+      "hasChanged": false,
+      "hash": "ee7f4d4b037578485092fa317d0b2990a1d98e69b25cfd8ec28a67fc8aebb0f6"
+    },
+    "generate-life-purpose": {
+      "hasChanged": false,
+      "hash": "1a772197e9d736d7fbbf6e126aff9e9d9340cc8248696d08fa4102dbd39c8e2c"
+    },
+    "generate-niche-finder": {
+      "hasChanged": false,
+      "hash": "cc43e798351a56afdae1a4234f0533040e82b8bdcffee41f4dd68a25b198364e"
+    },
+    "generate-passion-coaching-content": {
+      "hasChanged": false,
+      "hash": "0f11980a215984e857a60ffc488c0a437a454138ca588849738452d7f3b784df"
+    },
+    "generate-passion-roadmap": {
+      "hasChanged": false,
+      "hash": "52afbdab4c7fb89a041cf9819f3f127b3fa5d198f1b8fad9f1f8f4d0950c110f"
+    },
+    "generate-pdf": {
+      "hasChanged": false,
+      "hash": "932acdbe4669df7c3074c0ee2696967fffaa87b2d37edeac149c37cc81dfb762"
+    },
+    "generate-program": {
+      "hasChanged": false,
+      "hash": "747e6603f73dd7f613cd2fdc4c33db2cb9aec79c406d16b9d3c024967125874e"
+    },
+    "generate-roadmap": {
+      "hasChanged": false,
+      "hash": "c95950696914ace8ef66e92925a6bcacc34846e4639e4aa12c9a1a487331139d"
+    },
+    "generate-smart-goal": {
+      "hasChanged": false,
+      "hash": "736eacdf857334c8563141ec0c872ede0499821ac71b2cb6d8f9cb99520ed46d"
+    },
+    "generate-vision-board": {
+      "hasChanged": false,
+      "hash": "bcbeff659ec731b3bce3e9dc70fd558a30649ad4e2e46be336cd42ad446fcd77"
+    },
+    "generate-webinar": {
+      "hasChanged": false,
+      "hash": "b6b01b9b8f9486becc217ddeb344ad946308dcd0505c8830c3a38a75b46dbcdf"
+    },
+    "generate-youtube-script": {
+      "hasChanged": false,
+      "hash": "ae953ad29f9302900bae7b33fbc2f3ec0501525f7f3d439144bdba6a0450b723"
+    }
+  }
+}

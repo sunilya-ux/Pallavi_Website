@@ -1,25 +1,27 @@
 import { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, Loader2, RefreshCw, Copy, Check, ChevronDown, ChevronUp } from 'lucide-react';
-
-interface DipictoItem {
-  type: string;
-  point: string;
-  how_to: string;
-}
+import { ArrowLeft, Loader2, RefreshCw, Copy, Check, CheckCircle2, Sparkles } from 'lucide-react';
 
 interface ProgramStep {
+  label: string;
+  title: string;
+  intro: string;
+  imagine: string[];
+  dream_outcome: string;
+}
+
+interface ProgramInclude {
   title: string;
   description: string;
-  dipicto: DipictoItem[];
-  module: {
-    how_to: string;
-    name: string;
-  };
 }
 
 interface ProgramResult {
   program_name: string;
+  tagline: string;
+  subtitle: string;
+  core_promise: string;
+  designed_for: string[];
   steps: ProgramStep[];
+  includes: ProgramInclude[];
 }
 
 interface ProgramBuilderProps {
@@ -34,17 +36,42 @@ const SPINNER_MESSAGES = [
   "Mapping the steps to your client's result...",
   'Finding their doubts, pains and obstacles...',
   'Turning them into how-to questions...',
-  'Creating powerful module names...',
+  'Creating powerful step names...',
   'Naming your program...',
   'Almost done...',
 ];
 
 function buildCopyText(program: ProgramResult): string {
-  const lines: string[] = [program.program_name, ''];
+  const lines: string[] = [];
+  lines.push(program.program_name);
+  lines.push('');
+  lines.push(program.tagline);
+  lines.push('');
+  lines.push(program.subtitle);
+  lines.push('');
+  lines.push(`The Core Promise`);
+  lines.push(program.core_promise);
+  lines.push('');
+  lines.push(`This program is designed for you if you…`);
+  program.designed_for.forEach((d) => lines.push(`• ${d}`));
+  lines.push('');
+  lines.push(`The 4-Step Transformation`);
   program.steps.forEach((step, i) => {
-    lines.push(`Module ${i + 1}: ${step.module.name}`);
-    lines.push(`Solves: ${step.module.how_to}`);
     lines.push('');
+    lines.push(`Step ${i + 1} · ${step.label}`);
+    lines.push(step.title);
+    lines.push(step.intro);
+    lines.push('');
+    lines.push('Imagine being able to:');
+    step.imagine.forEach((im) => lines.push(`• ${im}`));
+    lines.push('');
+    lines.push('The dream outcome:');
+    lines.push(`"${step.dream_outcome}"`);
+  });
+  lines.push('');
+  lines.push(`What's Included`);
+  program.includes.forEach((inc) => {
+    lines.push(`• ${inc.title}: ${inc.description}`);
   });
   return lines.join('\n').trimEnd();
 }
@@ -58,8 +85,6 @@ export default function ProgramBuilder({ niche, who, struggle, result, onBack }:
   const [validationMsg, setValidationMsg] = useState(false);
   const [spinnerIdx, setSpinnerIdx] = useState(0);
   const [copied, setCopied] = useState(false);
-  const [showBreakdown, setShowBreakdown] = useState(false);
-  const [openStep, setOpenStep] = useState<number | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
   const spinnerTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -171,7 +196,7 @@ export default function ProgramBuilder({ niche, who, struggle, result, onBack }:
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8 mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Create Your Signature Program</h1>
         <p className="text-sm sm:text-base text-slate-600">
-          We'll turn your niche into a 4-module program with powerful names.
+          We'll turn your niche into a 4-step signature program with a complete, sales-ready offer.
         </p>
       </div>
 
@@ -238,122 +263,114 @@ export default function ProgramBuilder({ niche, who, struggle, result, onBack }:
 
       {program && (
         <div ref={resultsRef} className="space-y-6 scroll-mt-4">
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div className="bg-gradient-to-r from-teal-500 to-emerald-500 p-6 sm:p-8">
-              <p className="text-xs font-bold uppercase tracking-wider text-teal-100 mb-2">Your Program</p>
-              <h2 className="text-2xl sm:text-3xl font-bold text-white">{program.program_name}</h2>
-            </div>
-
+          {/* Header card */}
+          <div className="bg-gradient-to-r from-teal-500 to-emerald-500 rounded-xl shadow-sm overflow-hidden">
             <div className="p-6 sm:p-8">
-              <h3 className="text-lg font-bold text-slate-900 mb-4">Your 4 Modules</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                {program.steps.map((step, i) => (
-                  <div key={i} className="bg-slate-50 border border-slate-200 rounded-xl p-5">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-teal-600 mb-2">Module {i + 1}</p>
-                    <p className="text-lg font-bold text-slate-900 mb-2 leading-snug">{step.module.name}</p>
-                    <p className="text-sm text-slate-500">
-                      <span className="font-semibold text-slate-600">Solves:</span> {step.module.how_to}
-                    </p>
+              <p className="text-xs font-bold uppercase tracking-wider text-teal-100 mb-2">YOUR SIGNATURE PROGRAM</p>
+              <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">{program.program_name}</h2>
+              {program.tagline && (
+                <p className="text-base sm:text-lg font-semibold text-white/95 mb-2">{program.tagline}</p>
+              )}
+              {program.subtitle && (
+                <p className="text-sm sm:text-base text-white/80">{program.subtitle}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Core promise */}
+          {program.core_promise && (
+            <div className="bg-teal-50 border border-teal-100 rounded-xl p-6 sm:p-8">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-teal-700 mb-3">The Core Promise</h3>
+              <p className="text-lg text-slate-800 leading-relaxed">{program.core_promise}</p>
+            </div>
+          )}
+
+          {/* Designed for */}
+          {program.designed_for.length > 0 && (
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8">
+              <h3 className="text-lg font-bold text-slate-900 mb-4">This program is designed for you if you…</h3>
+              <ul className="space-y-3">
+                {program.designed_for.map((item, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm sm:text-base text-slate-700 leading-relaxed">{item}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* 4-Step Transformation */}
+          <div>
+            <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4">The 4-Step Transformation</h3>
+            <div className="space-y-4">
+              {program.steps.map((step, i) => (
+                <div key={i} className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8">
+                  <span className="inline-block text-xs font-bold uppercase tracking-wider bg-teal-100 text-teal-700 px-3 py-1 rounded-full mb-3">
+                    STEP {i + 1} · {step.label}
+                  </span>
+                  <h4 className="text-lg sm:text-xl font-bold text-slate-900 mb-2 leading-snug">{step.title}</h4>
+                  {step.intro && (
+                    <p className="text-sm text-slate-500 mb-4 leading-relaxed">{step.intro}</p>
+                  )}
+                  {step.imagine.length > 0 && (
+                    <>
+                      <p className="text-sm font-semibold text-slate-700 mb-3">Imagine being able to:</p>
+                      <ul className="space-y-2 mb-4">
+                        {step.imagine.map((im, j) => (
+                          <li key={j} className="flex items-start gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 text-teal-600 flex-shrink-0 mt-0.5" />
+                            <p className="text-sm text-slate-700 leading-relaxed">{im}</p>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                  {step.dream_outcome && (
+                    <div className="bg-amber-50 border-l-4 border-teal-500 rounded-r-lg px-5 py-4">
+                      <p className="text-sm font-semibold text-slate-700 mb-1">The dream outcome:</p>
+                      <p className="text-sm sm:text-base italic text-slate-800 leading-relaxed">"{step.dream_outcome}"</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* What's included */}
+          {program.includes.length > 0 && (
+            <div>
+              <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4">What's Included</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {program.includes.map((inc, i) => (
+                  <div key={i} className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                    <Sparkles className="w-5 h-5 text-teal-600 mb-2" />
+                    <h4 className="text-sm font-bold text-slate-900 mb-1">{inc.title}</h4>
+                    <p className="text-sm text-slate-500 leading-relaxed">{inc.description}</p>
                   </div>
                 ))}
               </div>
-
-              <button
-                onClick={handleCopy}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-teal-50 text-teal-700 text-sm font-semibold hover:bg-teal-100 transition-colors"
-              >
-                {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                {copied ? 'Copied!' : '📋 Copy my program'}
-              </button>
             </div>
-          </div>
+          )}
 
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          {/* Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3">
             <button
-              onClick={() => setShowBreakdown(!showBreakdown)}
-              className="w-full flex items-center justify-between p-6 sm:p-8 text-left hover:bg-slate-50 transition-colors"
+              onClick={handleCopy}
+              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-teal-50 text-teal-700 text-sm font-semibold hover:bg-teal-100 transition-colors"
             >
-              <span className="text-lg font-bold text-slate-900">🔍 See how your program was built</span>
-              {showBreakdown ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+              {copied ? 'Copied!' : '📋 Copy my program'}
             </button>
-
-            {showBreakdown && (
-              <div className="px-6 sm:px-8 pb-6 sm:pb-8 space-y-8">
-                <div>
-                  <h4 className="text-sm font-bold uppercase tracking-wider text-slate-700 mb-4">Stage 1 — Your 4 Steps</h4>
-                  <ol className="space-y-4">
-                    {program.steps.map((step, i) => (
-                      <li key={i} className="flex gap-3">
-                        <span className="flex-shrink-0 w-7 h-7 rounded-full bg-teal-100 text-teal-700 text-sm font-bold flex items-center justify-center">{i + 1}</span>
-                        <div>
-                          <p className="text-sm font-semibold text-slate-900">{step.title}</p>
-                          <p className="text-sm text-slate-500 mt-0.5">{step.description}</p>
-                        </div>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-
-                <div>
-                  <h4 className="text-sm font-bold uppercase tracking-wider text-slate-700 mb-4">Stage 2 — What will hold them back (DIPICTO)</h4>
-                  <div className="space-y-3">
-                    {program.steps.map((step, i) => (
-                      <div key={i} className="border border-slate-200 rounded-lg overflow-hidden">
-                        <button
-                          onClick={() => setOpenStep(openStep === i ? null : i)}
-                          className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50 transition-colors"
-                        >
-                          <span className="text-sm font-semibold text-slate-800">Step {i + 1}: {step.title}</span>
-                          {openStep === i ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
-                        </button>
-                        {openStep === i && (
-                          <div className="px-4 pb-4 space-y-2">
-                            {step.dipicto.map((d, j) => (
-                              <div key={j} className="text-sm">
-                                <span className="font-semibold text-teal-700">{d.type}:</span>{' '}
-                                <span className="text-slate-600">{d.point}</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="text-sm font-bold uppercase tracking-wider text-slate-700 mb-4">Stage 3 — How-to questions</h4>
-                  <div className="space-y-4">
-                    {program.steps.map((step, i) => (
-                      <div key={i}>
-                        <p className="text-sm font-semibold text-slate-800 mb-2">Step {i + 1}: {step.title}</p>
-                        <ul className="space-y-1.5 pl-4">
-                          {step.dipicto.map((d, j) => (
-                            <li
-                              key={j}
-                              className={`text-sm ${d.how_to === step.module.how_to ? 'font-bold text-slate-900' : 'text-slate-500'}`}
-                            >
-                              {d.how_to === step.module.how_to && <span className="mr-1">⭐</span>}
-                              {d.how_to}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
+            <button
+              onClick={handleBuild}
+              disabled={building}
+              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white border-2 border-teal-200 text-teal-700 text-sm font-semibold hover:bg-teal-50 transition-all duration-200 disabled:opacity-70"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Build again
+            </button>
           </div>
-
-          <button
-            onClick={handleBuild}
-            disabled={building}
-            className="w-full bg-white border-2 border-teal-200 text-teal-700 py-3.5 rounded-xl font-semibold hover:bg-teal-50 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-70"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Build again
-          </button>
         </div>
       )}
     </div>
