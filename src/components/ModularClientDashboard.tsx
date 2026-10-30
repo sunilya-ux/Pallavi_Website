@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LogOut, Lock, ChevronDown, ChevronRight, ClipboardList } from 'lucide-react';
+import { LogOut, Lock, ChevronDown, ChevronRight, ClipboardList, Menu, X } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import AssignmentGroupsHub from './AssignmentGroupsHub';
 import AssignmentSubList from './AssignmentSubList';
@@ -43,12 +43,22 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
   const [expandedCourses, setExpandedCourses] = useState<Set<string>>(new Set());
   const [restrictedMessage, setRestrictedMessage] = useState<string | null>(null);
   const [assignmentNav, setAssignmentNav] = useState<AssignmentNav | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const isAdmin = localStorage.getItem('userType') === 'admin';
 
   useEffect(() => {
     loadPermissions();
   }, [clientId]);
+
+  useEffect(() => {
+    if (drawerOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [drawerOpen]);
 
   const loadPermissions = async () => {
     try {
@@ -139,6 +149,7 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
       setActiveToolRoute(tool.route);
       setRestrictedMessage(null);
       setAssignmentNav(null);
+      setDrawerOpen(false);
     } else {
       setRestrictedMessage(`You don't have access to ${tool.display_name}. Please contact your admin.`);
     }
@@ -148,6 +159,7 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
     setActiveToolRoute(null);
     setRestrictedMessage(null);
     setAssignmentNav({ view: 'hub', moduleId: module.id, moduleName: module.display_name });
+    setDrawerOpen(false);
   };
 
   const getIcon = (iconName: string | null) => {
@@ -166,9 +178,8 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
     );
   }
 
-  return (
-    <div className="min-h-screen bg-slate-50 flex">
-      <aside className="w-72 bg-white border-r border-slate-200 flex flex-col shadow-sm">
+  const renderSidebarContent = () => (
+    <>
         <div className="p-6 border-b border-slate-200">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
             Client Portal
@@ -281,9 +292,53 @@ export default function ModularClientDashboard({ email, clientId }: ModularClien
             <span className="font-medium">Logout</span>
           </button>
         </div>
+    </>
+  );
+
+  return (
+    <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
+      {/* Mobile top bar */}
+      <div className="md:hidden sticky top-0 z-30 bg-white border-b border-slate-200 flex items-center gap-3 px-4 py-3 flex-shrink-0">
+        <button
+          onClick={() => setDrawerOpen(true)}
+          className="p-2 -ml-2"
+          aria-label="Open menu"
+        >
+          <Menu className="w-6 h-6 text-slate-700" />
+        </button>
+        <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+          Client Portal
+        </h1>
+      </div>
+
+      {/* Desktop sidebar */}
+      <aside className="hidden md:flex w-72 bg-white border-r border-slate-200 flex-col shadow-sm">
+        {renderSidebarContent()}
       </aside>
 
-      <main className="flex-1 p-4 sm:p-8 overflow-y-auto">
+      {/* Mobile drawer */}
+      {drawerOpen && (
+        <div
+          className="md:hidden fixed inset-0 z-40 bg-black/50"
+          onClick={() => setDrawerOpen(false)}
+        />
+      )}
+      <aside
+        className={`md:hidden fixed top-0 left-0 z-50 h-full w-[85vw] max-w-[320px] bg-white shadow-xl flex flex-col transition-transform duration-300 ${
+          drawerOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <button
+          onClick={() => setDrawerOpen(false)}
+          className="absolute top-4 right-4 z-10 p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-700"
+          aria-label="Close menu"
+        >
+          <X className="w-5 h-5" />
+        </button>
+        {renderSidebarContent()}
+      </aside>
+
+      <main className="flex-1 min-w-0 w-full p-4 sm:p-8 overflow-y-auto">
         <div className="max-w-4xl mx-auto">
           {restrictedMessage && (
             <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
