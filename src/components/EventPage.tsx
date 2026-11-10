@@ -2,7 +2,7 @@ import { CalendarDays, MapPin, Clock, Users, Sparkles, CheckCircle, UserCircle, 
 import { useState } from 'react';
 import RealWinsGrid from './RealWinsGrid';
 import {
-  isEventActive,
+  showThankYouPage,
   eventDate,
   eventDateLabel,
   tagline,
@@ -49,14 +49,14 @@ import {
 } from '../config/eventConfig';
 
 export default function EventPage() {
-  const active = isEventActive();
+  const showFullPage = !showThankYouPage;
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [playingVideo, setPlayingVideo] = useState<number | null>(null);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F5F0E6] via-[#FAF6EE] to-[#F5F0E6] scroll-smooth">
       <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-10 pt-16">
-        {active && (
+        {showFullPage && (
           <div className="fixed top-0 left-0 right-0 z-40 bg-slate-900 border-b border-slate-700/50 shadow-lg">
             <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 flex items-center justify-between h-12">
               <a href="/" className="text-white font-semibold text-sm whitespace-nowrap hover:text-[#D4AF37] transition-colors">Pallavi Chatterjee</a>
@@ -77,7 +77,7 @@ export default function EventPage() {
           </div>
         )}
 
-        {active ? (
+        {showFullPage ? (
           <>
             <div className="bg-gradient-to-br from-[#0a0a0a] via-[#141414] to-[#1a1a1a] rounded-2xl overflow-hidden shadow-sm">
               <div className="px-8 pt-10 sm:pt-12 md:pt-14 text-center">

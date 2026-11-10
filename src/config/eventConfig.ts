@@ -1,3 +1,5 @@
+export const showThankYouPage = false;
+
 export const eventName = 'Event';
 export const eventDate = '2026-10-31';
 export const eventDateLabel = '31 Oct 2026';
