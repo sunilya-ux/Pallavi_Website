@@ -1,8 +1,7 @@
-import { LogIn, LogOut, User } from 'lucide-react';
+import { LogIn, LogOut, User, CalendarDays } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import LoginModal from './LoginModal';
-import { isEventActive } from '../config/eventConfig';
 
 export default function Header() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -66,20 +65,20 @@ export default function Header() {
               </div>
             ) : (
               <div className="flex items-center gap-4 sm:gap-6">
-                {isEventActive() && (
-                  <a
-                    href="/event"
-                    className="text-sm font-semibold text-slate-700 hover:text-brand-bronze transition-colors hidden sm:inline"
-                  >
-                    Event
-                  </a>
-                )}
+                <a
+                  href="/event"
+                  className="flex items-center gap-1.5 text-sm font-semibold text-[#D4AF37] hover:text-[#C9A052] transition-colors"
+                >
+                  <CalendarDays className="w-4 h-4" />
+                  <span className="hidden xs:inline sm:inline">Upcoming Event</span>
+                  <span className="xs:hidden sm:hidden">Event</span>
+                </a>
                 <button
                   onClick={() => setIsLoginOpen(true)}
                   className="flex items-center gap-2 bg-gradient-to-r from-brand-gold to-brand-gold-dark text-brand-black px-6 py-2.5 rounded-lg font-semibold hover:shadow-lg hover:shadow-brand-gold/30 transition-all duration-300 hover:scale-105"
                 >
                   <LogIn className="w-4 h-4" />
-                  Login
+                  <span className="hidden sm:inline">Login</span>
                 </button>
               </div>
             )}
