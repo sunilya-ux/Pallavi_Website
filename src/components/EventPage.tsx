@@ -1,4 +1,4 @@
-import { CalendarDays, Clock, Users, Sparkles, CheckCircle, UserCircle, ImageIcon, PlayCircle, MinusCircle, XCircle, Plus, Ticket, MessageCircle, Gift } from 'lucide-react';
+import { CalendarDays, Clock, Users, Sparkles, CheckCircle, UserCircle, ImageIcon, PlayCircle, MinusCircle, XCircle, Plus, Ticket, MessageCircle, Gift, MonitorPlay } from 'lucide-react';
 import { useState } from 'react';
 import RealWinsGrid from './RealWinsGrid';
 import {
@@ -8,6 +8,7 @@ import {
   tagline,
   description,
   timeLabel,
+  eventMode,
   seatsLabel,
   heroImage,
   ecosystemHeadline,
@@ -128,7 +129,7 @@ export default function EventPage() {
             </div>
 
             <div className="bg-[#F5F0E6] rounded-2xl shadow-md border border-[#D4AF37]/20 -mt-8 mx-4 sm:mx-8 relative z-10 px-6 py-6 sm:py-8">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="flex items-center gap-3">
                   <CalendarDays className="w-5 h-5 text-[#9C6B12] flex-shrink-0" strokeWidth={2.25} />
                   <div>
@@ -141,6 +142,13 @@ export default function EventPage() {
                   <div>
                     <div className="text-xs text-slate-500">Time</div>
                     <div className="text-sm font-semibold text-slate-800">{timeLabel}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <MonitorPlay className="w-5 h-5 text-[#9C6B12] flex-shrink-0" strokeWidth={2.25} />
+                  <div>
+                    <div className="text-xs text-slate-500">Mode</div>
+                    <div className="text-sm font-semibold text-slate-800">{eventMode}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">

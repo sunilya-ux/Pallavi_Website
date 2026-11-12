@@ -7,6 +7,7 @@ export const bannerText = 'Live Event · 31 Oct 2026 · Delhi · Only 20 seats';
 export const tagline = 'Build Your Passion Coaching Business in Just 1 Day';
 export const description = 'A full day with Pallavi Chatterjee, an award-winning Life & Business Coach with 18 years of experience. Leave with clarity on your niche, a signature offer, and your launch plan.';
 export const timeLabel = '9:00 AM – 6:00 PM';
+export const eventMode = 'Live Online — joining link shared after booking';
 export const venueName = 'Park Inn by Radisson, New Delhi IP Extension';
 export const seatsLabel = 'Limited Seats Filling Fast';
 export const heroImage = '/images/host/host-pallavi.jpg';
@@ -33,15 +34,15 @@ export const aboutPoints = [
 
 export type ScheduleItem = { title: string; description: string };
 export const schedule: ScheduleItem[] = [
-  { title: 'Welcome + Coach Brand Experience', description: 'Registration, networking, event kit and your professional HD brand photoshoot as you step into your coach identity.' },
+  { title: 'Welcome + Coach Brand Experience', description: 'Join in, meet fellow coaches and step into your coach identity as the day begins.' },
   { title: 'Life Coaching Foundations', description: 'Understand what Life Coaching really is, its scope, how it differs from therapy/counselling, and whether coaching is the right career path for you. Discover how to turn your corporate, business or life experience into a Premium Coaching Business.' },
   { title: 'LIVE Coaching Experience', description: 'Experience a live coaching demonstration — see how powerful coaching conversations move you from confusion to action in the same session. Also get your Happiness Score, Life Purpose & Monetizable Happy Passion.' },
   { title: 'Break Your Stagnation / Procrastination / Fear to Start Your Business', description: 'Install the way a businesswoman thinks, own your identity to actually pursue your passion business, and get rid of the money and visibility blocks that keep aspiring and existing coaches from moving forward — using our unique Premium Coaching Method "Trilogy".' },
   { title: 'Vision → 10X Money Activation', description: 'Build your AI-powered Life & Business Vision; existing coaches identify their biggest growth gaps and 10X opportunities with our Collective Synergy Money Activation.' },
-  { title: 'Premium Lunch + Networking', description: 'Enjoy an elaborate lunch in a premium hotel setting while connecting, exchanging ideas and building your coach circle of friends — maybe co-founders, hiring managers, trainers and HRs.' },
+  { title: 'Break + Networking', description: 'Take a short break, then connect with fellow coaches online, exchange ideas and build your coach circle of friends — maybe co-founders, hiring managers, trainers and HRs.' },
   { title: 'AI Life Coach Business Upgrade', description: 'Use AI to work through your premium niche, positioning, coaching strategy, marketing and business direction — turning expertise into a clear, legit, social-media-led business asset ready to invite clients.' },
   { title: 'Premium Coach Branding & Experience', description: 'Create your personal brand assets with AI and learn how to show up professionally and confidently as a Premium Life Coach whom people pay without asking for discounts.' },
-  { title: 'Content Creation Challenge', description: 'Create your own content LIVE at the venue, use our viral hooks and ideas, and start building your 30-day content bank — with content posted from the event itself, in collaboration with other coaches.' },
+  { title: 'Content Creation Challenge', description: 'Create your own content LIVE during the session, use our viral hooks and ideas, and start building your 30-day content bank — with content posted during the event itself, in collaboration with other coaches.' },
   { title: 'The Coach Success Room', description: 'Hear directly from our successful coach mentees as they share their real journeys, monetization strategies and what helped them create significant coaching income alongside a hectic job, family and kids — charging lakhs per client.' },
   { title: 'Celebrate • Unlock Your 1 CRORE Roadmap', description: 'Celebrations, Q&A, networking and your Coach Accelerator Goodie Bag — packed with resources to help you show up and grow as a businesswoman. Plus the Businesswoman Crowning Ceremony & Future Self Ramp Walk.' },
 ];
@@ -65,7 +66,7 @@ export const takeaways: Takeaway[] = [
   { title: 'An AI-Powered Business System', description: 'AI tools to accelerate your branding, marketing & business execution', worth: 'Worth ₹1 Lakh' },
   { title: 'A Client Acquisition Roadmap', description: 'A practical system to move from visibility to conversations to clients', worth: 'Worth ₹20K' },
   { title: '30 Days of Content Ready to Go', description: 'Hooks + ideas + AI-assisted content — created and started LIVE', worth: 'Worth ₹50K' },
-  { title: 'A Professional Coach Brand', description: 'HD brand photos + personal branding assets to show up professionally', worth: 'Worth ₹20K' },
+  { title: 'A Professional Coach Brand', description: 'AI-created personal branding assets to show up professionally', worth: 'Worth ₹20K' },
   { title: 'Your Next-Level Growth Roadmap', description: "Your next moves mapped out — whether you're starting, restarting or ready to scale", worth: 'Priceless' },
 ];
 export const takeawaysClosingLine = "You don't leave with more information. You leave with BUSINESS ASSETS, STRATEGY & ACTION READY TO EXECUTE.";
@@ -91,14 +92,14 @@ export const afterItems = [
 export type FAQ = { question: string; answer: string };
 export const faqHeading = 'Frequently Asked Questions';
 export const faqs: FAQ[] = [
-  { question: 'Can I bring a team member or family member?', answer: "Absolutely! We'd be happy to have your team member or a family member join you. Each person attending will need to purchase their own ticket so they can have full access to the event and everything included in the experience." },
-  { question: 'What should I bring with me?', answer: "Ideally, bring your laptop so you can follow along and take action during the event. If you don't have access to a laptop, you can also use your mobile phone. All workbooks, resources, and other learning materials you'll need will be provided at the event." },
+  { question: 'Can I bring a team member or family member?', answer: 'Each ticket gives one person access to the live online event. If someone else would like to join, they can book their own seat — the joining link is personal to you.' },
+  { question: 'What do I need to join?', answer: 'A laptop (recommended) or phone with a stable internet connection, headphones, and a notebook. Join from a quiet space so you can take part fully. Your joining link will be shared after booking.' },
   { question: 'Are tickets refundable?', answer: 'Tickets are non-refundable due to the limited number of seats available for the event.' },
   { question: 'How can I contact you if I have a question?', answer: 'If you have any questions before the event, feel free to reach out to us at info@lifecoachpallavichatterjee.com. Our team will be happy to help and make sure you\'re fully prepared for the event.' },
 ];
 
 export const closingHeading = "";
-export const closingSubheading = "Walk In With Confusion. Walk Out With a Business.";
+export const closingSubheading = "Join With Confusion. Leave With a Business.";
 export const closingTagline = "This One Day Will Flip Your Coaching Reality";
 export const closingImage = '/images/closing/closing-pallavi.jpg';
 
@@ -151,10 +152,9 @@ export const priceIncreaseNote = 'Price increases to ₹8,000 after 2 slots';
 export const pricingValueLine = 'Value worth ₹2L+, available to you at this event at just ₹6K';
 export const ticketLabel = 'Full Day Access';
 export const ticketInclusions: string[] = [
-  'Full access to the entire day, live in the room',
+  'Full access to the entire day, live online',
   'The complete system to build your coaching business, step by step',
   'Live implementation — build your offer and plan with guidance, not just theory',
-  'Lunch, tea, and coffee included',
   'Network with ambitious coaches, corporate & college hiring managers, and influential creators.',
   'Limited Seats Filling Fast',
 ];
