@@ -1,4 +1,4 @@
-import { CalendarDays, MapPin, Clock, Users, Sparkles, CheckCircle, UserCircle, ImageIcon, PlayCircle, ExternalLink, MinusCircle, XCircle, Plus, Ticket, MessageCircle, Gift, Mic } from 'lucide-react';
+import { CalendarDays, Clock, Users, Sparkles, CheckCircle, UserCircle, ImageIcon, PlayCircle, MinusCircle, XCircle, Plus, Ticket, MessageCircle, Gift } from 'lucide-react';
 import { useState } from 'react';
 import RealWinsGrid from './RealWinsGrid';
 import {
@@ -8,7 +8,6 @@ import {
   tagline,
   description,
   timeLabel,
-  venueName,
   seatsLabel,
   heroImage,
   ecosystemHeadline,
@@ -23,10 +22,6 @@ import {
   hostStoryHeading,
   hostStory,
   videoLinks,
-  venueAddress,
-  venueDescription,
-  venueImages,
-  venueMapUrl,
   bonusesSection,
   takeawaysHeading,
   takeaways,
@@ -41,6 +36,8 @@ import {
   closingTagline,
   closingImage,
   ticketPrice,
+  earlyBirdLabel,
+  priceIncreaseNote,
   ticketLabel,
   pricingValueLine,
   ticketInclusions,
@@ -62,7 +59,6 @@ export default function EventPage() {
               <a href="/" className="text-white font-semibold text-sm whitespace-nowrap hover:text-[#D4AF37] transition-colors">Pallavi Chatterjee</a>
               <div className="flex items-center gap-5 sm:gap-6">
                 <a href="#schedule" className="hidden sm:block text-slate-300 hover:text-white text-sm font-medium transition-colors">Schedule</a>
-                <a href="#venue" className="hidden sm:block text-slate-300 hover:text-white text-sm font-medium transition-colors">Venue</a>
                 <a href="#faq" className="hidden sm:block text-slate-300 hover:text-white text-sm font-medium transition-colors">FAQ</a>
                 <a
                   href={ticketBookingUrl}
@@ -93,7 +89,7 @@ export default function EventPage() {
                 <div>
                   <div className="inline-flex items-center gap-2 bg-[#D4AF37]/15 border border-[#D4AF37]/40 text-[#D4AF37] text-sm font-medium px-3 py-1 rounded-full mb-5">
                     <Sparkles className="w-4 h-4" />
-                    Live Event · Delhi
+                    Live Event
                   </div>
                   <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight mb-5">
                     {tagline}
@@ -132,7 +128,7 @@ export default function EventPage() {
             </div>
 
             <div className="bg-[#F5F0E6] rounded-2xl shadow-md border border-[#D4AF37]/20 -mt-8 mx-4 sm:mx-8 relative z-10 px-6 py-6 sm:py-8">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div className="flex items-center gap-3">
                   <CalendarDays className="w-5 h-5 text-[#9C6B12] flex-shrink-0" strokeWidth={2.25} />
                   <div>
@@ -145,13 +141,6 @@ export default function EventPage() {
                   <div>
                     <div className="text-xs text-slate-500">Time</div>
                     <div className="text-sm font-semibold text-slate-800">{timeLabel}</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <MapPin className="w-5 h-5 text-[#9C6B12] flex-shrink-0" strokeWidth={2.25} />
-                  <div>
-                    <div className="text-xs text-slate-500">Venue</div>
-                    <div className="text-sm font-semibold text-slate-800">{venueName}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -218,20 +207,15 @@ export default function EventPage() {
                 {schedule.map((item, i) => (
                   <div key={i}>
                     {i > 0 && <div className="border-t border-slate-100 my-4 sm:my-5" />}
-                    <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-6">
-                      <div className="text-sm font-bold text-[#9C6B12] sm:w-32 flex-shrink-0">
-                        {item.time}
+                    <div>
+                      <div className="text-sm sm:text-base font-semibold text-slate-800">
+                        {item.title}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm sm:text-base font-semibold text-slate-800">
-                          {item.title}
+                      {item.description && (
+                        <div className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                          {item.description}
                         </div>
-                        {item.description && (
-                          <div className="text-xs sm:text-sm text-slate-500 mt-0.5">
-                            {item.description}
-                          </div>
-                        )}
-                      </div>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -248,9 +232,9 @@ export default function EventPage() {
                   {bonusesSection.subtitle}
                 </p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+              <div className="max-w-3xl mx-auto">
                 {/* Bonuses card */}
-                <div className="bg-[#FAF6EE] rounded-2xl border border-[#D4AF37]/30 shadow-md px-6 sm:px-8 py-8 flex flex-col">
+                <div className="bg-[#FAF6EE] rounded-2xl border border-[#D4AF37]/30 shadow-md px-6 sm:px-8 py-8">
                   <div className="flex items-center gap-3 mb-6">
                     <Gift className="w-6 h-6 text-[#D4AF37] flex-shrink-0" />
                     <h3 className="text-lg sm:text-xl font-bold text-[#9C6B12]">
@@ -267,24 +251,6 @@ export default function EventPage() {
                       </div>
                     ))}
                   </div>
-                </div>
-                {/* Speakers card */}
-                <div className="bg-[#FAF6EE] rounded-2xl border border-[#D4AF37]/30 shadow-md px-6 sm:px-8 py-8 flex flex-col">
-                  <div className="flex items-center gap-3 mb-6">
-                    <Mic className="w-6 h-6 text-[#D4AF37] flex-shrink-0" />
-                    <h3 className="text-lg sm:text-xl font-bold text-[#9C6B12]">
-                      {bonusesSection.speakersHeading}
-                    </h3>
-                  </div>
-                  <div className="flex flex-col gap-4">
-                    {bonusesSection.speakers.map((speaker, i) => (
-                      <div key={i} className="flex items-start gap-3">
-                        <Sparkles className="w-5 h-5 text-[#D4AF37] flex-shrink-0 mt-0.5" />
-                        <p className="text-sm sm:text-base font-semibold text-slate-800 leading-relaxed">{speaker}</p>
-                      </div>
-                    ))}
-                  </div>
-                  <p className="mt-5 text-sm italic text-[#9C6B12]">{bonusesSection.speakersMore}</p>
                 </div>
               </div>
             </div>
@@ -502,76 +468,6 @@ export default function EventPage() {
               </div>
             </div>
 
-            {/* Venue section */}
-            <div id="venue" className="mt-16 sm:mt-20 scroll-mt-24">
-              <div className="text-center mb-10">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900">
-                  Venue of the Event
-                </h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-8 items-center max-w-5xl mx-auto">
-                <div className="md:col-span-2 rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm aspect-[3/4]">
-                  <img
-                    src={venueImages[0]}
-                    alt={`${venueName} building`}
-                    className="w-full h-full object-cover object-center"
-                  />
-                </div>
-                <div className="md:col-span-3">
-                  <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2">
-                    {venueName}
-                  </h3>
-                  <p className="text-sm sm:text-base font-medium text-[#9C6B12] mb-4">
-                    {venueAddress}
-                  </p>
-                  <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-6">
-                    {venueDescription}
-                  </p>
-                  {venueMapUrl && (
-                    <a
-                      href={venueMapUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-2 text-sm font-semibold text-[#9C6B12] hover:text-[#7a520e] hover:underline transition-colors mb-6"
-                    >
-                      View on Google Maps
-                      <ExternalLink className="w-4 h-4" strokeWidth={2.25} />
-                    </a>
-                  )}
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-5 border-t border-slate-200 pt-6">
-                    <div className="flex items-center gap-3">
-                      <CalendarDays className="w-5 h-5 text-[#9C6B12] flex-shrink-0" strokeWidth={2.25} />
-                      <div>
-                        <div className="text-xs text-slate-500">Date</div>
-                        <div className="text-sm font-semibold text-slate-800">{eventDateLabel}</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Clock className="w-5 h-5 text-[#9C6B12] flex-shrink-0" strokeWidth={2.25} />
-                      <div>
-                        <div className="text-xs text-slate-500">Time</div>
-                        <div className="text-sm font-semibold text-slate-800">{timeLabel}</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <MapPin className="w-5 h-5 text-[#9C6B12] flex-shrink-0" strokeWidth={2.25} />
-                      <div>
-                        <div className="text-xs text-slate-500">Venue</div>
-                        <div className="text-sm font-semibold text-slate-800">{venueName}</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Users className="w-5 h-5 text-[#9C6B12] flex-shrink-0" strokeWidth={2.25} />
-                      <div>
-                        <div className="text-xs text-slate-500">Seats</div>
-                        <div className="text-sm font-semibold text-slate-800">{seatsLabel}</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             {/* Tickets section */}
             <div id="tickets" className="mt-16 sm:mt-20 scroll-mt-24">
               <div className="text-center mb-10">
@@ -613,6 +509,14 @@ export default function EventPage() {
                   </div>
                   <div className="text-center mb-8">
                     <span className="text-4xl sm:text-5xl font-bold text-[#1a1a1a]">{ticketPrice}</span>
+                    <div className="mt-3 flex flex-col items-center gap-2">
+                      <span className="inline-block bg-[#F5D77A]/40 text-[#9C6B12] text-xs font-semibold rounded-full px-3 py-1">
+                        {earlyBirdLabel}
+                      </span>
+                      <span className="text-xs sm:text-sm font-medium text-[#9C6B12]">
+                        {priceIncreaseNote}
+                      </span>
+                    </div>
                   </div>
                   <ul className="flex flex-col gap-4 mb-8">
                     {ticketInclusions.map((item, i) => (

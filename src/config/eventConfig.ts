@@ -31,23 +31,23 @@ export const aboutPoints = [
   "Ready to go from scattered income to a ₹1 Crore coaching business?",
 ];
 
-export type ScheduleItem = { time: string; title: string; description: string };
+export type ScheduleItem = { title: string; description: string };
 export const schedule: ScheduleItem[] = [
-  { time: '9:00 – 9:30 AM', title: 'Welcome + Coach Brand Experience', description: 'Registration, networking, event kit and your professional HD brand photoshoot as you step into your coach identity.' },
-  { time: '9:30 – 10:30 AM', title: 'Life Coaching Foundations', description: 'Understand what Life Coaching really is, its scope, how it differs from therapy/counselling, and whether coaching is the right career path for you. Discover how to turn your corporate, business or life experience into a Premium Coaching Business.' },
-  { time: '10:30 – 11:15 AM', title: 'LIVE Coaching Experience', description: 'Experience a live coaching demonstration — see how powerful coaching conversations move you from confusion to action in the same session. Also get your Happiness Score, Life Purpose & Monetizable Happy Passion.' },
-  { time: '11:15 AM – 12:00 PM', title: 'Break Your Stagnation / Procrastination / Fear to Start Your Business', description: 'Install the way a businesswoman thinks, own your identity to actually pursue your passion business, and get rid of the money and visibility blocks that keep aspiring and existing coaches from moving forward — using our unique Premium Coaching Method "Trilogy".' },
-  { time: '12:00 – 1:00 PM', title: 'Vision → 10X Money Activation', description: 'Build your AI-powered Life & Business Vision; existing coaches identify their biggest growth gaps and 10X opportunities with our Collective Synergy Money Activation.' },
-  { time: '1:00 – 2:00 PM', title: 'Premium Lunch + Networking', description: 'Enjoy an elaborate lunch in a premium hotel setting while connecting, exchanging ideas and building your coach circle of friends — maybe co-founders, hiring managers, trainers and HRs.' },
-  { time: '2:00 – 3:00 PM', title: 'AI Life Coach Business Upgrade', description: 'Use AI to work through your premium niche, positioning, coaching strategy, marketing and business direction — turning expertise into a clear, legit, social-media-led business asset ready to invite clients.' },
-  { time: '3:00 – 3:45 PM', title: 'Premium Coach Branding & Experience', description: 'Create your personal brand assets with AI and learn how to show up professionally and confidently as a Premium Life Coach whom people pay without asking for discounts.' },
-  { time: '3:45 – 4:45 PM', title: 'Content Creation Challenge', description: 'Create your own content LIVE at the venue, use our viral hooks and ideas, and start building your 30-day content bank — with content posted from the event itself, in collaboration with other coaches.' },
-  { time: '4:45 – 5:30 PM', title: 'The Coach Success Room', description: 'Hear directly from our successful coach mentees as they share their real journeys, monetization strategies and what helped them create significant coaching income alongside a hectic job, family and kids — charging lakhs per client.' },
-  { time: '5:30 – 6:00 PM', title: 'Celebrate • Unlock Your 1 CRORE Roadmap', description: 'Celebrations, Q&A, networking and your Coach Accelerator Goodie Bag — packed with resources to help you show up and grow as a businesswoman. Plus the Businesswoman Crowning Ceremony & Future Self Ramp Walk.' },
+  { title: 'Welcome + Coach Brand Experience', description: 'Registration, networking, event kit and your professional HD brand photoshoot as you step into your coach identity.' },
+  { title: 'Life Coaching Foundations', description: 'Understand what Life Coaching really is, its scope, how it differs from therapy/counselling, and whether coaching is the right career path for you. Discover how to turn your corporate, business or life experience into a Premium Coaching Business.' },
+  { title: 'LIVE Coaching Experience', description: 'Experience a live coaching demonstration — see how powerful coaching conversations move you from confusion to action in the same session. Also get your Happiness Score, Life Purpose & Monetizable Happy Passion.' },
+  { title: 'Break Your Stagnation / Procrastination / Fear to Start Your Business', description: 'Install the way a businesswoman thinks, own your identity to actually pursue your passion business, and get rid of the money and visibility blocks that keep aspiring and existing coaches from moving forward — using our unique Premium Coaching Method "Trilogy".' },
+  { title: 'Vision → 10X Money Activation', description: 'Build your AI-powered Life & Business Vision; existing coaches identify their biggest growth gaps and 10X opportunities with our Collective Synergy Money Activation.' },
+  { title: 'Premium Lunch + Networking', description: 'Enjoy an elaborate lunch in a premium hotel setting while connecting, exchanging ideas and building your coach circle of friends — maybe co-founders, hiring managers, trainers and HRs.' },
+  { title: 'AI Life Coach Business Upgrade', description: 'Use AI to work through your premium niche, positioning, coaching strategy, marketing and business direction — turning expertise into a clear, legit, social-media-led business asset ready to invite clients.' },
+  { title: 'Premium Coach Branding & Experience', description: 'Create your personal brand assets with AI and learn how to show up professionally and confidently as a Premium Life Coach whom people pay without asking for discounts.' },
+  { title: 'Content Creation Challenge', description: 'Create your own content LIVE at the venue, use our viral hooks and ideas, and start building your 30-day content bank — with content posted from the event itself, in collaboration with other coaches.' },
+  { title: 'The Coach Success Room', description: 'Hear directly from our successful coach mentees as they share their real journeys, monetization strategies and what helped them create significant coaching income alongside a hectic job, family and kids — charging lakhs per client.' },
+  { title: 'Celebrate • Unlock Your 1 CRORE Roadmap', description: 'Celebrations, Q&A, networking and your Coach Accelerator Goodie Bag — packed with resources to help you show up and grow as a businesswoman. Plus the Businesswoman Crowning Ceremony & Future Self Ramp Walk.' },
 ];
 
 export const bonusesSection = {
-  title: "Exclusive Bonuses & Guest Experts",
+  title: "Exclusive Bonuses",
   subtitle: "Included with your seat, at no extra cost",
   bonusesHeading: "Exclusive Bonuses",
   bonuses: [
@@ -56,13 +56,6 @@ export const bonusesSection = {
     "How I Cracked ₹10 Lakh in Just 1 Day",
     "My Profitable, Sustainable ₹0 → ₹1 Crore Coaching Roadmap",
   ],
-  speakersHeading: "Guest Trainers & Speakers",
-  speakers: [
-    "Personality Enhancement for Coaches & Business Owners",
-    "Building a Coaching Venture for a Social Cause",
-    "A College Placement Head on the Scope of Coaching in Colleges",
-  ],
-  speakersMore: "…and much more",
 };
 
 export type Takeaway = { title: string; description: string; worth: string };
@@ -92,7 +85,6 @@ export const afterItems = [
   "A client acquisition strategy you can start using immediately.",
   "Your niche, positioning and AI-powered brand created.",
   "30 days of content + AI tools to use.",
-  "Professional brand photos and assets to show up confidently.",
   "A clear roadmap for your next stage — from first client to scaling to crores."
 ];
 
@@ -102,7 +94,6 @@ export const faqs: FAQ[] = [
   { question: 'Can I bring a team member or family member?', answer: "Absolutely! We'd be happy to have your team member or a family member join you. Each person attending will need to purchase their own ticket so they can have full access to the event and everything included in the experience." },
   { question: 'What should I bring with me?', answer: "Ideally, bring your laptop so you can follow along and take action during the event. If you don't have access to a laptop, you can also use your mobile phone. All workbooks, resources, and other learning materials you'll need will be provided at the event." },
   { question: 'Are tickets refundable?', answer: 'Tickets are non-refundable due to the limited number of seats available for the event.' },
-  { question: "I'm travelling from outside the city. Can you help me with accommodation?", answer: "Yes, we have access to group rates with selected hotels. Once you've booked your ticket, simply get in touch with us and we'll help you explore the available accommodation options. For accommodation or travel-related questions, please email us at info@lifecoachpallavichatterjee.com, and our team will be happy to assist." },
   { question: 'How can I contact you if I have a question?', answer: 'If you have any questions before the event, feel free to reach out to us at info@lifecoachpallavichatterjee.com. Our team will be happy to help and make sure you\'re fully prepared for the event.' },
 ];
 
@@ -154,19 +145,9 @@ export const videoLinks: { videoId: string; caption: string }[] = [
   { videoId: 'yPR9wvHHe2M', caption: 'From Homemaker to Fulltime Job + Life Coach Earning 2L at the Age of 50' },
 ];
 
-export const venueAddress = 'Park Inn by Radisson, New Delhi IP Extension';
-export const venueDescription = "Experience the event at one of Delhi's premium business hotels, offering a comfortable, professional environment with modern conference facilities and warm hospitality.";
-export const venueImages = [
-  '/images/venue/venue-1-building.jpg',
-  '/images/venue/venue-2-banquet.jpg',
-  '/images/venue/venue-3-lobby.jpg',
-  '/images/venue/venue-4-pool.jpg',
-  '/images/venue/venue-5-restaurant.jpg',
-  '/images/venue/venue-6-lounge.jpg',
-];
-export const venueMapUrl = 'https://maps.app.goo.gl/L5xn57qg6oxbDLVAA';
-
 export const ticketPrice = '₹6,000';
+export const earlyBirdLabel = 'Early Bird Price';
+export const priceIncreaseNote = 'Price increases to ₹8,000 after 2 slots';
 export const pricingValueLine = 'Value worth ₹2L+, available to you at this event at just ₹6K';
 export const ticketLabel = 'Full Day Access';
 export const ticketInclusions: string[] = [
