@@ -1,12 +1,12 @@
 export const showThankYouPage = false;
 
 export const eventName = 'Event';
-export const eventDate = '2026-10-31';
-export const eventDateLabel = '31 Oct 2026';
-export const bannerText = 'Live Event · 31 Oct 2026 · Delhi · Only 20 seats';
+export const eventDate = '2026-11-21';
+export const eventDateLabel = '21 Nov 2026';
+export const bannerText = 'Live Event · 21 Nov 2026 · Delhi · Only 20 seats';
 export const tagline = 'Build Your Passion Coaching Business in Just 1 Day';
 export const description = 'A full day with Pallavi Chatterjee, an award-winning Life & Business Coach with 18 years of experience. Leave with clarity on your niche, a signature offer, and your launch plan.';
-export const timeLabel = '9:00 AM – 6:00 PM';
+export const timeLabel = '11:00 AM – 6:00 PM';
 export const eventMode = 'Live Online — joining link shared after booking';
 export const venueName = 'Park Inn by Radisson, New Delhi IP Extension';
 export const seatsLabel = 'Limited Seats Filling Fast';
@@ -32,19 +32,17 @@ export const aboutPoints = [
   "Ready to go from scattered income to a ₹1 Crore coaching business?",
 ];
 
-export type ScheduleItem = { title: string; description: string };
+export type ScheduleItem = { title: string; description?: string };
 export const schedule: ScheduleItem[] = [
   { title: 'Welcome + Coach Brand Experience', description: 'Join in, meet fellow coaches and step into your coach identity as the day begins.' },
   { title: 'Life Coaching Foundations', description: 'Understand what Life Coaching really is, its scope, how it differs from therapy/counselling, and whether coaching is the right career path for you. Discover how to turn your corporate, business or life experience into a Premium Coaching Business.' },
   { title: 'LIVE Coaching Experience', description: 'Experience a live coaching demonstration — see how powerful coaching conversations move you from confusion to action in the same session. Also get your Happiness Score, Life Purpose & Monetizable Happy Passion.' },
   { title: 'Break Your Stagnation / Procrastination / Fear to Start Your Business', description: 'Install the way a businesswoman thinks, own your identity to actually pursue your passion business, and get rid of the money and visibility blocks that keep aspiring and existing coaches from moving forward — using our unique Premium Coaching Method "Trilogy".' },
   { title: 'Vision → 10X Money Activation', description: 'Build your AI-powered Life & Business Vision; existing coaches identify their biggest growth gaps and 10X opportunities with our Collective Synergy Money Activation.' },
-  { title: 'Break + Networking', description: 'Take a short break, then connect with fellow coaches online, exchange ideas and build your coach circle of friends — maybe co-founders, hiring managers, trainers and HRs.' },
   { title: 'AI Life Coach Business Upgrade', description: 'Use AI to work through your premium niche, positioning, coaching strategy, marketing and business direction — turning expertise into a clear, legit, social-media-led business asset ready to invite clients.' },
   { title: 'Premium Coach Branding & Experience', description: 'Create your personal brand assets with AI and learn how to show up professionally and confidently as a Premium Life Coach whom people pay without asking for discounts.' },
   { title: 'Content Creation Challenge', description: 'Create your own content LIVE during the session, use our viral hooks and ideas, and start building your 30-day content bank — with content posted during the event itself, in collaboration with other coaches.' },
-  { title: 'The Coach Success Room', description: 'Hear directly from our successful coach mentees as they share their real journeys, monetization strategies and what helped them create significant coaching income alongside a hectic job, family and kids — charging lakhs per client.' },
-  { title: 'Celebrate • Unlock Your 1 CRORE Roadmap', description: 'Celebrations, Q&A, networking and your Coach Accelerator Goodie Bag — packed with resources to help you show up and grow as a businesswoman. Plus the Businesswoman Crowning Ceremony & Future Self Ramp Walk.' },
+  { title: 'Celebrate • Unlock Your 1 CRORE Roadmap' },
 ];
 
 export const bonusesSection = {
